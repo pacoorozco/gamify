@@ -1,0 +1,68 @@
+; <?php exit(); __halt_compiler(); ?>
+;
+; Maintain above line in order to avoid sending sensitive data
+; if someone request this file.
+;
+; You can improve this security meassure using this code in
+; your .htaccess:
+;
+; <Files gamify.conf>
+;    Order Allow,Deny
+;    Deny from All
+; </Files>
+;
+
+[site]
+base_url = https://localhost
+
+; If you want to DEBUG this app, set this to '1'
+; If you're debugging and you want to receive mail messages
+; set debug_receiver to an email.
+;
+; debug = 0
+; debug_receiver = <someone@mail.net>
+
+[datasource]
+;
+; NOT IMPLEMENTED YET!
+;
+; Only works for mysql
+;
+; The datasource to use, here you must select the driver
+; see the corresponding configuration section, in order
+; to put required parameters.
+;
+; db_driver:
+;       mysql   for MySQL database, see [mysql]
+;       oracle  for Oracle database, see [oracle]
+;       pg      for PostgreSQL database, see [pg]
+;
+db_driver = mysql
+
+[mysql]
+; MySQL configuration
+;
+; If you use localhost you must not to use this
+; host = server.domain.com
+
+host = localhost
+
+; Credentials to make DB connection
+database = <database name>
+user     = <user to access database>
+passwd   = <very secret password>
+
+[authentication]
+; Where users will be authenticated
+;
+; If you use type=LOCAL we will use an internal database.
+;
+; If you use type=LDAP you must supply [LDAP] parameters.
+;
+type = LOCAL
+
+[LDAP]
+; host = ldaps://hostname
+; basedn = cn=%s,ou=users,dc=domain"
+; filter = "(suborganization=something)"
+
