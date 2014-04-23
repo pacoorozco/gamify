@@ -123,11 +123,10 @@ function silent_action( $user_id, $action_id ) {
             if ( 'completed' == $status ) {
                 // send a mail to user in order to tell him/her, his/her new badge          
                 notify_badge_2_user($data);
+                return $data['id_badge'];
             } 
-            return true;
-        } else {
-            return false;            
         }
+        return false;            
     }
     
     $row = $result->fetch_assoc();
@@ -151,7 +150,7 @@ function silent_action( $user_id, $action_id ) {
             if ( $db->query($query) ) {
                 // send a mail to user in order to tell him/her, his/her new achievement          
                 notify_badge_2_user($data);
-                return true;
+                return $data['id_badge'];
             } else {
                 return false;
             }
@@ -160,11 +159,8 @@ function silent_action( $user_id, $action_id ) {
             $query = sprintf( "UPDATE members_badges SET amount='%d', last_time='%d' WHERE id = '%d' LIMIT 1", 
                                $data['amount'], time(), $data['id'] );
             
-            if ( $db->query($query) ) {
-                return true;
-            } else {
-                return false;                
-            }
+            $db->query($query);
+            return false;                
         }
     } else {
         return false;
@@ -216,4 +212,15 @@ LEVEL_MAIL;
     return send_message($subject, $mail_body, $data['email']);
 } // END notify_badge_2_user()
 
+function get_user_level($user_id) {
+    global $db;
+        
+    $query = sprintf( "SELECT level_id FROM vmembers WHERE id='%d' LIMIT 1", intval($user_id));
+    $result = $db->query($query);
+    if (0 == $result->num_rows ) {
+        return false;
+    }
+    $row = $result->fetch_assoc();
+    return $row['level_id'];
+}
 ?>
