@@ -17,6 +17,9 @@ $CONFIG['version'] = '2.5';
 // Sets DEBUG mode based on parsed configuration
 $CONFIG['site']['debug'] = isset($CONFIG['site']['debug']) ? true : false;
 
+// We need to send mails, we use Swift
+require_once('lib/swift_required.php');
+
 /*** MAIN ***/
 
 // Start the session (pretty important!)
