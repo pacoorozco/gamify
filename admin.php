@@ -24,8 +24,6 @@ if ( ! user_has_privileges($_SESSION['member']['id'], 'administrator') ) {
     exit();
 } 
 
-// We need to send mails, we use Swift
-require_once('lib/swift_required.php');
 require_once('inc/header.inc.php');
 
 $missatges = array();
