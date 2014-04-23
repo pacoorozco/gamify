@@ -658,7 +658,13 @@ function create_user( $data = array() ) {
     }
     
     // User data is correct, now we can insert it to DB
-    $query = sprintf("INSERT INTO members SET username='%s', password='%s', email='%s', role='%s'", $db->real_escape_string($data['username']), $db->real_escape_string(md5($data['password'])), $db->real_escape_string($data['email']), $db->real_escape_string($data['role']) );
+    $query = sprintf( "INSERT INTO members SET uuid='%s', username='%s', password='%s', email='%s', role='%s'", 
+            $db->real_escape_string(generate_uuid()),
+            $db->real_escape_string($data['username']), 
+            $db->real_escape_string(md5($data['password'])), 
+            $db->real_escape_string($data['email']), 
+            $db->real_escape_string($data['role']) 
+            );
     $db->query($query);
 
     // Get new user_id or 0 on error.
@@ -1643,7 +1649,8 @@ function create_quiz( $data = array() ) {
     // TODO - Validate supplied data
 
     // Question data is correct, now we can insert it to DB
-    $query = sprintf( "INSERT INTO questions SET name='%s', image='%s', question='%s', tip='%s', solution='%s', type='%s', status='%s'",
+    $query = sprintf( "INSERT INTO questions SET uuid='%s', name='%s', image='%s', question='%s', tip='%s', solution='%s', type='%s', status='%s'",
+            $db->real_escape_string(generate_uuid()),
             $db->real_escape_string($data['name']), 
             $db->real_escape_string($data['image']),
             $db->real_escape_string($data['question']),
@@ -1657,6 +1664,13 @@ function create_quiz( $data = array() ) {
 
     // Get new question_id or 0 on error.
     $question_id = $db->insert_id;
+    
+    if ( 0 == $question_id ) {    
+            die($query);
+            $missatges[] = array('type' => "error", 'msg' => "No s'ha pogut crear la pregunta.");
+            print_newquiz_form($data, $missatges);
+            return false;
+    }
     
     // put choices into its table
     foreach ( $data['choices'] as $key => $value ) {
@@ -1688,14 +1702,9 @@ function create_quiz( $data = array() ) {
         $db->query($query);
     }
     
-    if ( 0 == $question_id ) {
-        die($query);
-        $missatges[] = array('type' => "error", 'msg' => "No s'ha pogut crear la pregunta.");
-        print_newquiz_form($data, $missatges);
-    } else {
-        $missatges[] = array('type' => "success", 'msg' => "La pregunta s'ha creat correctament.");
-        print_quiz_management($missatges);
-    } 
+    $missatges[] = array('type' => "success", 'msg' => "La pregunta s'ha creat correctament.");
+    print_quiz_management($missatges);
+    return true;
 } // END create_quiz()
 
 function save_quiz_data( $data = array() ) {

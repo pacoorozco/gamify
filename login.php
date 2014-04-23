@@ -252,8 +252,11 @@ function do_register( $data = array() ) {
     }
     
     // User successfully validated.
-    $query = sprintf("INSERT INTO members SET username='%s', email='%s'", 
-                     $db->real_escape_string($data['username']), $db->real_escape_string($data['email']) );
+    $query = sprintf("INSERT INTO members SET uuid='%s', username='%s', email='%s'",
+            $db->real_escape_string(generate_uuid()),
+            $db->real_escape_string($data['username']), 
+            $db->real_escape_string($data['email']) 
+            );
     $db->query($query);
 
     // Get new user_id or 0 on error.
