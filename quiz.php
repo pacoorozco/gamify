@@ -51,6 +51,8 @@ exit();
 /*** FUNCTIONS ***/
 function answer( $question_uuid, $answers ) {
     global $db;
+    
+    $html_code = array();
       
     $query = sprintf( "SELECT * FROM questions WHERE uuid='%s' LIMIT 1", $db->real_escape_string($question_uuid) );
     $result = $db->query($query);
@@ -63,6 +65,10 @@ function answer( $question_uuid, $answers ) {
     
     $question = $result->fetch_assoc();
     $question_id = $question['id'];
+    
+    if ( !empty($question['solution']) ) {
+        $html_code[] = sprintf("<p>La resposta correcta és:</p><pre>%s</pre>", $question['solution']);
+    }
     
     // Mirem si la pregunta ha estat resposta per aquest usuari
     $query = sprintf( "SELECT * FROM members_questions WHERE id_member='%d' AND id_question='%d' LIMIT 1", 
@@ -113,8 +119,17 @@ function answer( $question_uuid, $answers ) {
             );
     
     $db->query($query);
-
+    
+    $old_level = get_user_level($_SESSION['member']['id']);
     silent_add_experience( $_SESSION['member']['id'], $points, 'ha resport la pregunta '. $question['name'] );
+    $new_level = get_user_level($_SESSION['member']['id']);
+    
+    if ($old_level != $new_level) {
+        $query = sprintf("SELECT name FROM levels WHERE id='%d'", $new_level);
+        $result = $db->query($query);
+        $row = $result->fetch_assoc();
+        $html_code[] = sprintf("<p><strong>Enhorabona!</strong> Acabes de pujar de nivell. Ara ets un <strong>'%s'</strong>.</p>", $row['name']);
+    }
     
     // anem a veure si haig d'executar alguna accio
     $query = sprintf("SELECT * FROM questions_badges WHERE question_id='%d' AND ( type='always' OR type='%s' )", 
@@ -126,7 +141,12 @@ function answer( $question_uuid, $answers ) {
     if ( $result->num_rows > 0 ) {
         // hi ha accions a realitzar
         while ( $row = $result->fetch_assoc() ) {
-            silent_action( $_SESSION['member']['id'], $row['badge_id'] );
+            if (silent_action($_SESSION['member']['id'], $row['badge_id']) == $row['badge_id']) {
+                $query = sprintf("SELECT name FROM badges WHERE id='%d'", $row['badge_id']);
+                $result2 = $db->query($query);
+                $row2 = $result2->fetch_assoc();
+                $html_code[] = sprintf("<p><strong>Enhorabona!</strong> Acabes d'aconseguir la insíginia <strong>'%s'</strong>.</p>", $row2['name']);
+            }
         }
     }  
     
@@ -136,6 +156,8 @@ function answer( $question_uuid, $answers ) {
     <div class="panel panel-default" width="70%">
         <div class="panel-heading"><h2>Gràcies per la teva resposta</h2></div>
         <div class="panel-body">
+            <p>La teva resposta ha obtingut una puntuació de <strong><?php echo $points; ?> punts</strong>.</p>
+            <?php echo implode(PHP_EOL, $html_code); ?>
         </div>
     </div>
     <?php
