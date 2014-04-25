@@ -108,6 +108,8 @@ function answer( $question_uuid, $answers ) {
             $success = $success || $choice['correct'];
         }
     }
+    // minimun points for answer is '1'
+    if ($points < 1 ) $points = 1;
        
     $type = 'fail';
     if ( true === $success ) {
