@@ -18,9 +18,10 @@ See [CHANGELOG](https://git.upcnet.es/paco.orozco/gamify/blob/master/CHANGELOG) 
 
 ### Clone the Source
 
-    Clone GitLab repository
-    git clone https://git.upcnet.es/paco.orozco/gamify.git gamify
-
+Clone GitLab repository
+```bash
+git clone https://git.upcnet.es/paco.orozco/gamify.git gamify
+```
 ### Configuration
 * Copy [gamify.conf.sample](https://git.upcnet.es/paco.orozco/gamify/blob/master/gamify.conf.sample) to **gamify.conf**. 
 * Edit it and put valid values
