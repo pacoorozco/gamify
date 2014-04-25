@@ -19,9 +19,9 @@ See [CHANGELOG](https://git.upcnet.es/paco.orozco/gamify/blob/master/CHANGELOG) 
 ### Clone the Source
 
 Clone GitLab repository
-```Shell
-git clone https://git.upcnet.es/paco.orozco/gamify.git gamify
-```
+
+```$ git clone https://git.upcnet.es/paco.orozco/gamify.git gamify```
+
 ### Configuration
 * Copy [gamify.conf.sample](https://git.upcnet.es/paco.orozco/gamify/blob/master/gamify.conf.sample) to **gamify.conf**. 
 * Edit it and put valid values
@@ -32,7 +32,7 @@ Then enjoy !
 
 Go to the dir where application is installed ($APP_DIR) and use git to pull new code.
 
-    git pull https://git.upcnet.es/paco.orozco/gamify.git master
+```$ git pull https://git.upcnet.es/paco.orozco/gamify.git master```
 
 Please see [install/](https://git.upcnet.es/paco.orozco/gamify/tree/master/install) dir in order to see if DB schema must be upgraded.
 
