@@ -10,8 +10,10 @@ require_once('inc/functions.inc.php');
 
 // Page only for members
 if ( false === login_check() ) {
-    header('Location: index.php');
-    exit();
+    // save referrer to $_SESSION['nav'] for after login redirect
+    $_SESSION['nav'] = urlencode($_SERVER['SCRIPT_NAME'] . '?' . $_SERVER['QUERY_STRING']);
+    header('Location: login.php');
+    exit;
 }
 
 // Que hem de fer?
