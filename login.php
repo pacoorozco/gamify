@@ -23,12 +23,22 @@ switch ($action) {
         $errors = array();
 
         if ( true === do_login($username, $password) ) {
-            header('Location: index.php');
+            // go to previous referrer, if exists
+            $nav = pakus_POST('nav');
+            $nav = (!empty($nav)) ? $nav : 'index.php';
+            header('Location: ' . urldecode($nav));
             exit();
         } else {
             $errors[] = array('type' => "error", 'msg' => "Usuari o contrasenya incorrectes.");
         }
         break;
+        
+    default:
+        if (true === login_check()) {
+            // ja esta autenticat
+            header('Location: index.php');
+            exit();
+        }
 }
 
 // now rest of actions
@@ -62,6 +72,10 @@ exit();
 /*** FUNCTIONS ***/
 
 function print_login_form( $username = '', $missatges = array() ) {
+    // get after login url if exists
+    $nav = pakus_POST('nav');
+    $nav = (!empty($nav)) ? $nav : $_SESSION['nav'];
+    unset($_SESSION['nav']);
 ?>
         <div id="loginbox" style="margin-top:50px;" class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">                                     
             <div class="panel panel-info">
@@ -89,6 +103,7 @@ function print_login_form( $username = '', $missatges = array() ) {
                             <div style="margin-top:10px" class="form-group">
                                 <div class="col-md-12">
                                     <input type="hidden" id="a" name="a" value="login">
+                                    <input type="hidden" name="nav" value="<?php echo $nav; ?>">
                                     <button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-log-in"></span> &nbsp; Accedir</button>
                                 </div>
                             </div>

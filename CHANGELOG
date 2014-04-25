@@ -1,0 +1,12 @@
+Version 2.6
+-----------
+* [#186] New feature: 'Permetre 'preview' de les preguntes'
+* [#198] New feature: 'Permetre enllaçar URL protegides'
+* [#200] Bug solved: 'Algunes preguntes donen punts negatius'
+* [#199] Bug solved: 'No es mostren els codis HTML de les preguntes'
+* [#197] Bug solved: 'Error al crear una pregunta'
+* [#196] Bug solved: 'Pantalla blanca al respondre una pregunta'
+
+Version 2.5
+-----------
+First version with CHANGELOG

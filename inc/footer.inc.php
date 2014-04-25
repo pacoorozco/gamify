@@ -28,6 +28,7 @@ defined('IN_SCRIPT') or die('Invalid attempt');
     <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
     <script src="js/jquery.liveSearch.js"></script>
     <script src="js/chosen/chosen.jquery.min.js"></script>
+    <script src="//tinymce.cachefly.net/4.0/tinymce.min.js"></script>
     <script src="holder.js"></script>
     <script>
         $('#live-search').liveSearch({url: 'member.php?a=search&q='});
@@ -60,6 +61,19 @@ defined('IN_SCRIPT') or die('Invalid attempt');
             event.preventDefault();
             $(this).closest( '.clonable' ).remove();
         } );
+        
+        tinymce.init({
+            selector: "textarea.tinymce",
+            width:      '100%',
+            height:     270,
+            statusbar:  false,
+            menubar:    false,                
+            plugins: [
+                "link",
+                "code"
+            ],
+            toolbar: "bold italic underline strikethrough | removeformat | undo redo | bullist numlist | link code"
+        });
     </script>
     
     <!-- Google Analytics -->

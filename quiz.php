@@ -11,9 +11,11 @@ require_once('inc/gamify.inc.php');
 
 // Page only for members
 if ( false === login_check() ) {
-    header('Location: index.php');
+    // save referrer to $_SESSION['nav'] for after login redirect
+    $_SESSION['nav'] = urlencode($_SERVER['SCRIPT_NAME'] . '?' . $_SERVER['QUERY_STRING']);
+    header('Location: login.php');
     exit;
-} 
+}
 
 require_once('inc/header.inc.php');
 // Que hem de fer?
@@ -106,6 +108,8 @@ function answer( $question_uuid, $answers ) {
             $success = $success || $choice['correct'];
         }
     }
+    // minimun points for answer is '1'
+    if ($points < 1 ) $points = 1;
        
     $type = 'fail';
     if ( true === $success ) {

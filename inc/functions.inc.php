@@ -12,7 +12,7 @@ defined('IN_SCRIPT') or die('Invalid attempt');
 $CONFIG = parse_ini_file('gamify.conf', true, INI_SCANNER_RAW);
 
 // Put APP version
-$CONFIG['version'] = '2.5';
+$CONFIG['version'] = '2.6';
 
 // Sets DEBUG mode based on parsed configuration
 $CONFIG['site']['debug'] = isset($CONFIG['site']['debug']) ? true : false;
@@ -53,7 +53,7 @@ function pakus_input($in, $force_slashes=0, $max_length=0) {
         unset ($element);
     } else {
         // Strip whitespace
-        $in = preg_replace('/&amp;(\#[0-9]+;)/', '&$1', htmlspecialchars( trim($in) ));
+        $in = preg_replace('/&amp;(\#[0-9]+;)/', '&$1', trim($in));
 
         // Is value length 0 chars?
         if (strlen($in) == 0) return $in;
