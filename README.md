@@ -19,7 +19,7 @@ See [CHANGELOG](https://git.upcnet.es/paco.orozco/gamify/blob/master/CHANGELOG) 
 ### Clone the Source
 
 Clone GitLab repository
-```bash
+```Shell
 git clone https://git.upcnet.es/paco.orozco/gamify.git gamify
 ```
 ### Configuration
