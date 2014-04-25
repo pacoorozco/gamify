@@ -12,7 +12,7 @@ defined('IN_SCRIPT') or die('Invalid attempt');
 $CONFIG = parse_ini_file('gamify.conf', true, INI_SCANNER_RAW);
 
 // Put APP version
-$CONFIG['version'] = '2.5';
+$CONFIG['version'] = '2.6';
 
 // Sets DEBUG mode based on parsed configuration
 $CONFIG['site']['debug'] = isset($CONFIG['site']['debug']) ? true : false;

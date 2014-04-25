@@ -272,6 +272,11 @@ switch ($action) {
         print_quiz_management($missatges);
         break;
     
+    case 'previewquiz':
+        $question_id = pakus_REQUEST('item');
+        print_preview_quiz($question_id);
+        break;
+    
     default:
         print_admin_dashboard();
 }
@@ -1531,8 +1536,9 @@ function print_quiz_management( $msg = array() ) {
         
         $html_code[] = '</td>';
         $html_code[] = '<td>';
-        $html_code[] = '<a href="'. $_SERVER['PHP_SELF'] .'?a=editquiz&item='. $row['id'] .'" class="btn btn-default btn-sm" role="button"><span class="glyphicon glyphicon-pencil"></span> Editar</a>';
-        $html_code[] = '<a href="'. $_SERVER['PHP_SELF'] .'?a=deletequiz&item='. $row['id'] .'" class="btn btn-danger btn-sm" role="button"><span class="glyphicon glyphicon-remove"></span> El·liminar</a>';
+        $html_code[] = '<a href="'. $_SERVER['PHP_SELF'] .'?a=editquiz&item='. $row['id'] .'" class="btn btn-default" role="button"><span class="glyphicon glyphicon-pencil"></span> Editar</a>';
+        $html_code[] = '<a href="'. $_SERVER['PHP_SELF'] .'?a=previewquiz&item='. $row['id'] .'" class="btn btn-default" role="button"><span class="glyphicon glyphicon-eye-open"></span> Veure</a>';
+        $html_code[] = '<a href="'. $_SERVER['PHP_SELF'] .'?a=deletequiz&item='. $row['id'] .'" class="btn btn-danger" role="button"><span class="glyphicon glyphicon-remove"></span> El·liminar</a>';
         $html_code[] = '</td>';
         $html_code[] = '</tr>';
     }
@@ -1621,7 +1627,7 @@ function print_newquiz_form( $data = array(), $msg = array() ) {
                                 <div class="col-sm-offset-2 col-sm-10">
                                     <input type="hidden" id="a" name="a" value="createquiz">
                                     <button type="submit" class="btn btn-success">Crear pregunta</button>
-                                    <a href="<?php echo $_SERVER['PHP_SELF']; ?>?a=quiz" class="btn btn-default" role="button">Cancel·lar</a>
+                                    <h1>Nova pregunta</h1>
                                 </div>
                             </div>
                         </form>
@@ -1992,4 +1998,74 @@ function print_quiz_form_content( $data ) {
                             </div>    
     <?php
 } // END print_quiz_form_content()
+
+function print_preview_quiz($question_id) {
+    global $db;
+    
+    $query = sprintf( "SELECT * FROM questions WHERE id='%s' LIMIT 1", $db->real_escape_string($question_id) );
+    $result = $db->query($query);
+    
+    if ( 0 == $result->num_rows ) {
+        // La pregunta que ens han passat no existeix, per tant tornem a mostrar la llista.
+        $missatges[] = array('type' => "error", 'msg' => "No he trobat informaci&oacute; per aquesta pregunta.");
+        print_quiz_management();
+        return false;        
+    }
+    
+    $question = $result->fetch_assoc(); 
+    
+    // get question's choices, if none, return
+    $query = sprintf( "SELECT * FROM questions_choices WHERE question_id='%d'", $question_id);
+    $result = $db->query($query);
+    
+    $question['choices'] = array();
+    while ( $row = $result->fetch_assoc() ) {
+        $question['choices'][] = $row;
+    }
+    
+    if ( empty($question['image']) ) {
+        $question['image'] = 'images/question_default.jpg';
+    }
+    
+    ?>
+    <h1>Veure pregunta
+    <a href="<?php echo $_SERVER['PHP_SELF']; ?>?a=editquiz&item=<?php echo $question_id; ?>" class="btn btn-info" role="button"><span class="glyphicon glyphicon-pencil"></span> Editar</a>
+    <a href="<?php echo $_SERVER['PHP_SELF']; ?>?a=quiz" class="btn btn-danger" role="button"><span class="glyphicon glyphicon-remove"></span> Tornar</a>
+    </h1> 
+
+    <div class="panel panel-default" width="70%">
+        <div class="panel-heading">
+            <h2><?php echo $question['name']; ?></h2>
+        </div>
+        <div class="panel-body">
+            <img src="<?php echo $question['image']; ?>" width="120" class="img-rounded">
+            <h4><?php echo $question['question']; ?></h4>
+                <ul class="list-group">
+                    <?php
+                        $html_code = array();
+                        foreach ($question['choices'] as $choice) {
+                            $html_code[] = '<li class="list-group-item">';
+                                if ( 'yes' == $choice['correct'] ) {
+                                    $html_code[] = '<span class="glyphicon glyphicon-ok"></span>';
+                                } else {
+                                    $html_code[] = '<span class="glyphicon glyphicon-remove"></span>';
+                                }
+                            $html_code[] = $choice['choice'];
+                            $html_code[] = '<span class="badge pull-right">' . $choice['points'] .'</span>';
+                            $html_code[] = '</li>';
+                            
+                        }
+                        echo implode(PHP_EOL, $html_code);
+                    ?>
+                </ul>
+            <?php
+                if ( !empty($question['solution']) ) {
+                // nomes mostrem la resposta si l'usuari ha respost la pregunta
+                echo '<div class="alert alert-info"><p><strong>La resposta correcta és: </strong></p><p>'. $question['solution'] .'</p></div>';
+                }
+            ?>
+        </div>
+    </div>
+    <?php    
+} // END print_preview_quiz()
 ?>
