@@ -1488,20 +1488,6 @@ function print_send_message( $msg = array() ) {
                     </form>
                 </div>
             </div>
-            <script src="//tinymce.cachefly.net/4.0/tinymce.min.js"></script>
-            <script>
-            tinymce.init({
-                selector: "textarea.tinymce",
-                width:      '100%',
-                height:     270,
-                statusbar:  false,
-                menubar:    false,                
-                plugins: [
-                    "anchor link"
-                ],
-                toolbar: "styleselect | bold italic | alignleft aligncenter alignright alignjustify | link"
-            });
-            </script>
     <?php
 } // END print_send_message()
 
@@ -1827,7 +1813,7 @@ function print_quiz_form_content( $data ) {
                             <div class="form-group">
                                 <label class="col-sm-2 control-label">Pregunta</label>
                                 <div class="col-sm-10">                     
-                                    <textarea name="question" class="form-control" rows="3" placeholder="Quina és la pregunta?" required><?php if ( isset($data['question']) ) echo $data['question']; ?></textarea>
+                                    <textarea name="question" class="form-control tinymce" rows="3" placeholder="Quina és la pregunta?" required><?php if ( isset($data['question']) ) echo $data['question']; ?></textarea>
                                 </div>
                             </div>
                          
@@ -1921,7 +1907,7 @@ function print_quiz_form_content( $data ) {
                             <div class="form-group">
                                 <label class="col-sm-2 control-label">Solució explicada</label>
                                 <div class="col-sm-10">                     
-                                    <textarea name="solution" class="form-control" rows="3" placeholder="Quina és la solució detallada? (opcional)"><?php if ( isset($data['solution']) ) echo $data['solution']; ?></textarea>
+                                    <textarea name="solution" class="form-control tinymce" rows="3" placeholder="Quina és la solució detallada? (opcional)"><?php if ( isset($data['solution']) ) echo $data['solution']; ?></textarea>
                                 </div>
                             </div>
                                                         
