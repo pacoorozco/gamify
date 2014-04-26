@@ -53,14 +53,15 @@ defined('IN_SCRIPT') or die('Invalid attempt');
         </div>
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
-                <li><a href="index.php">Inici</a></li>
+                <li><a href="index.php" title="Inici"><span class="glyphicon glyphicon-home"></span> Inici</a></li>
                 <?php
                 if( true === login_check() ) {
                 ?>
-                <li><a href="quiz.php">Participa <span class="badge"><?php echo get_pending_quizs($_SESSION['member']['id']); ?></span></a></li>
-                
-                <li><a href="admin.php">Administra</a></li>
+                <li><a href="quiz.php" title="Participa amb nosaltres"><span class="glyphicon glyphicon-question-sign"></span> Participa <span class="badge"><?php echo get_pending_quizs($_SESSION['member']['id']); ?></span></a></li>
                 <?php
+                if (user_has_privileges($_SESSION['member']['id'])) {
+                    echo '<li><a href="admin.php" title="Panell d\'administració"><span class="glyphicon glyphicon-tasks"></span> Administra</a></li>';
+                }
                 }
                 ?>
             </ul>
@@ -68,21 +69,21 @@ defined('IN_SCRIPT') or die('Invalid attempt');
             if( true === login_check() ) {
                 ?>
         <ul class="nav navbar-nav navbar-right">
-        <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo $_SESSION['member']['username']; ?>
+        <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-user"></span> <?php echo $_SESSION['member']['username']; ?>
                 <b class="caret"></b></a>
             <ul class="dropdown-menu">
                 <li>
                     <div class="navbar-content">
                         <div class="row">
                             <div class="col-md-5">
-                                <img src="//lh5.googleusercontent.com/-b0-k99FZlyE/AAAAAAAAAAI/AAAAAAAAAAA/twDq00QDud4/s120-c/photo.jpg" alt="<?php echo $_SESSION['member']['username']; ?>" class="img-responsive">
-                                <p class="text-center small"><a href="#">Canviar imatge</a></p>
+                                <img src="images/profile_default.png" alt="<?php echo $_SESSION['member']['username']; ?>" class="img-thumbnail img-responsive">
+                                <p class="text-center small"><a href="#" title="Canviar imatge" class="disabled">Canviar imatge</a></p>
                             </div>
                             <div class="col-md-7">
                                 <span><?php echo $_SESSION['member']['username']; ?></span>
                                 <p class="text-muted small"><?php echo $_SESSION['member']['email']; ?></p>
                                 <div class="divider"></div>
-                                <a href="member.php?a=viewuser&item=<?php echo $_SESSION['member']['id']; ?>" class="btn btn-primary btn-sm active">El meu compte</a>
+                                <a href="member.php?a=viewuser&item=<?php echo $_SESSION['member']['id']; ?>" title="El meu compte" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-user"></span> El meu compte</a>
                             </div>
                         </div>
                     </div>
@@ -91,7 +92,7 @@ defined('IN_SCRIPT') or die('Invalid attempt');
                             <div class="row">
                                 <div class="col-md-6"></div>
                                 <div class="col-md-6">
-                                    <a href="login.php?a=logout" class="btn btn-danger btn-sm pull-right">Sortir</a>
+                                    <a href="login.php?a=logout" title="Sortir" class="btn btn-danger btn-sm pull-right"><span class="glyphicon glyphicon-log-out"></span> Sortir</a>
                                 </div>
                             </div>                            
                         </div>

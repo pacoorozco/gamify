@@ -51,25 +51,13 @@ if ( true === login_check() ) { ?>
         <h1>Hall of fame</h1>         
         
         <ul class="nav nav-tabs">
-            <li class="active"><a href="#week_top" data-toggle="tab">Setmanal</a></li>
-            <li><a href="#month_top" data-toggle="tab">Mensual</a></li>
+            <li class="active"><a href="#month_top" data-toggle="tab">Darrer mes</a></li>
             <li><a href="#top" data-toggle="tab">Total</a></li>
         </ul>
         
-        <div class="tab-content">  
-            <!-- week top -->
-            <div class="table-responsive tab-pane fade in active" id="week_top">
-            <?php
-       
-            $query = "SELECT t1.id, t1.username, t2.points, t1.level_id, (SELECT COUNT(id) FROM members_badges WHERE t1.id = members_badges.id_member AND members_badges.status = 'completed') AS badges FROM vmembers AS t1, vtop_week AS t2 WHERE t1.id = t2.id AND t1.role = 'member' ORDER BY points DESC, badges DESC, username ASC LIMIT 10"; 
-            $result = $db->query($query);
-        
-            require('inc/hall_of_fame.inc.php');
-            ?>					
-            </div>
-            
+        <div class="tab-content">              
             <!-- month top -->
-            <div class="table-responsive tab-pane fade active" id="month_top">
+            <div class="table-responsive tab-pane fade in active" id="month_top">
             <?php
        
             $query = "SELECT t1.id, t1.username, t2.points, t1.level_id, (SELECT COUNT(id) FROM members_badges WHERE t1.id = members_badges.id_member AND members_badges.status = 'completed') AS badges FROM vmembers AS t1, vtop_month AS t2 WHERE t1.id = t2.id AND t1.role = 'member' ORDER BY points DESC, badges DESC, username ASC LIMIT 10"; 
@@ -125,12 +113,22 @@ if ( true === login_check() ) { ?>
                     </div>     
 
                     <div style="padding-top:30px" class="panel-body" >
+                        
+                                <?php 
+                                $usertext = 'usuari';
+                                $logintext = 'Accedir';
+                                
+                                if ($CONFIG['authentication']['LDAP']) {
+                                    $usertext = 'usuari LDAP';
+                                    $logintext = 'Accedir amb LDAP';
+                                }
+                                ?>                        
                             
                         <form action="login.php" method="post" class="form-horizontal" role="form">
                                     
                             <div style="margin-bottom: 25px" class="input-group">
                                 <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
-                                <input type="text" name="username" class="form-control" placeholder="usuari" required>  
+                                <input type="text" name="username" class="form-control" placeholder="<?= $usertext; ?>" required>  
                             </div>
                                 
                             <div style="margin-bottom: 25px" class="input-group">
@@ -141,7 +139,7 @@ if ( true === login_check() ) { ?>
                             <div style="margin-top:10px" class="form-group">
                                 <div class="col-md-12">
                                     <input type="hidden" id="a" name="a" value="login">
-                                    <button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-log-in"></span> &nbsp; Accedir</button>
+                                    <button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-log-in"></span> <?= $logintext; ?></button>
                                 </div>
                             </div>
                             

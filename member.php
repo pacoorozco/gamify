@@ -47,29 +47,27 @@ function get_search_results( $searchterm ) {
 	global $db;
 
 	$html_code = array();
-        $html_code[] = '<div id="searchResults-users">';
+        $html_code[] = '<ul class="list-group">';
         
         // Nomes farem cerques si busquen mes de tres caracters, aixo evita que sobrecarreguem la BDD
         if ( ! isset($searchterm[3]) ) {
-            $html_code[] = '<p>Tecleja m&eacute;s de 3 car&agrave;cters per fer la cerca</p>';
+            $html_code[] = '<li class="list-group-item list-group-item-info">Tecleja m&eacute;s de 3 car&agrave;cters per fer la cerca</li>';
         } else {       
             $query = sprintf("SELECT id, username FROM vmembers WHERE username LIKE '%%%s%%'", $db->real_escape_string($searchterm));
             $result = $db->query($query);
         
             if ( 0 == $result->num_rows  ) {
                 // No s'ha trobat res
-                $html_code[] = '<div id="no_result">No hi ha trobat cap resultat.</div>';
+                $html_code[] = '<li class="list-group-item list-group-item-danger">No he trobat cap resultat</li>';
                 
             } else {
                 // Hem trobat informacio
-                $html_code[] = '<ul>';
                 while ( $row = $result->fetch_assoc() ) {
-                    $html_code[] = '<li><a href="member.php?a=viewuser&item=' . $row['id'] . '">' . $row['username'] . "</a></li>";
+                    $html_code[] = '<li><a href="member.php?a=viewuser&item=' . $row['id'] . '" title="Veure ' . $row['username'] . '" class="list-group-item"><span class="glyphicon glyphicon-user"></span> ' . $row['username'] . "</a></li>";
                 }
-                $html_code[] = '</ul>';
             }
         }
-        $html_code[] = '</div>';
+        $html_code[] = '</ul>';
 	return implode($html_code, PHP_EOL);
 } // END get_search_results()
 
