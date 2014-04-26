@@ -130,6 +130,36 @@ function secure_session_destroy() {
     return $is_user_logged_in;
  }
  
+ function time_elapsed_string($datetime, $full = false) {
+    $now = new DateTime;
+    $ago = new DateTime($datetime);
+    $diff = $now->diff($ago);
+
+    $diff->w = floor($diff->d / 7);
+    $diff->d -= $diff->w * 7;
+
+    $string = array(
+        'y' => array('any', 'anys'),
+        'm' => array('mes', 'mesos'),
+        'w' => array('setmana', 'setmanes'),
+        'd' => array('dia', 'dies'),
+        'h' => array('hora', 'hores'),
+        'i' => array('minut', 'minuts'),
+        's' => array('segon', 'segons')
+    );
+    foreach ($string as $k => &$v) {
+        if ($diff->$k) {
+            $v = $diff->$k . ' ' . ($diff->$k > 1 ? $v[1] : $v[0]);
+        } else {
+            unset($string[$k]);
+        }
+    }
+
+    if (!$full) $string = array_slice($string, 0, 1);
+
+    return $string ? 'fa '. implode(', ', $string) : 'ara mateix';
+}
+ 
 function send_message( $subject, $missatge, $receiver = '' ) {
     global $db, $CONFIG;
     
