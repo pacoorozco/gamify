@@ -25,7 +25,6 @@ defined('IN_SCRIPT') or die('Invalid attempt');
     <!-- Chosen plugin CSS and theme for bootstrap -->
     <link href="js/chosen/chosen.min.css" rel="stylesheet">
     <link href="js/chosen/chosen-bootstrap.css" rel="stylesheet">
-    
 
     <!-- Custom styles for this template -->
     <link href="css/style.css" rel="stylesheet">

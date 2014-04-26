@@ -1262,7 +1262,7 @@ function add_experience ( $data = array() ) {
     }
     
     if ( empty($data['memo']) ) {
-        $data['memo'] = "t'han donat aquests punts sense cap ra&oacute;.";
+        $data['memo'] = "alguna ra&oacute; desconeguda";
     }
     
     if ( ! empty($missatges) ) {
@@ -1376,7 +1376,8 @@ function action( $data = array() ) {
         if ( $db->query($query) ) {
             $missatges[] = array('type' => "success", 'msg' => "Dades de l'usuari '<strong>". $data['username'] ."</strong>' actualitzades.");
             if ( 'completed' == $status ) {
-                // send a mail to user in order to tell him/her, his/her new badge          
+                // send a mail to user in order to tell him/her, his/her new badge  
+                silent_add_experience( $data['id_member'], 5, 'desbloquejar la ins&iacute;gnia: '. $data['name'] );
                 notify_badge_2_user($data);
                 $missatges[] = array('type' => "info", 'msg' => "L'usuari '<strong>". $data['username'] ."</strong>' ha aconseguit la insíngia '<strong>". $data['name'] ."</strong>'.");
             } 

@@ -29,7 +29,7 @@ function silent_add_experience ( $user_id, $experience, $memo = '' ) {
     }
     
     if ( empty($data['memo']) ) {
-        $data['memo'] = "t'han donat aquests punts sense cap ra&oacute;.";
+        $data['memo'] = "alguna ra&oacute; desconeguda.";
     }
        
     // get the current level, before adding points
@@ -121,6 +121,7 @@ function silent_action( $user_id, $action_id ) {
         
         if ( $db->query($query) ) {
             if ( 'completed' == $status ) {
+                silent_add_experience( $user_id, 5, 'desbloquejar la ins&iacute;gnia: '. $data['name'] );
                 // send a mail to user in order to tell him/her, his/her new badge          
                 notify_badge_2_user($data);
                 return $data['id_badge'];

@@ -125,7 +125,7 @@ function answer( $question_uuid, $answers ) {
     $db->query($query);
     
     $old_level = get_user_level($_SESSION['member']['id']);
-    silent_add_experience( $_SESSION['member']['id'], $points, 'ha resport la pregunta '. $question['name'] );
+    silent_add_experience( $_SESSION['member']['id'], $points, 'respondre la pregunta: '. $question['name'] );
     $new_level = get_user_level($_SESSION['member']['id']);
     
     if ($old_level != $new_level) {
