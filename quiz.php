@@ -116,6 +116,15 @@ function answer( $question_uuid, $answers ) {
         $type = 'success';
     }
     
+    // ACTION: Badge RAPIDO
+    $query = sprintf("SELECT id_member FROM members_questions WHERE id_question='%d'", intval($question_id));
+    $result = $db->query($query);
+    if ($result->num_rows === 0) {
+        // Es el primero, hay que dar badge
+        silent_action(intval($_SESSION['member']['id']), 1);
+    }
+    // END ACTION
+    
     $query = sprintf( "INSERT INTO members_questions SET id_member='%d', id_question='%d', amount='%d'",
             intval($_SESSION['member']['id']),
             intval($question_id),

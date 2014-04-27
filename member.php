@@ -232,10 +232,11 @@ function upload_profile_picture() {
     $row = $result->fetch_assoc();
     if (file_exists($row['profile_image'])) unlink($row['profile_image']);
         
-    // Si es la primera vegada que puja una imatge... guanya un badge
+    // ACTION: Si es la primera vegada que puja una imatge... guanya un badge
     if (empty($row['profile_image'])) {
         silent_action($_SESSION['member']['id'], 19);
     }
+    // END ACTION
         
     $query = sprintf("UPDATE members SET profile_image='%s' WHERE id='%d'", 
             $returnedMessage, 
