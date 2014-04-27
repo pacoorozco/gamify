@@ -12,7 +12,7 @@ defined('IN_SCRIPT') or die('Invalid attempt');
 $CONFIG = parse_ini_file('gamify.conf', true, INI_SCANNER_RAW);
 
 // Put APP version
-$CONFIG['version'] = '2.6';
+$CONFIG['version'] = '2.7';
 
 // Sets DEBUG mode based on parsed configuration
 $CONFIG['site']['debug'] = isset($CONFIG['site']['debug']) ? true : false;
@@ -119,7 +119,7 @@ function secure_session_destroy() {
     // Run a quick check to see if we are an authenticated user or not
     // First, we set a 'is the user logged in' flag to false by default.
     $is_user_logged_in = false;
-    $query = sprintf("SELECT id, username, email, role, disabled FROM members WHERE session_id='%s' LIMIT 1", $db->real_escape_string(session_id()));
+    $query = sprintf("SELECT id, username, email, role, disabled, profile_image FROM members WHERE session_id='%s' LIMIT 1", $db->real_escape_string(session_id()));
     $result = $db->query($query);
     if ( 1 === $result->num_rows ) {
         $row = $result->fetch_assoc();
@@ -158,7 +158,92 @@ function secure_session_destroy() {
     if (!$full) $string = array_slice($string, 0, 1);
 
     return $string ? 'fa '. implode(', ', $string) : 'ara mateix';
-}
+} // END time_elapsed_string()
+
+/**
+ * uploadFile()
+ * 
+ * This functions gets a $_FILES[] and move to our filesystem in a 
+ * secured way. 
+ * 
+ * Checks if some error has done while uploading. 
+ * Checks if filetype is allowed or no.
+ * 
+ * @param   string  $file_field     Name of file upload in html form
+ * @param   string  $destination    The directory where file will be moved
+ * @param   array   $allowed_types  An array containing tiletypes allowed
+ * 
+ * This array has the form, this is the defaults one:
+ * array(
+ *      'jpg' => 'image/jpeg',
+ *      'png' => 'image/png',
+ *      'gif' => 'image/gif'
+ *      );
+ * 
+ * @return 	array   first value may be 'true' or 'false'.
+ *                      second value is an string.
+ * 
+ * On 'false' is an error message string
+ * On 'true' is the generated filename.
+ */
+ function uploadFile($file_field, $destination, $allowed_types = array()) {
+    
+    // Default allowed list of file to be uploaded
+    if (empty($allowed_types) || !is_array($allowed_types)) {
+        $allowed_types = array(
+            'jpg' => 'image/jpeg',
+            'png' => 'image/png',
+            'gif' => 'image/gif'
+            );
+    }    
+    
+    // Undefined | Multiple Files | $_FILES Corruption Attack
+    // If this request falls under any of them, treat it invalid.
+    if (!isset($_FILES[$file_field]['error']) || is_array($_FILES[$file_field]['error']) ) {
+        // Invalid parameters
+        return array(false , 'Invalid parameters');
+    }
+    
+    // Check $file['error'] value.
+    switch ($_FILES[$file_field]['error']) {
+        case UPLOAD_ERR_OK:
+            break;
+        case UPLOAD_ERR_NO_FILE:
+            // No file sent
+            return array(false, 'No file sent');
+        case UPLOAD_ERR_INI_SIZE:
+        case UPLOAD_ERR_FORM_SIZE:
+            // Exceeded filesize limit
+            return array(false, 'Exceeded filesize limit');
+        default:
+            // Unknown errors
+            return array(false, 'Unknown error');
+    }
+    
+    // Check MIME Type
+    $finfo = new finfo(FILEINFO_MIME_TYPE);
+    if (false === $ext = array_search( 
+            $finfo->file($_FILES[$file_field]['tmp_name']),
+            $allowed_types,
+            true
+            )) {
+        // Invalid file format
+        return array(false, 'Invalid file format');
+    }
+    
+    // Generate a new filename (unique)
+    $filename = sprintf('%s/%s.%s',
+                    $destination,
+                    generate_uuid(),
+                    $ext);
+    
+    if (!move_uploaded_file($_FILES[$file_field]['tmp_name'], $filename)) {
+        // Failed to move uploaded file
+        return array(false, 'Failed to move uploaded file');
+    }    
+    
+    return array(true, $filename);
+} // END upload_file()
  
 function send_message( $subject, $missatge, $receiver = '' ) {
     global $db, $CONFIG;

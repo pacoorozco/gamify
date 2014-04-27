@@ -419,7 +419,7 @@ function print_user_management ( $msg = array() ) {
                         <div class="panel panel-default">
                             <div class="panel-body">
                                 <p class="text-right">
-                                    <a href="admin.php?a=newuser" class="btn btn-success btn-sm" role="button"><span class="glyphicon glyphicon-plus"></span> Nou usuari</a>
+                                    <a href="admin.php?a=newuser" class="btn btn-success" role="button"><span class="glyphicon glyphicon-plus"></span> Nou usuari</a>
                                 </p>
 
                 <table class="table table-hover">
@@ -444,8 +444,8 @@ function print_user_management ( $msg = array() ) {
         $html_code[] = '</td>';
         $html_code[] = '<td>' . $row['role'] . '</td>';
         $html_code[] = '<td>';
-        $html_code[] = '<a href="admin.php?a=edituser&item='. $row['id'] .'" class="btn btn-default btn-sm" role="button"><span class="glyphicon glyphicon-pencil"></span> Editar</a>';
-        $html_code[] = '<a href="admin.php?a=deleteuser&item='. $row['id'] .'" class="btn btn-danger btn-sm" role="button"><span class="glyphicon glyphicon-remove"></span> El·liminar</a>';
+        $html_code[] = '<a href="admin.php?a=edituser&item='. $row['id'] .'" class="btn btn-default" role="button"><span class="glyphicon glyphicon-edit"></span> Editar</a>';
+        $html_code[] = '<a href="admin.php?a=deleteuser&item='. $row['id'] .'" class="btn btn-danger" role="button"><span class="glyphicon glyphicon-trash"></span> El·liminar</a>';
         $html_code[] = '</td>';
         $html_code[] = '</tr>';
     }
@@ -467,7 +467,7 @@ function print_level_management( $msg = array() ) {
                         <div class="panel panel-default">
                             <div class="panel-body">
                                 <p class="text-right">
-                                    <a href="admin.php?a=newlevel" class="btn btn-success btn-sm" role="button"><span class="glyphicon glyphicon-plus"></span> Nou nivell</a>
+                                    <a href="admin.php?a=newlevel" class="btn btn-success" role="button"><span class="glyphicon glyphicon-plus"></span> Nou nivell</a>
                                 </p>
                 <table class="table table-hover">
                     <thead>
@@ -497,8 +497,8 @@ function print_level_management( $msg = array() ) {
             $html_code[] = '<td><img src="images/levels/'. $row['image'] .'" alt="'. $row['name'] .'" width="64"></td>';
         }        
         $html_code[] = '<td>';
-        $html_code[] = '<a href="admin.php?a=editlevel&item='. $row['id'] .'" class="btn btn-default btn-sm" role="button"><span class="glyphicon glyphicon-pencil"></span> Editar</a>';
-        $html_code[] = '<a href="admin.php?a=deletelevel&item='. $row['id'] .'" class="btn btn-danger btn-sm" role="button"><span class="glyphicon glyphicon-remove"></span> El·liminar</a>';
+        $html_code[] = '<a href="admin.php?a=editlevel&item='. $row['id'] .'" class="btn btn-default" role="button"><span class="glyphicon glyphicon-edit"></span> Editar</a>';
+        $html_code[] = '<a href="admin.php?a=deletelevel&item='. $row['id'] .'" class="btn btn-danger" role="button"><span class="glyphicon glyphicon-trash"></span> El·liminar</a>';
         $html_code[] = '</td>';
         $html_code[] = '</tr>';
     }
@@ -520,7 +520,7 @@ function print_badge_management( $msg = array() ) {
                         <div class="panel panel-default">
                             <div class="panel-body">
                                 <p class="text-right">
-                                    <a href="admin.php?a=newbadge" class="btn btn-success btn-sm" role="button"><span class="glyphicon glyphicon-plus"></span> Nova insígnia</a>
+                                    <a href="admin.php?a=newbadge" class="btn btn-success" role="button"><span class="glyphicon glyphicon-plus"></span> Nova insígnia</a>
                                 </p>
                 <table class="table table-hover">
                     <thead>
@@ -544,14 +544,14 @@ function print_badge_management( $msg = array() ) {
         $html_code[] = '<a href="admin.php?a=editbadge&item=' . $row['id'] . '">' . $row['name'] . '</a>';
         $html_code[] = '</td>';
         if ( empty($row['image']) ) {
-            $html_code[] = '<td><img data-src="holder.js/64x64" alt="..."></td>';
+            $html_code[] = '<td><img src="images/default_badge_off.png" alt="'. $row['name'] .'" class="img-thumbnail" width="64"></td>';
         } else {
-            $html_code[] = '<td><img src="images/badges/'. $row['image'] .'" alt="'. $row['name'] .'" width="64"></td>';
+            $html_code[] = '<td><img src="images/badges/'. $row['image'] .'" alt="'. $row['name'] .'" class="img-thumbnail" width="64"></td>';
         }
         $html_code[] = '<td>'. $row['amount_needed'] .'</td>';        
         $html_code[] = '<td>';
-        $html_code[] = '<a href="admin.php?a=editbadge&item='. $row['id'] .'" class="btn btn-default btn-sm" role="button"><span class="glyphicon glyphicon-pencil"></span> Editar</a>';
-        $html_code[] = '<a href="admin.php?a=deletebadge&item='. $row['id'] .'" class="btn btn-danger btn-sm" role="button"><span class="glyphicon glyphicon-remove"></span> El·liminar</a>';
+        $html_code[] = '<a href="admin.php?a=editbadge&item='. $row['id'] .'" class="btn btn-default" role="button"><span class="glyphicon glyphicon-edit"></span> Editar</a>';
+        $html_code[] = '<a href="admin.php?a=deletebadge&item='. $row['id'] .'" class="btn btn-danger" role="button"><span class="glyphicon glyphicon-trash"></span> El·liminar</a>';
         $html_code[] = '</td>';
         $html_code[] = '</tr>';
     }
@@ -616,7 +616,7 @@ function print_newuser_form( $data = array(), $msg = array() ) {
                                 <div class="col-sm-offset-2 col-sm-10">
                                     <input type="hidden" id="a" name="a" value="createuser">
                                     <button type="submit" class="btn btn-success">Crear usuari</button>
-                                    <a href="admin.php?a=users" class="btn btn-default btn-sm" role="button">Cancel·lar</a>
+                                    <a href="admin.php?a=users" class="btn btn-default" role="button">Cancel·lar</a>
                                 </div>
                             </div>
                         </form>
@@ -761,8 +761,8 @@ function print_edituser_form($user_id, $msg = array()) {
                                 <div class="col-sm-offset-2 col-sm-10">
                                     <input type="hidden" id="item" name="item" value="<?php echo $user_id; ?>">
                                     <input type="hidden" id="a" name="a" value="saveuser">
-                                    <button type="submit" class="btn btn-success">Actualitzar dades</button>
-                                    <a href="admin.php?a=users" class="btn btn-default btn-sm" role="button">Cancel·lar</a>
+                                    <button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-save"></span> Actualitzar dades</button>
+                                    <a href="<?php echo $_SERVER['PHP_SELF']; ?>?a=users" class="btn btn-danger" role="button"><span class="glyphicon glyphicon-retweet"></span> Tornar</a>
                                 </div>
                             </div>
                         </form>
@@ -861,7 +861,7 @@ function print_newlevel_form( $data = array(), $msg = array() ) {
                                 <div class="col-sm-offset-2 col-sm-10">
                                     <input type="hidden" id="a" name="a" value="createlevel">
                                     <button type="submit" class="btn btn-success">Crear nivell</button>
-                                    <a href="admin.php?a=levels" class="btn btn-default btn-sm" role="button">Cancel·lar</a>
+                                    <a href="admin.php?a=levels" class="btn btn-default" role="button">Cancel·lar</a>
                                 </div>
                             </div>
                         </form>
@@ -957,8 +957,8 @@ function print_editlevel_form($level_id, $msg = array()) {
                                 <div class="col-sm-offset-2 col-sm-10">
                                     <input type="hidden" id="item" name="item" value="<?php echo $data['id']; ?>">
                                     <input type="hidden" id="a" name="a" value="savelevel">
-                                    <button type="submit" class="btn btn-success">Actualitzar dades</button>
-                                    <a href="admin.php?a=levels" class="btn btn-default btn-sm" role="button">Cancel·lar</a>
+                                    <button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-save"></span> Actualitzar dades</button>
+                                    <a href="admin.php?a=levels" class="btn btn-danger" role="button"><span class="glyphicon glyphicon-retweet"></span> Tornar</a>
                                 </div>
                             </div>
                         </form>
@@ -1071,7 +1071,7 @@ function print_newbadge_form( $data = array(), $msg = array() ) {
                                 <div class="col-sm-offset-2 col-sm-10">
                                     <input type="hidden" id="a" name="a" value="createbadge">
                                     <button type="submit" class="btn btn-success">Crear insígnia</button>
-                                    <a href="admin.php?a=badges" class="btn btn-default btn-sm" role="button">Cancel·lar</a>
+                                    <a href="admin.php?a=badges" class="btn btn-default" role="button">Cancel·lar</a>
                                 </div>
                             </div>
                         </form>
@@ -1166,8 +1166,8 @@ function print_editbadge_form($badge_id, $msg = array()) {
                                 <div class="col-sm-offset-2 col-sm-10">
                                     <input type="hidden" id="item" name="item" value="<?php echo $badge_id; ?>">
                                     <input type="hidden" id="a" name="a" value="savebadge">
-                                    <button type="submit" class="btn btn-success">Actualitzar dades</button>
-                                    <a href="admin.php?a=badges" class="btn btn-default btn-sm" role="button">Cancel·lar</a>
+                                    <button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-save"></span> Actualitzar dades</button>
+                                    <a href="admin.php?a=badges" class="btn btn-danger" role="button"><span class="glyphicon glyphicon-retweet"></span> Tornar</a>
                                 </div>
                             </div>
                         </form>
@@ -1481,14 +1481,14 @@ function print_send_message( $msg = array() ) {
                                 <label for="bcc" class="col-sm-2 control-label">Destinataris</label>
                                 <div class="col-sm-10">
                                     <textarea id="bcc" class="form-control" rows="3" style="display:none;" disabled><?php echo implode(',', $bcc_mail); ?></textarea>
-                                    <a id="bcc_btn" href="#" class="btn btn-default" onClick="$('#bcc_btn').hide(); $('#bcc').show()">Mostrar</a>
+                                    <a id="bcc_btn" href="#" class="btn btn-default" onClick="$('#bcc_btn').hide(); $('#bcc').show()"><span class="glyphicon glyphicon-eye-open"></span> Mostrar destinataris</a>
                                 </div>
                             </div>
                         
                             <div class="form-group">
                                 <div class="col-sm-offset-2 col-sm-10">
                                     <input type="hidden" id="a" name="a" value="sendmessage">
-                                    <button type="submit" class="btn btn-default">Enviar missatge</button>
+                                    <button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-envelope"></span> Enviar missatge</button>
                                 </div>
                             </div>                        
                     </form>
@@ -1505,7 +1505,7 @@ function print_quiz_management( $msg = array() ) {
                         <div class="panel panel-default">
                             <div class="panel-body">
                                 <p class="text-right">
-                                    <a href="<?php echo $_SERVER['PHP_SELF']; ?>?a=newquiz" class="btn btn-success btn-sm" role="button"><span class="glyphicon glyphicon-plus"></span> Nova pregunta</a>
+                                    <a href="<?php echo $_SERVER['PHP_SELF']; ?>?a=newquiz" class="btn btn-success" role="button"><span class="glyphicon glyphicon-plus"></span> Nova pregunta</a>
                                 </p>
                 <table class="table table-hover">
                     <thead>
@@ -1537,9 +1537,9 @@ function print_quiz_management( $msg = array() ) {
         
         $html_code[] = '</td>';
         $html_code[] = '<td>';
-        $html_code[] = '<a href="'. $_SERVER['PHP_SELF'] .'?a=editquiz&item='. $row['id'] .'" class="btn btn-default" role="button"><span class="glyphicon glyphicon-pencil"></span> Editar</a>';
+        $html_code[] = '<a href="'. $_SERVER['PHP_SELF'] .'?a=editquiz&item='. $row['id'] .'" class="btn btn-default" role="button"><span class="glyphicon glyphicon-edit"></span> Editar</a>';
         $html_code[] = '<a href="'. $_SERVER['PHP_SELF'] .'?a=previewquiz&item='. $row['id'] .'" class="btn btn-default" role="button"><span class="glyphicon glyphicon-eye-open"></span> Veure</a>';
-        $html_code[] = '<a href="'. $_SERVER['PHP_SELF'] .'?a=deletequiz&item='. $row['id'] .'" class="btn btn-danger" role="button"><span class="glyphicon glyphicon-remove"></span> El·liminar</a>';
+        $html_code[] = '<a href="'. $_SERVER['PHP_SELF'] .'?a=deletequiz&item='. $row['id'] .'" class="btn btn-danger" role="button"><span class="glyphicon glyphicon-trash"></span> El·liminar</a>';
         $html_code[] = '</td>';
         $html_code[] = '</tr>';
     }
@@ -1607,8 +1607,8 @@ function print_editquiz_form( $question_id, $msg = array() ) {
                                 <div class="col-sm-offset-2 col-sm-10">
                                     <input type="hidden" id="item" name="item" value="<?php echo $data['id']; ?>">
                                     <input type="hidden" id="a" name="a" value="savequiz">
-                                    <button type="submit" class="btn btn-success">Actualitzar dades</button>
-                                    <a href="<?php echo $_SERVER['PHP_SELF']; ?>?a=quiz" class="btn btn-default" role="button">Cancel·lar</a>
+                                    <button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-save"></span> Actualitzar dades</button>
+                                    <a href="<?php echo $_SERVER['PHP_SELF']; ?>?a=quiz" class="btn btn-danger" role="button"><span class="glyphicon glyphicon-retweet"></span> Tornar</a>
                                 </div>
                             </div>
                         </form>
@@ -1877,7 +1877,7 @@ function print_quiz_form_content( $data ) {
                                         </select>
                                     </div>
                                     <div class="col-sm-1">
-                                        <span class="input-group-btn"><button type="button" class="btn btn-danger btn-remove">-</button></span>
+                                        <span class="input-group-btn"><button type="button" class="btn btn-danger btn-trash">-</button></span>
                                     </div>
                                 </div>                                
                            </div>                            
@@ -1962,7 +1962,7 @@ function print_quiz_form_content( $data ) {
                                         </select>
                                     </div>
                                     <div class="col-sm-1">
-                                        <span class="input-group-btn"><button type="button" class="btn btn-danger btn-remove">-</button></span>
+                                        <span class="input-group-btn"><button type="button" class="btn btn-danger btn-trash">-</button></span>
                                     </div>
                                 </div> 
                             </div>
@@ -2030,8 +2030,8 @@ function print_preview_quiz($question_id) {
     
     ?>
     <h1>Veure pregunta
-    <a href="<?php echo $_SERVER['PHP_SELF']; ?>?a=editquiz&item=<?php echo $question_id; ?>" class="btn btn-info" role="button"><span class="glyphicon glyphicon-pencil"></span> Editar</a>
-    <a href="<?php echo $_SERVER['PHP_SELF']; ?>?a=quiz" class="btn btn-danger" role="button"><span class="glyphicon glyphicon-remove"></span> Tornar</a>
+    <a href="<?php echo $_SERVER['PHP_SELF']; ?>?a=editquiz&item=<?php echo $question_id; ?>" class="btn btn-info" role="button"><span class="glyphicon glyphicon-edit"></span> Editar</a>
+    <a href="<?php echo $_SERVER['PHP_SELF']; ?>?a=quiz" class="btn btn-danger" role="button"><span class="glyphicon glyphicon-retweet"></span> Tornar</a>
     </h1> 
 
     <div class="panel panel-default" width="70%">

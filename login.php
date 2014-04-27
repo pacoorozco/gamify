@@ -72,6 +72,8 @@ exit();
 /*** FUNCTIONS ***/
 
 function print_login_form( $username = '', $missatges = array() ) {
+    global $CONFIG;
+    
     // get after login url if exists
     $nav = pakus_POST('nav');
     $nav = (!empty($nav)) ? $nav : $_SESSION['nav'];
@@ -92,7 +94,16 @@ function print_login_form( $username = '', $missatges = array() ) {
                                     
                             <div style="margin-bottom: 25px" class="input-group">
                                 <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
-                                <input type="text" name="username" class="form-control" value="<?php echo $username; ?>" placeholder="usuari" required>  
+                                <?php 
+                                $usertext = 'usuari';
+                                $logintext = 'Accedir';
+                                
+                                if ($CONFIG['authentication']['LDAP']) {
+                                    $usertext = 'usuari LDAP';
+                                    $logintext = 'Accedir amb LDAP';
+                                }
+                                ?>
+                                <input type="text" name="username" class="form-control" value="<?php echo $username; ?>" placeholder="<?= $usertext; ?>" required>  
                             </div>
                                 
                             <div style="margin-bottom: 25px" class="input-group">
@@ -104,7 +115,7 @@ function print_login_form( $username = '', $missatges = array() ) {
                                 <div class="col-md-12">
                                     <input type="hidden" id="a" name="a" value="login">
                                     <input type="hidden" name="nav" value="<?php echo $nav; ?>">
-                                    <button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-log-in"></span> &nbsp; Accedir</button>
+                                    <button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-log-in"></span> <?= $logintext; ?></button>
                                 </div>
                             </div>
                             

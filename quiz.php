@@ -241,11 +241,11 @@ function answer_qz( $question_uuid ) {
                         echo implode(PHP_EOL, $html_code);
                     ?>
                 </ul>
-                <a href="//kbtic.upcnet.es/search?SearchableText=<?php echo $question['tip']; ?>" class="btn btn-default" target="_blank"role="button">Ho buscaré a la KBTic</a>
-                <a href="//www.google.es/search?q=<?php echo $question['tip']; ?>" class="btn btn-default" target="_blank" role="button">Ho buscaré a Google</a>                               <input type="hidden" name="item" value="<?php echo $question_id; ?>">
+                <a href="//kbtic.upcnet.es/search?SearchableText=<?php echo $question['tip']; ?>" title="Buscar la resposta a la KBTic" class="btn btn-default" target="_blank"role="button"><span class="glyphicon glyphicon-new-window"></span> Ho buscaré a la KBTic</a>
+                <a href="//www.google.es/search?q=<?php echo $question['tip']; ?>" title="Buscar la resposta a Google" class="btn btn-default" target="_blank" role="button"><span class="glyphicon glyphicon-new-window"></span> Ho buscaré a Google</a>
                 <input type="hidden" name="item" value="<?php echo $question_uuid; ?>">
                 <input type="hidden" name="a" value="answer">
-                <button type="submit" class="btn btn-primary">Respodre</button>                
+                <button type="submit" class="btn btn-success pull-right"><span class="glyphicon glyphicon-save"></span> Guardar resposta</button>                
             </form>
         </div>
     </div>

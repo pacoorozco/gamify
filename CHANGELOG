@@ -1,7 +1,13 @@
 Version 2.7
 -----------
+* Allow users to change its profile image, with file upload included
+* IMPORTANT!: We add a new column to members table to put profile image:
+    ALTER TABLE `members` ADD `profile_image` VARCHAR( 250 ) NULL 
+* All JS is now managed by head.js. Trying to improve load times
+* Put some icons on administrator interface
 * Re-styled view profile page. Now it's awesome!
 * [#188] New feature: 'Crear un 'timeline' sobre l'activitat de GoW'
+* [#189] New feature: 'File upload'
 
 Version 2.6
 -----------
