@@ -161,7 +161,7 @@ function print_profile($user_id) {
                     $title = sprintf("%s\n%s", $row['name'], $row['description']);
                     $html_code[] = '<a href="#" title="' . $title . '">';
                     $image = ('completed' == $row['status']) ? 'images/badges/' . $row['image'] : 'images/default_badge_off.png';
-                    $html_code[] = '<img src="' . $image .'" alt="'. $row['name'] . 'class="img-thumbnail" width="80">';
+                    $html_code[] = '<img src="' . $image .'" alt="'. $row['name'] . '" class="img-thumbnail" width="80">';
                     $html_code[] = '</a>';
                 }
                 echo implode(PHP_EOL, $html_code);

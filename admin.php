@@ -544,9 +544,9 @@ function print_badge_management( $msg = array() ) {
         $html_code[] = '<a href="admin.php?a=editbadge&item=' . $row['id'] . '">' . $row['name'] . '</a>';
         $html_code[] = '</td>';
         if ( empty($row['image']) ) {
-            $html_code[] = '<td><img data-src="holder.js/64x64" alt="..."></td>';
+            $html_code[] = '<td><img src="images/default_badge_off.png" alt="'. $row['name'] .'" class="img-thumbnail" width="64"></td>';
         } else {
-            $html_code[] = '<td><img src="images/badges/'. $row['image'] .'" alt="'. $row['name'] .'" width="64"></td>';
+            $html_code[] = '<td><img src="images/badges/'. $row['image'] .'" alt="'. $row['name'] .'" class="img-thumbnail" width="64"></td>';
         }
         $html_code[] = '<td>'. $row['amount_needed'] .'</td>';        
         $html_code[] = '<td>';
@@ -761,8 +761,8 @@ function print_edituser_form($user_id, $msg = array()) {
                                 <div class="col-sm-offset-2 col-sm-10">
                                     <input type="hidden" id="item" name="item" value="<?php echo $user_id; ?>">
                                     <input type="hidden" id="a" name="a" value="saveuser">
-                                    <button type="submit" class="btn btn-success">Actualitzar dades</button>
-                                    <a href="admin.php?a=users" class="btn btn-default" role="button">Cancel·lar</a>
+                                    <button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-save"></span> Actualitzar dades</button>
+                                    <a href="<?php echo $_SERVER['PHP_SELF']; ?>?a=users" class="btn btn-danger" role="button"><span class="glyphicon glyphicon-retweet"></span> Tornar</a>
                                 </div>
                             </div>
                         </form>
@@ -957,8 +957,8 @@ function print_editlevel_form($level_id, $msg = array()) {
                                 <div class="col-sm-offset-2 col-sm-10">
                                     <input type="hidden" id="item" name="item" value="<?php echo $data['id']; ?>">
                                     <input type="hidden" id="a" name="a" value="savelevel">
-                                    <button type="submit" class="btn btn-success">Actualitzar dades</button>
-                                    <a href="admin.php?a=levels" class="btn btn-default" role="button">Cancel·lar</a>
+                                    <button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-save"></span> Actualitzar dades</button>
+                                    <a href="admin.php?a=levels" class="btn btn-danger" role="button"><span class="glyphicon glyphicon-retweet"></span> Tornar</a>
                                 </div>
                             </div>
                         </form>
@@ -1166,8 +1166,8 @@ function print_editbadge_form($badge_id, $msg = array()) {
                                 <div class="col-sm-offset-2 col-sm-10">
                                     <input type="hidden" id="item" name="item" value="<?php echo $badge_id; ?>">
                                     <input type="hidden" id="a" name="a" value="savebadge">
-                                    <button type="submit" class="btn btn-success">Actualitzar dades</button>
-                                    <a href="admin.php?a=badges" class="btn btn-default" role="button">Cancel·lar</a>
+                                    <button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-save"></span> Actualitzar dades</button>
+                                    <a href="admin.php?a=badges" class="btn btn-danger" role="button"><span class="glyphicon glyphicon-retweet"></span> Tornar</a>
                                 </div>
                             </div>
                         </form>
@@ -1481,14 +1481,14 @@ function print_send_message( $msg = array() ) {
                                 <label for="bcc" class="col-sm-2 control-label">Destinataris</label>
                                 <div class="col-sm-10">
                                     <textarea id="bcc" class="form-control" rows="3" style="display:none;" disabled><?php echo implode(',', $bcc_mail); ?></textarea>
-                                    <a id="bcc_btn" href="#" class="btn btn-default" onClick="$('#bcc_btn').hide(); $('#bcc').show()">Mostrar</a>
+                                    <a id="bcc_btn" href="#" class="btn btn-default" onClick="$('#bcc_btn').hide(); $('#bcc').show()"><span class="glyphicon glyphicon-eye-open"></span> Mostrar destinataris</a>
                                 </div>
                             </div>
                         
                             <div class="form-group">
                                 <div class="col-sm-offset-2 col-sm-10">
                                     <input type="hidden" id="a" name="a" value="sendmessage">
-                                    <button type="submit" class="btn btn-default">Enviar missatge</button>
+                                    <button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-envelope"></span> Enviar missatge</button>
                                 </div>
                             </div>                        
                     </form>
@@ -1607,8 +1607,8 @@ function print_editquiz_form( $question_id, $msg = array() ) {
                                 <div class="col-sm-offset-2 col-sm-10">
                                     <input type="hidden" id="item" name="item" value="<?php echo $data['id']; ?>">
                                     <input type="hidden" id="a" name="a" value="savequiz">
-                                    <button type="submit" class="btn btn-success">Actualitzar dades</button>
-                                    <a href="<?php echo $_SERVER['PHP_SELF']; ?>?a=quiz" class="btn btn-default" role="button">Cancel·lar</a>
+                                    <button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-save"></span> Actualitzar dades</button>
+                                    <a href="<?php echo $_SERVER['PHP_SELF']; ?>?a=quiz" class="btn btn-danger" role="button"><span class="glyphicon glyphicon-retweet"></span> Tornar</a>
                                 </div>
                             </div>
                         </form>
