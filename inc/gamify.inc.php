@@ -197,7 +197,7 @@ function notify_level_2_user( $data = array() ) {
     $level_name = $data['name'];
     $level_image = sprintf("%s/images/levels/%s", $CONFIG['site']['base_url'], $data['image']);
     $user_profile = sprintf("%s/member.php?a=viewuser&item=%s", 
-                             $CONFIG['site']['base_url'], $data[id_member]); 
+                             $CONFIG['site']['base_url'], $data['id_member']); 
     
     $subject = 'Has pujat de nivell a GoW!';
     $mail_body = <<<LEVEL_MAIL
