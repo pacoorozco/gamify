@@ -27,6 +27,11 @@ switch ($action) {
         echo get_search_results($searchterm);
         exit();
         break;
+    
+    case 'upload':
+        echo upload_profile_picture();
+        exit();
+        break;
 }
 
 require_once('inc/header.inc.php'); 
@@ -84,6 +89,11 @@ function print_profile($user_id) {
     $result = $db->query($query);
     $row = $result->fetch_assoc();
     
+    $query = sprintf("SELECT profile_image FROM members WHERE id='%d' LIMIT 1", $user_id);
+    $result = $db->query($query);
+    $row2 = $result->fetch_assoc();
+    $row['profile_image'] = $row2['profile_image'];
+    
     if (false === $admin) {
         $query = sprintf( "SELECT * FROM levels WHERE experience_needed >= '%d' LIMIT 1", $row['total_points']);    
         $result = $db->query($query);
@@ -92,17 +102,52 @@ function print_profile($user_id) {
         $levelper= round($row['total_points'] / $row2['experience_needed'] * 100);
     }
      
-    ?>          
+    ?>        
         <div class="row" style="margin-top:50px;">
             <div class="col-md-7">
                 <div class="row">
                     <div class="col-md-4">
-                        <img src="images/profile_default.png" class="img-thumbnail">
+                        <?php
+                        if (empty($row['profile_image'])) {
+                            $row['profile_image'] = 'images/profile_default.png';
+                        }
+                        ?>
+                        <img src="<?= $row['profile_image']; ?>" class="img-thumbnail" id="profileImage">
+                        <?php 
+                        if ($user_id == $_SESSION['member']['id']) {
+                            // L'usuari por editar la seva imatge.
+                        ?>
+                        <p class="text-center"><a href="#" id="uploadFile" title="Upload"><span class="glyphicon glyphicon-open"></span> Canviar imatge</a></p>
+                        <p id="messageBox"></p>
+                        <script>
+                            var uploadURL = "<?= $_SERVER['PHP_SELF']; ?>?a=upload";
+                            head(function() {
+                                $(document).ready(function() {
+                                    $('a#uploadFile').file();
+                                    $('input#uploadFile').file().choose(function(e, input) {
+                                        input.upload(uploadURL, function(res) {
+                                            if (res=="ERROR") {
+                                                $('p#messageBox').attr("class","text-danger");
+                                                $('p#messageBox').html("Invalid extension !");
+                                            } else {
+                                                 $('img#profileImage').attr("src",res);
+                                                $('input#profileImageFile').val(res);
+                                                $(this).remove();
+                                            }
+                                        }, '');
+                                    } );
+                                } );
+                            } );
+                        </script>
+                            
+                        <?php
+                        }
+                        ?>
                     </div>
                     <div class="col-md-8">
                         <p class="h1"><?php echo $row['username']; ?></p>
                         <p class="lead"><?php echo $row['level_name']; ?></p>
-                        <p class="small">Darrera connexió el <?php echo strftime('%A %d de %B', $row['last_access']); ?></p>
+                        <p class="small">Darrera connexió el <?php echo strftime('%A, %d de %B', $row['last_access']); ?></p>
                     </div>
                 </div>
                 <?php 
@@ -172,3 +217,27 @@ function print_profile($user_id) {
     <?php
 
 } // END print_profile()
+
+function upload_profile_picture() {
+    global $db;
+    
+    list($returnedValue, $returnedMessage) = uploadFile('uploadFile', 'uploads');
+    
+    if (false === $returnedValue) return 'ERROR';
+
+    // Deletes previous profile picture file
+    $query = sprintf("SELECT profile_image FROM members WHERE id='%d'", $_SESSION['member']['id']);
+    $result = $db->query($query);
+    if ($result->num_rows) {
+        $row = $result->fetch_assoc();
+        if (file_exists($row['profile_image'])) unlink($row['profile_image']);
+    }
+        
+    $query = sprintf("UPDATE members SET profile_image='%s' WHERE id='%d'", 
+            $returnedMessage, 
+            $_SESSION['member']['id']
+            );
+    $db->query($query);
+  
+    return $returnedMessage;  
+}

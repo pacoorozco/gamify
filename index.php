@@ -118,7 +118,7 @@ if ( true === login_check() ) { ?>
                                 $usertext = 'usuari';
                                 $logintext = 'Accedir';
                                 
-                                if ($CONFIG['authentication']['LDAP']) {
+                                if (isset($CONFIG['authentication']['LDAP'])) {
                                     $usertext = 'usuari LDAP';
                                     $logintext = 'Accedir amb LDAP';
                                 }

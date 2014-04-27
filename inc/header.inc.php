@@ -34,6 +34,9 @@ defined('IN_SCRIPT') or die('Invalid attempt');
       <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
       <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
+    
+    <!-- Load head.js for improved JS loading -->
+    <script src="js/head.min.js"></script>
   </head>
 
   <body>
@@ -76,8 +79,13 @@ defined('IN_SCRIPT') or die('Invalid attempt');
                     <div class="navbar-content">
                         <div class="row">
                             <div class="col-md-5">
-                                <img src="images/profile_default.png" alt="<?php echo $_SESSION['member']['username']; ?>" class="img-thumbnail img-responsive">
-                                <p class="text-center small"><a href="#" title="Canviar imatge" class="disabled">Canviar imatge</a></p>
+                                <?php 
+                                $image = (empty($_SESSION['member']['profile_image'])) 
+                                        ? 'images/profile_default.png' 
+                                        : $_SESSION['member']['profile_image'];
+                                ?>
+                                <img src="<?= $image; ?>" alt="<?php echo $_SESSION['member']['username']; ?>" class="img-thumbnail img-responsive">
+                                <p class="small"></p>
                             </div>
                             <div class="col-md-7">
                                 <span><?php echo $_SESSION['member']['username']; ?></span>

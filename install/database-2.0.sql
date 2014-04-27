@@ -47,6 +47,7 @@ CREATE TABLE members (
   `session_id` varchar(32) DEFAULT NULL,
   `last_access` varchar(32) DEFAULT NULL,
   `disabled` tinyint(1) NOT NULL DEFAULT '0',
+  `profile_image` VARCHAR( 250 ) NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`),
   UNIQUE KEY `member_uuid` (`uuid`),
