@@ -47,7 +47,7 @@ function get_search_results( $searchterm ) {
 	global $db;
 
 	$html_code = array();
-        $html_code[] = '<ul class="list-group">';
+        $html_code[] = '<ul class="list-unstyled list-group">';
         
         // Nomes farem cerques si busquen mes de tres caracters, aixo evita que sobrecarreguem la BDD
         if ( ! isset($searchterm[3]) ) {

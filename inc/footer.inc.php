@@ -16,7 +16,7 @@ defined('IN_SCRIPT') or die('Invalid attempt');
     
       <footer id="footer">
           <div class="container">
-                  <p class="text-muted credit">GoW! v<?php echo $CONFIG['version']; ?> - <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/deed.ca">Llicència Creative Commons Reconeixement-CompartirIgual</a></p>
+              <p class="text-muted credit">GoW! v<?php echo $CONFIG['version']; ?> - Powered by <a href="https://git.upcnet.es/paco.orozco/gamify/blob/master/README.md" title="Gamify Project">gamify</a> - <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/deed.ca">Llicència Creative Commons Reconeixement-CompartirIgual</a></p>
           </div>
       </footer>
 
