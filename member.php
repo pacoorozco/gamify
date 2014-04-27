@@ -7,6 +7,7 @@
 
 define('IN_SCRIPT', 1);
 require_once('inc/functions.inc.php');
+require_once('inc/gamify.inc.php');
 
 // Page only for members
 if ( false === login_check() ) {
@@ -228,9 +229,12 @@ function upload_profile_picture() {
     // Deletes previous profile picture file
     $query = sprintf("SELECT profile_image FROM members WHERE id='%d'", $_SESSION['member']['id']);
     $result = $db->query($query);
-    if ($result->num_rows) {
-        $row = $result->fetch_assoc();
-        if (file_exists($row['profile_image'])) unlink($row['profile_image']);
+    $row = $result->fetch_assoc();
+    if (file_exists($row['profile_image'])) unlink($row['profile_image']);
+        
+    // Si es la primera vegada que puja una imatge... guanya un badge
+    if (empty($row['profile_image'])) {
+        silent_action($_SESSION['member']['id'], 19);
     }
         
     $query = sprintf("UPDATE members SET profile_image='%s' WHERE id='%d'", 
