@@ -88,7 +88,9 @@ defined('IN_SCRIPT') or die('Invalid attempt');
                                 <p class="small"></p>
                             </div>
                             <div class="col-md-7">
-                                <span><?php echo $_SESSION['member']['username']; ?></span>
+                                <span><?php echo $_SESSION['member']['username']; ?>
+                                    <a href="https://bit.ly/1rwwkFN"><span class="glyphicon glyphicon-heart"></span></a>
+                                </span>
                                 <p class="text-muted small"><?php echo $_SESSION['member']['email']; ?></p>
                                 <div class="divider"></div>
                                 <a href="member.php?a=viewuser&item=<?php echo $_SESSION['member']['id']; ?>" title="El meu compte" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-user"></span> El meu compte</a>

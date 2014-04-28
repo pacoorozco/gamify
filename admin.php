@@ -1511,12 +1511,13 @@ function print_quiz_management( $msg = array() ) {
                     <thead>
                     <tr>
                         <th>Pregunta</th>
+                        <th>Enllaç públic</th>
                         <th>Accions</th>
                     </tr>  
                     </thead>
                     <tbody>
     <?php
-    $query = "SELECT id, name, status FROM questions ORDER BY status";
+    $query = "SELECT id, uuid, name, status FROM questions ORDER BY status";
     $result = $db->query($query);
 
     // Per incrementar la velocitat, guardem tot el codi en una variable i fem nomes un echo.
@@ -1536,6 +1537,7 @@ function print_quiz_management( $msg = array() ) {
         }
         
         $html_code[] = '</td>';
+        $html_code[] = '<td><a href="quiz.php?a=answerqz&item=' . $row['uuid'] . '"><span class="glyphicon glyphicon-link"></span></a></td>';
         $html_code[] = '<td>';
         $html_code[] = '<a href="'. $_SERVER['PHP_SELF'] .'?a=editquiz&item='. $row['id'] .'" class="btn btn-default" role="button"><span class="glyphicon glyphicon-edit"></span> Editar</a>';
         $html_code[] = '<a href="'. $_SERVER['PHP_SELF'] .'?a=previewquiz&item='. $row['id'] .'" class="btn btn-default" role="button"><span class="glyphicon glyphicon-eye-open"></span> Veure</a>';
@@ -1627,8 +1629,8 @@ function print_newquiz_form( $data = array(), $msg = array() ) {
                             <div class="form-group">
                                 <div class="col-sm-offset-2 col-sm-10">
                                     <input type="hidden" id="a" name="a" value="createquiz">
-                                    <button type="submit" class="btn btn-success">Crear pregunta</button>
-                                    <h1>Nova pregunta</h1>
+                                    <button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-save"></span> Crear pregunta</button>
+                                    <a href="<?php echo $_SERVER['PHP_SELF']; ?>?a=quiz" class="btn btn-danger" role="button"><span class="glyphicon glyphicon-retweet"></span> Tornar</a>
                                 </div>
                             </div>
                         </form>
@@ -1803,7 +1805,7 @@ function print_quiz_form_content( $data ) {
                             <div class="form-group">
                                 <label class="col-sm-2 control-label">Estat</label>
                                 <div class="col-sm-2">
-                                    <select name="status" class="form-control" required>
+                                    <select name="status" class="form-control">
                                     <?php 
                                     $available_options = array(
                                         'draft' => 'Esborrany',
@@ -1820,7 +1822,7 @@ function print_quiz_form_content( $data ) {
                             <div class="form-group">
                                 <label class="col-sm-2 control-label">Pregunta</label>
                                 <div class="col-sm-10">                     
-                                    <textarea name="question" class="form-control tinymce" rows="3" placeholder="Quina és la pregunta?" required><?php if ( isset($data['question']) ) echo $data['question']; ?></textarea>
+                                    <textarea name="question" class="form-control tinymce" rows="3" placeholder="Quina és la pregunta?"><?php if ( isset($data['question']) ) echo $data['question']; ?></textarea>
                                 </div>
                             </div>
                          
@@ -1834,7 +1836,7 @@ function print_quiz_form_content( $data ) {
                             <div class="form-group">
                                 <label class="col-sm-2 control-label">Tipus</label>
                                 <div class="col-sm-2">
-                                    <select name="type" class="form-control" required>
+                                    <select name="type" class="form-control">
                                     <?php 
                                     $available_options = array(
                                         'single' => 'Resposta única',
@@ -1950,7 +1952,7 @@ function print_quiz_form_content( $data ) {
                                     </div>                                    
                                     <label class="col-sm-1 control-label">Quan</label>
                                     <div class="col-sm-4">
-                                        <select name="when[]" class="form-control" required>
+                                        <select name="when[]" class="form-control">
                                         <?php 
                                         $available_options = array(
                                             'success' => 'Resposta correcta',
@@ -1981,7 +1983,7 @@ function print_quiz_form_content( $data ) {
                                     </div>
                                     <label class="col-sm-1 control-label">Quan</label>
                                     <div class="col-sm-4">
-                                        <select name="when[]" class="form-control" required>
+                                        <select name="when[]" class="form-control">
                                         <?php 
                                         $available_options = array(
                                             'success' => 'Resposta correcta',

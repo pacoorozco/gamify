@@ -20,7 +20,6 @@ if ( true === login_check() ) { ?>
         <div class="video-container">
         <iframe width="320" height="240" src="//www.youtube.com/embed/eH2A0k1um3A" frameborder="0" allowfullscreen></iframe>
         </div>
-
     </div>
     
         <?php
