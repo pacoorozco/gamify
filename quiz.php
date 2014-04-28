@@ -464,4 +464,3 @@ function see_qz($question_uuid) {
     </div>
     <?php
 } // END see_qz()
-?>

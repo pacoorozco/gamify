@@ -245,4 +245,4 @@ function upload_profile_picture() {
     $db->query($query);
   
     return $returnedMessage;  
-}
+} // END upload_profile_picture()

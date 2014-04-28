@@ -211,5 +211,4 @@ if ( true === login_check() ) { ?>
 <?php 
 }
 	
-require_once('inc/footer.inc.php'); 
-?>
+require_once('inc/footer.inc.php');

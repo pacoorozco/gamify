@@ -2069,4 +2069,3 @@ function print_preview_quiz($question_id) {
     </div>
     <?php    
 } // END print_preview_quiz()
-?>

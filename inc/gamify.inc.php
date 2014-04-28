@@ -223,5 +223,4 @@ function get_user_level($user_id) {
     }
     $row = $result->fetch_assoc();
     return $row['level_id'];
-}
-?>
+} // END get_user_level()
