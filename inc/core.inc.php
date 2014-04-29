@@ -231,25 +231,3 @@ function get_member_id ($username) {
     $row = $result->fetch_assoc();
     return $row['id'];
 } // END get_member_id()
-
-/**
-  * user_has_privileges($user_id, $privilege)
-  *
-  * Retorna TRUE si l'usuari te el privilegi demanat
-  *
-  * Parameters:
-  *  $user_id: Potser és un identificador d'usuari
-  *  $privilege: 'member' o 'administrator'
-  *
-  * Returns:
-  *  $result:   True si és admin
-  */
- function user_has_privileges($user_id, $privilege='administrator') {
-    global $db;
-
-    $query = sprintf( "SELECT username FROM members WHERE id='%d' AND role='%s' LIMIT 1", intval($user_id), $privilege );
-    $result = $db->query($query);
-    
-    // Si no s'ha trobat res, retornem FALSE
-    return ( $result->num_rows == 0 ) ? false : true;
-} // END user_is_admin()
