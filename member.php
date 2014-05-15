@@ -40,8 +40,8 @@ require_once('inc/header.inc.php');
 switch ($action) {
     case 'viewuser':
     default:
-        $user_id = pakus_REQUEST('item');
-        printProfile($user_id);
+        $userId = pakus_REQUEST('item');
+        printProfile($userId);
 }
 
 

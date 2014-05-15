@@ -34,7 +34,7 @@ $missatges = array();
 $action = pakus_REQUEST('a');
 switch ($action) {
     case 'actions':
-        print_actions();
+        printActions();
         break;
 
     case 'giveexperience':
@@ -43,7 +43,7 @@ switch ($action) {
         $data['experience'] = pakus_POST('experience');
         $data['memo'] = pakus_POST('memo');
 
-        add_experience($data);
+        addExperience($data);
         break;
 
     case 'givebadge':
@@ -56,11 +56,11 @@ switch ($action) {
         break;
 
     case 'users':
-        print_user_management();
+        printUserManagement();
         break;
 
     case 'newuser':
-        print_newuser_form();
+        printNewUserForm();
         break;
 
     case 'createuser':
@@ -71,12 +71,12 @@ switch ($action) {
         $data['email'] = pakus_POST('email');
         $data['role'] = pakus_POST('role');
 
-        create_user($data);
+        createUser($data);
         break;
 
     case 'edituser':
-        $user_id = pakus_REQUEST('item');
-        print_edituser_form($user_id);
+        $userId = pakus_REQUEST('item');
+        printEditUserForm($userId);
         break;
 
     case 'saveuser':
@@ -87,26 +87,26 @@ switch ($action) {
         $data['email'] = pakus_POST('email');
         $data['role'] = pakus_POST('role');
 
-        save_user_data($data);
+        saveUserData($data);
         break;
 
     case 'deleteuser':
-        $user_id = pakus_REQUEST('item');
+        $userId = pakus_REQUEST('item');
 
-        if(delete_user($user_id)) {
+        if(deleteUser($userId)) {
            $missatges[] = array('type' => "success", 'msg' => "L'usuari s'ha el&middot;liminat correctament.");
         } else {
            $missatges[] = array('type' => "error", 'msg' => "No s'ha pogut el&middot;liminar l'usuari.");
         }
-        print_user_management($missatges);
+        printUserManagement($missatges);
         break;
 
     case 'levels':
-        print_level_management();
+        printLevelManagement();
         break;
 
     case 'newlevel':
-        print_newlevel_form();
+        printNewLevelForm();
         break;
 
     case 'createlevel':
@@ -115,12 +115,12 @@ switch ($action) {
         $data['experience_needed'] = pakus_POST('experience_needed');
         $data['image'] = pakus_POST('image');
 
-        create_level($data);
+        createLevel($data);
         break;
 
     case 'editlevel':
         $level_id = pakus_REQUEST('item');
-        print_editlevel_form($level_id);
+        printEditLevelForm($level_id);
         break;
 
     case 'savelevel':
@@ -130,26 +130,26 @@ switch ($action) {
         $data['experience_needed'] = pakus_POST('experience_needed');
         $data['image'] = pakus_POST('image');
 
-        save_level_data($data);
+        saveLevelData($data);
         break;
 
     case 'deletelevel':
         $level_id = pakus_REQUEST('item');
 
-        if(delete_level($level_id)) {
+        if(deleteLevel($level_id)) {
            $missatges[] = array('type' => "success", 'msg' => "El n&iacute;vell s'ha el&middot;liminat correctament.");
         } else {
            $missatges[] = array('type' => "error", 'msg' => "No s'ha pogut el&middot;liminar el n&iacute;vell.");
         }
-        print_level_management($missatges);
+        printLevelManagement($missatges);
         break;
 
     case 'badges':
-        print_badge_management();
+        printBadgeManagement();
         break;
 
     case 'newbadge':
-        print_newbadge_form();
+        printNewBadgeForm();
         break;
 
     case 'createbadge':
@@ -159,12 +159,12 @@ switch ($action) {
         $data['description'] = pakus_POST('description');
         $data['amount_needed'] = pakus_POST('amount_needed');
 
-        create_badge($data);
+        createBadge($data);
         break;
 
     case 'editbadge':
         $badge_id = pakus_REQUEST('item');
-        print_editbadge_form($badge_id);
+        printEditBadgeForm($badge_id);
         break;
 
     case 'savebadge':
@@ -175,22 +175,22 @@ switch ($action) {
         $data['description'] = pakus_POST('description');
         $data['amount_needed'] = pakus_POST('amount_needed');
 
-        save_badge_data($data);
+        saveBadgeData($data);
         break;
 
     case 'deletebadge':
         $badge_id = pakus_REQUEST('item');
 
-        if(delete_badge($badge_id)) {
+        if(deleteBadge($badge_id)) {
            $missatges[] = array('type' => "success", 'msg' => "La insígnia s'ha el&middot;liminat correctament.");
         } else {
            $missatges[] = array('type' => "error", 'msg' => "No s'ha pogut el&middot;liminar la insígnia.");
         }
-        print_badge_management($missatges);
+        printBadgeManagement($missatges);
         break;
 
     case 'messages':
-        print_send_message();
+        printSendMessage();
         break;
 
     case 'sendmessage':
@@ -204,15 +204,15 @@ switch ($action) {
         } else {
            $missatges[] = array('type' => "error", 'msg' => "No s'ha pogut enviar el missatge.");
         }
-        print_send_message($missatges);
+        printSendMessage($missatges);
         break;
 
     case 'quiz':
-        print_quiz_management();
+        printQuestionManagement();
         break;
 
     case 'newquiz':
-        print_newquiz_form();
+        printNewQuestionForm();
         break;
 
     case 'createquiz':
@@ -232,12 +232,12 @@ switch ($action) {
         $data['actions'] = pakus_POST('actions');
         $data['when'] = pakus_POST('when');
 
-        create_quiz($data);
+        createQuestion($data);
         break;
 
     case 'editquiz':
         $question_id = pakus_REQUEST('item');
-        print_editquiz_form($question_id);
+        printEditQuestionForm($question_id);
         break;
 
     case 'savequiz':
@@ -258,27 +258,27 @@ switch ($action) {
         $data['actions'] = pakus_POST('actions');
         $data['when'] = pakus_POST('when');
 
-        save_quiz_data($data);
+        saveQuestionData($data);
         break;
 
     case 'deletequiz':
         $question_id = pakus_REQUEST('item');
 
-        if(delete_quiz($question_id)) {
+        if(deleteQuestion($question_id)) {
            $missatges[] = array('type' => "success", 'msg' => "La pregunta s'ha el&middot;liminat correctament.");
         } else {
            $missatges[] = array('type' => "error", 'msg' => "No s'ha pogut el&middot;liminar la pregunta.");
         }
-        print_quiz_management($missatges);
+        printQuestionManagement($missatges);
         break;
 
     case 'previewquiz':
         $question_id = pakus_REQUEST('item');
-        print_preview_quiz($question_id);
+        printPreviewQuestion($question_id);
         break;
 
     default:
-        print_admin_dashboard();
+        printAdminDashboard();
 }
 
 require_once('inc/footer.inc.php');
@@ -286,7 +286,7 @@ exit();
 
 /*** FUNCTIONS ***/
 
-function print_admin_header( $a = 'users', $msg = array() ) {
+function printAdminHeader( $a = 'users', $msg = array() ) {
     ?>
             <h1>Administració</h1>
             <p><?php echo getHTMLMessages($msg); ?></p>
@@ -303,14 +303,14 @@ function print_admin_header( $a = 'users', $msg = array() ) {
     <?php
 }
 
-function print_admin_dashboard() {
-    print_actions();
+function printAdminDashboard() {
+    printActions();
 } // END print_admin_dashboard()
 
-function print_actions ( $msg = array() ) {
+function printActions ( $msg = array() ) {
     global $db;
 
-    print_admin_header('actions');
+    printAdminHeader('actions');
     ?>
                <div class="panel panel-default">
                 <div class="panel-body">
@@ -411,10 +411,10 @@ function print_actions ( $msg = array() ) {
     <?php
 } // END print_action()
 
-function print_user_management ( $msg = array() ) {
+function printUserManagement ( $msg = array() ) {
     global $db;
 
-    print_admin_header('users', $msg);
+    printAdminHeader('users', $msg);
     ?>
                         <div class="panel panel-default">
                             <div class="panel-body">
@@ -459,10 +459,10 @@ function print_user_management ( $msg = array() ) {
     <?php
 } // END print_user_management()
 
-function print_level_management( $msg = array() ) {
+function printLevelManagement( $msg = array() ) {
     global $db;
 
-    print_admin_header('levels', $msg);
+    printAdminHeader('levels', $msg);
     ?>
                         <div class="panel panel-default">
                             <div class="panel-body">
@@ -512,10 +512,10 @@ function print_level_management( $msg = array() ) {
     <?php
 } // END print_level_management()
 
-function print_badge_management( $msg = array() ) {
+function printBadgeManagement( $msg = array() ) {
     global $db;
 
-    print_admin_header('badges', $msg);
+    printAdminHeader('badges', $msg);
     ?>
                         <div class="panel panel-default">
                             <div class="panel-body">
@@ -566,7 +566,7 @@ function print_badge_management( $msg = array() ) {
 } // END print_badge_management()
 
 /*** USERS ***/
-function print_newuser_form( $data = array(), $msg = array() ) {
+function printNewUserForm( $data = array(), $msg = array() ) {
     global $CONFIG;
     ?>
                         <h1>Nou usuari</h1>
@@ -624,7 +624,7 @@ function print_newuser_form( $data = array(), $msg = array() ) {
     <?php
 } // END print_newuser_form()
 
-function create_user( $data = array() ) {
+function createUser( $data = array() ) {
     global $db, $CONFIG;
 
     $missatges = array();
@@ -660,7 +660,7 @@ function create_user( $data = array() ) {
     }
 
     if ( ! empty($missatges) ) {
-        print_newuser_form($data, $missatges);
+        printNewUserForm($data, $missatges);
         return false;
     }
 
@@ -679,14 +679,14 @@ function create_user( $data = array() ) {
 
     if ( $user_id == 0 ) {
         $missatges[] = array('type' => "error", 'msg' => "No s'ha pogut crear l'usuari.");
-        print_newuser_form($data, $missatges);
+        printNewUserForm($data, $missatges);
     } else {
         $missatges[] = array('type' => "success", 'msg' => "L'usuari '<strong>". get_username($user_id) ."</strong>' s'ha creat correctament.");
-        print_user_management($missatges);
+        printUserManagement($missatges);
     }
 } // END create_user()
 
-function print_edituser_form($user_id, $msg = array()) {
+function printEditUserForm($user_id, $msg = array()) {
     global $db, $CONFIG;
 
     $missatges = array();
@@ -701,7 +701,7 @@ function print_edituser_form($user_id, $msg = array()) {
     if ($result->num_rows == 0) {
         // L'usuari que ens han passat no existeix, per tant tornem a mostrar la llista.
         $missatges[] = array('type' => "error", 'msg' => "No he trobat informaci&oacute; per aquest usuari.");
-        print_user_management($missatges);
+        printUserManagement($missatges);
         return false;
     }
     $row = $result->fetch_assoc();
@@ -770,7 +770,7 @@ function print_edituser_form($user_id, $msg = array()) {
     <?php
 } // END print_edituser_form()
 
-function save_user_data( $data = array() ) {
+function saveUserData( $data = array() ) {
     global $db, $CONFIG;
 
     $missatges = array();
@@ -779,7 +779,7 @@ function save_user_data( $data = array() ) {
     $data['id'] = intval($data['id']);
     if ( ! user_exists($data['id']) ) {
         $missatges[] = array('type' => "error", 'msg' => "<strong>ATENCI&Oacute;</strong>: L'usuari suministrat per actualitzar no existeix.");
-        print_user_management($missatges);
+        printUserManagement($missatges);
         return false;
     }
 
@@ -798,7 +798,7 @@ function save_user_data( $data = array() ) {
     }
 
     if ( ! empty($missatges) ) {
-        print_edituser_form($data['id'], $missatges);
+        printEditUserForm($data['id'], $missatges);
         return false;
     }
 
@@ -811,15 +811,15 @@ function save_user_data( $data = array() ) {
 
     if ( $db->query($query) ) {
         $missatges[] = array('type' => "success", 'msg' => "Dades d'usuari '<strong>". get_username($data['id']) ."</strong>' actualitzades.");
-        print_user_management($missatges);
+        printUserManagement($missatges);
 
     } else {
         $missatges[] = array('type' => "error", 'msg' => "No s'ha pogut actualitzar les dades de l'usuari.");
-        print_edituser_form($data, $missatges);
+        printEditUserForm($data, $missatges);
     }
 } // END save_user_data()
 
-function delete_user($user_id) {
+function deleteUser($user_id) {
     global $db;
 
     // user_id must be an integer
@@ -834,7 +834,7 @@ function delete_user($user_id) {
 
 /*** LEVELS ***/
 
-function print_newlevel_form( $data = array(), $msg = array() ) {
+function printNewLevelForm( $data = array(), $msg = array() ) {
     ?>
                         <h1>Nou nivell</h1>
                         <p><?php echo getHTMLMessages($msg); ?></p>
@@ -869,7 +869,7 @@ function print_newlevel_form( $data = array(), $msg = array() ) {
     <?php
 } // END print_newlevel_form()
 
-function create_level( $data = array() ) {
+function createLevel( $data = array() ) {
     global $db;
 
     $missatges = array();
@@ -893,7 +893,7 @@ function create_level( $data = array() ) {
     }
 
     if ( ! empty($missatges) ) {
-        print_newlevel_form($data, $missatges);
+        printNewLevelForm($data, $missatges);
         return false;
     }
 
@@ -905,14 +905,14 @@ function create_level( $data = array() ) {
 
     if ( $level_id == 0 ) {
         $missatges[] = array('type' => "error", 'msg' => "No s'ha pogut crear el nivell.");
-        print_newlevel_form($data, $missatges);
+        printNewLevelForm($data, $missatges);
     } else {
         $missatges[] = array('type' => "success", 'msg' => "El nivell '<strong>". $data['name'] ."</strong>' s'ha creat correctament.");
-        print_level_management($missatges);
+        printLevelManagement($missatges);
     }
 } // END create_level()
 
-function print_editlevel_form($level_id, $msg = array()) {
+function printEditLevelForm($level_id, $msg = array()) {
     global $db;
 
     $missatges = array();
@@ -927,7 +927,7 @@ function print_editlevel_form($level_id, $msg = array()) {
     if ($result->num_rows == 0) {
         // No existeix.
         $missatges[] = array('type' => "error", 'msg' => "No he trobat informaci&oacute; per aquest nivell.");
-        print_level_management($missatges);
+        printLevelManagement($missatges);
         return false;
     }
     $data = $result->fetch_assoc();
@@ -966,7 +966,7 @@ function print_editlevel_form($level_id, $msg = array()) {
     <?php
 } // END print_editlevel_form()
 
-function save_level_data( $data = array() ) {
+function saveLevelData( $data = array() ) {
     global $db;
 
     $missatges = array();
@@ -980,7 +980,7 @@ function save_level_data( $data = array() ) {
     if ($result->num_rows == 0) {
         // A level doesn't exists .
         $missatges[] = array('type' => "error", 'msg' => "<strong>ATENCI&Oacute;</strong>: El nivell suministrat per actualitzar no existeix.");
-        print_level_management($missatges);
+        printLevelManagement($missatges);
         return false;
     }
 
@@ -1002,7 +1002,7 @@ function save_level_data( $data = array() ) {
     }
 
     if ( ! empty($missatges) ) {
-        print_editlevel_form($data['id'], $missatges);
+        printEditLevelForm($data['id'], $missatges);
         return false;
     }
 
@@ -1012,14 +1012,14 @@ function save_level_data( $data = array() ) {
 
     if ( $db->query($query) ) {
         $missatges[] = array('type' => "success", 'msg' => "Dades del nivell '<strong>". $data['name'] ."</strong>' actualitzades.");
-        print_level_management($missatges);
+        printLevelManagement($missatges);
     } else {
         $missatges[] = array('type' => "error", 'msg' => "No s'ha pogut actualitzar les dades del nivell.");
-        print_editlevel_form($data, $missatges);
+        printEditLevelForm($data, $missatges);
     }
 } // END save_level_data()
 
-function delete_level($level_id) {
+function deleteLevel($level_id) {
     global $db;
 
     // level_id must be an integer
@@ -1038,7 +1038,7 @@ function delete_level($level_id) {
 
 /*** BADGES ***/
 
-function print_newbadge_form( $data = array(), $msg = array() ) {
+function printNewBadgeForm( $data = array(), $msg = array() ) {
     ?>
                         <h1>Nova insígnia</h1>
                         <p><?php echo getHTMLMessages($msg); ?></p>
@@ -1079,7 +1079,7 @@ function print_newbadge_form( $data = array(), $msg = array() ) {
     <?php
 } // END print_newbadge_form()
 
-function create_badge( $data = array() ) {
+function createBadge( $data = array() ) {
     global $db;
 
     $missatges = array();
@@ -1095,7 +1095,7 @@ function create_badge( $data = array() ) {
     }
 
     if ( ! empty($missatges) ) {
-        print_newbadge_form($data, $missatges);
+        printNewBadgeForm($data, $missatges);
         return false;
     }
 
@@ -1108,14 +1108,14 @@ function create_badge( $data = array() ) {
 
     if ( $badge_id == 0 ) {
         $missatges[] = array('type' => "error", 'msg' => "No s'ha pogut crear la insígnia.");
-        print_newlevel_form($data, $missatges);
+        printNewLevelForm($data, $missatges);
     } else {
         $missatges[] = array('type' => "success", 'msg' => "La insígnia '<strong>". $data['name'] ."</strong>' s'ha creat correctament.");
-        print_badge_management($missatges);
+        printBadgeManagement($missatges);
     }
 } // END create_badge()
 
-function print_editbadge_form($badge_id, $msg = array()) {
+function printEditBadgeForm($badge_id, $msg = array()) {
     global $db;
 
     $missatges = array();
@@ -1130,7 +1130,7 @@ function print_editbadge_form($badge_id, $msg = array()) {
     if ($result->num_rows == 0) {
         // No existeix.
         $missatges[] = array('type' => "error", 'msg' => "No he trobat informaci&oacute; per aquesta insígnia.");
-        print_badge_management($missatges);
+        printBadgeManagement($missatges);
         return false;
     }
     $data = $result->fetch_assoc();
@@ -1175,7 +1175,7 @@ function print_editbadge_form($badge_id, $msg = array()) {
     <?php
 } // END print_editbadge_form()
 
-function save_badge_data( $data = array() ) {
+function saveBadgeData( $data = array() ) {
     global $db;
 
     $missatges = array();
@@ -1189,7 +1189,7 @@ function save_badge_data( $data = array() ) {
     if ($result->num_rows == 0) {
         // A badge doesn't exists .
         $missatges[] = array('type' => "error", 'msg' => "<strong>ATENCI&Oacute;</strong>: La insígnia suministrada per actualitzar no existeix.");
-        print_badge_management($missatges);
+        printBadgeManagement($missatges);
         return false;
     }
 
@@ -1211,7 +1211,7 @@ function save_badge_data( $data = array() ) {
     }
 
     if ( ! empty($missatges) ) {
-        print_editbadge_form($data['badge_id'], $missatges);
+        printEditBadgeForm($data['badge_id'], $missatges);
         return false;
     }
 
@@ -1219,14 +1219,14 @@ function save_badge_data( $data = array() ) {
 
     if ( $db->query($query) ) {
         $missatges[] = array('type' => "success", 'msg' => "Dades de la insígia '<strong>". $data['name'] ."</strong>' actualitzades.");
-        print_badge_management($missatges);
+        printBadgeManagement($missatges);
     } else {
         $missatges[] = array('type' => "error", 'msg' => "No s'ha pogut actualitzar les dades de la insígnia.");
-        print_editbadge_form($data, $missatges);
+        printEditBadgeForm($data, $missatges);
     }
 } // END save_badge_data()
 
-function delete_badge($badge_id) {
+function deleteBadge($badge_id) {
     global $db;
 
     // badge_id must be an integer
@@ -1243,7 +1243,7 @@ function delete_badge($badge_id) {
     return ($result->num_rows == 0);
 } // END delete_badge()
 
-function add_experience ( $data = array() ) {
+function addExperience ( $data = array() ) {
     global $db;
 
     $missatges = array();
@@ -1266,7 +1266,7 @@ function add_experience ( $data = array() ) {
     }
 
     if ( ! empty($missatges) ) {
-        print_actions($missatges);
+        printActions($missatges);
         return false;
     }
 
@@ -1282,7 +1282,7 @@ function add_experience ( $data = array() ) {
 
     if ( !$result ) {
         $missatges[] = array('type' => "error", 'msg' => "No s'ha pogut actualitzar les dades de l'usuari '<strong>". $data['username'] ."</strong>'.");
-        print_actions($data, $missatges);
+        printActions($data, $missatges);
         return false;
     }
 
@@ -1307,7 +1307,7 @@ function add_experience ( $data = array() ) {
     }
 
     $missatges[] = array('type' => "success", 'msg' => "Dades de l'usuari '<strong>". $data['username'] ."</strong>' actualitzades.");
-    print_actions($missatges);
+    printActions($missatges);
     return true;
 } // END add_experience()
 
@@ -1328,7 +1328,7 @@ function action( $data = array() ) {
     if ($result->num_rows == 0) {
         // L'usuari que ens han passat no existeix.
         $missatges[] = array('type' => "error", 'msg' => "No he trobat informaci&oacute; per aquest usuari.");
-        print_actions($missatges);
+        printActions($missatges);
         return false;
     } else {
         $row = $result->fetch_assoc();
@@ -1343,7 +1343,7 @@ function action( $data = array() ) {
     if ($result->num_rows == 0) {
         // La insígnia que ens han passat no existeix.
         $missatges[] = array('type' => "error", 'msg' => "No he trobat informaci&oacute; per aquesta insígnia.");
-        print_actions($missatges);
+        printActions($missatges);
         return false;
     } else {
         $row = $result->fetch_assoc();
@@ -1357,7 +1357,7 @@ function action( $data = array() ) {
     }
 
     if ( ! empty($missatges) ) {
-        print_actions($missatges);
+        printActions($missatges);
         return false;
     }
 
@@ -1381,11 +1381,11 @@ function action( $data = array() ) {
                 notifyBadgeToUser($data);
                 $missatges[] = array('type' => "info", 'msg' => "L'usuari '<strong>". $data['username'] ."</strong>' ha aconseguit la insíngia '<strong>". $data['name'] ."</strong>'.");
             }
-            print_actions($missatges);
+            printActions($missatges);
             return true;
         } else {
             $missatges[] = array('type' => "error", 'msg' => "No s'ha pogut actualitzar les dades de l'usuari '<strong>". $data['username'] ."</strong>.");
-            print_actions($missatges);
+            printActions($missatges);
             return false;
         }
     }
@@ -1413,11 +1413,11 @@ function action( $data = array() ) {
                 notifyBadgeToUser($data);
                 $missatges[] = array('type' => "success", 'msg' => "Dades de l'usuari '<strong>". $data['username'] ."</strong>' actualitzades.");
                 $missatges[] = array('type' => "info", 'msg' => "L'usuari '<strong>". $data['username'] ."</strong>' ha aconseguit la insíngia '<strong>". $data['name'] ."</strong>'.");
-                print_actions($missatges);
+                printActions($missatges);
                 return true;
             } else {
                 $missatges[] = array('type' => "error", 'msg' => "No s'ha pogut actualitzar les dades de l'usuari '<strong>". $data['username'] ."</strong>'.");
-                print_actions($missatges);
+                printActions($missatges);
                 return false;
             }
         } else {
@@ -1427,25 +1427,25 @@ function action( $data = array() ) {
 
             if ( $db->query($query) ) {
                 $missatges[] = array('type' => "success", 'msg' => "Dades de l'usuari '<strong>". $data['username'] ."</strong>' actualitzades.");
-                print_actions($missatges);
+                printActions($missatges);
                 return true;
             } else {
                 $missatges[] = array('type' => "error", 'msg' => "No s'ha pogut actualitzar les dades de l'usuari '<strong>". $data['username'] ."</strong>'.");
-                print_actions($missatges);
+                printActions($missatges);
                 return false;
             }
         }
     } else {
         $missatges[] = array('type' => "info", 'msg' => "L'usuari '<strong>". $data['username'] ."</strong>' ja tenia l'insígnia <strong>". $data['name'] ."</strong>.");
-        print_actions($missatges);
+        printActions($missatges);
         return false;
     }
 }
 
-function print_send_message( $msg = array() ) {
+function printSendMessage( $msg = array() ) {
     global $db;
 
-    print_admin_header('messages');
+    printAdminHeader('messages');
 
     $query = "SELECT email FROM vmembers WHERE role = 'member'";
     $result = $db->query($query);
@@ -1497,10 +1497,10 @@ function print_send_message( $msg = array() ) {
     <?php
 } // END print_send_message()
 
-function print_quiz_management( $msg = array() ) {
+function printQuestionManagement( $msg = array() ) {
     global $db;
 
-    print_admin_header('quiz', $msg);
+    printAdminHeader('quiz', $msg);
     ?>
                         <div class="panel panel-default">
                             <div class="panel-body">
@@ -1555,7 +1555,7 @@ function print_quiz_management( $msg = array() ) {
     <?php
 } // END print_quiz_management()
 
-function print_editquiz_form( $question_id, $msg = array() ) {
+function printEditQuestionForm( $question_id, $msg = array() ) {
     global $db;
 
     $missatges = array();
@@ -1570,7 +1570,7 @@ function print_editquiz_form( $question_id, $msg = array() ) {
     if ($result->num_rows == 0) {
         // No existeix.
         $missatges[] = array('type' => "error", 'msg' => "No he trobat informaci&oacute; per aquesta pregunta.");
-        print_quiz_management($missatges);
+        printQuestionManagement($missatges);
         return false;
     }
     $data = $result->fetch_assoc();
@@ -1603,7 +1603,7 @@ function print_editquiz_form( $question_id, $msg = array() ) {
                         <p><?php echo getHTMLMessages($msg); ?></p>
                         <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post" class="form-horizontal" role="form">
 
-                            <?php print_quiz_form_content($data); ?>
+                            <?php printQuestionContentForm($data); ?>
 
                             <div class="form-group">
                                 <div class="col-sm-offset-2 col-sm-10">
@@ -1617,14 +1617,14 @@ function print_editquiz_form( $question_id, $msg = array() ) {
     <?php
 } // END print_editquiz_form()
 
-function print_newquiz_form( $data = array(), $msg = array() ) {
+function printNewQuestionForm( $data = array(), $msg = array() ) {
     global $db;
     ?>
                         <h1>Nova pregunta</h1>
                         <p><?php echo getHTMLMessages($msg); ?></p>
                         <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post" class="form-horizontal" role="form">
 
-                            <?php print_quiz_form_content($data); ?>
+                            <?php printQuestionContentForm($data); ?>
 
                             <div class="form-group">
                                 <div class="col-sm-offset-2 col-sm-10">
@@ -1638,7 +1638,7 @@ function print_newquiz_form( $data = array(), $msg = array() ) {
     <?php
 } // END print_newquiz_form()
 
-function create_quiz( $data = array() ) {
+function createQuestion( $data = array() ) {
     global $db;
 
     $missatges = array();
@@ -1665,7 +1665,7 @@ function create_quiz( $data = array() ) {
     if ( 0 == $question_id ) {
             die($query);
             $missatges[] = array('type' => "error", 'msg' => "No s'ha pogut crear la pregunta.");
-            print_newquiz_form($data, $missatges);
+            printNewQuestionForm($data, $missatges);
             return false;
     }
 
@@ -1700,11 +1700,11 @@ function create_quiz( $data = array() ) {
     }
 
     $missatges[] = array('type' => "success", 'msg' => "La pregunta s'ha creat correctament.");
-    print_quiz_management($missatges);
+    printQuestionManagement($missatges);
     return true;
 } // END create_quiz()
 
-function save_quiz_data( $data = array() ) {
+function saveQuestionData( $data = array() ) {
     global $db;
 
     $missatges = array();
@@ -1764,15 +1764,15 @@ function save_quiz_data( $data = array() ) {
 
     if ( $db->query($query) ) {
         $missatges[] = array('type' => "success", 'msg' => "Dades actualitzades.");
-        print_quiz_management($missatges);
+        printQuestionManagement($missatges);
 
     } else {
         $missatges[] = array('type' => "error", 'msg' => "No s'ha pogut actualitzar les dades.");
-        print_editquiz_form($data, $missatges);
+        printEditQuestionForm($data, $missatges);
     }
 } // END save_quiz_data()
 
-function delete_quiz($question_id) {
+function deleteQuestion($question_id) {
     global $db;
 
     // question_id must be an integer
@@ -1790,7 +1790,7 @@ function delete_quiz($question_id) {
     return $db->query($query);
 } // END delete_quiz()
 
-function print_quiz_form_content( $data ) {
+function printQuestionContentForm( $data ) {
     global $db;
 
     ?>
@@ -2002,7 +2002,7 @@ function print_quiz_form_content( $data ) {
     <?php
 } // END print_quiz_form_content()
 
-function print_preview_quiz($question_id) {
+function printPreviewQuestion($question_id) {
     global $db;
 
     $query = sprintf( "SELECT * FROM questions WHERE id='%s' LIMIT 1", $db->real_escape_string($question_id) );
@@ -2011,7 +2011,7 @@ function print_preview_quiz($question_id) {
     if ( 0 == $result->num_rows ) {
         // La pregunta que ens han passat no existeix, per tant tornem a mostrar la llista.
         $missatges[] = array('type' => "error", 'msg' => "No he trobat informaci&oacute; per aquesta pregunta.");
-        print_quiz_management();
+        printQuestionManagement();
         return false;
     }
 
