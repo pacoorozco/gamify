@@ -13,13 +13,13 @@ defined('IN_SCRIPT') or die('Invalid attempt');
         <div id="push"></div>
     </div><!--/wrap -->
 
-    
+
       <footer id="footer">
           <div class="container">
               <p class="text-muted credit">GoW! v<?php echo $CONFIG['version']; ?> - Powered by <a href="https://git.upcnet.es/paco.orozco/gamify/blob/master/README.md" title="Gamify Project">gamify</a> - <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/deed.ca">Llicència Creative Commons Reconeixement-CompartirIgual</a></p>
           </div>
       </footer>
-    
+
     <!-- Placed at the end of the document so the pages load faster -->
     <script>
         head.js(
@@ -37,7 +37,7 @@ defined('IN_SCRIPT') or die('Invalid attempt');
                 }
                 );
     </script>
-    
+
     <!-- Google Analytics -->
     <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
@@ -48,7 +48,7 @@ defined('IN_SCRIPT') or die('Invalid attempt');
   ga('create', 'UA-45534443-3', 'upcnet.es');
   ga('send', 'pageview');
     </script>
-    
+
   </body>
 </html>
 
