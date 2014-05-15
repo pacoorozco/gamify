@@ -24,18 +24,18 @@ $action = pakus_REQUEST('a');
 switch ($action) {
     case 'search':
         // Que hem de buscar?
-        $searchterm = pakus_GET('q');         
+        $searchterm = pakus_GET('q');
         echo getSearchResults($searchterm);
         exit();
         break;
-    
+
     case 'upload':
         echo uploadProfilePicture();
         exit();
         break;
 }
 
-require_once('inc/header.inc.php'); 
+require_once('inc/header.inc.php');
 
 switch ($action) {
     case 'viewuser':
@@ -44,7 +44,7 @@ switch ($action) {
         printProfile($user_id);
 }
 
-    
+
 require_once('inc/footer.inc.php');
 exit();
 
@@ -54,18 +54,18 @@ function getSearchResults( $searchterm ) {
 
 	$html_code = array();
         $html_code[] = '<ul class="list-unstyled list-group">';
-        
+
         // Nomes farem cerques si busquen mes de tres caracters, aixo evita que sobrecarreguem la BDD
         if ( ! isset($searchterm[3]) ) {
             $html_code[] = '<li class="list-group-item list-group-item-info">Tecleja m&eacute;s de 3 car&agrave;cters per fer la cerca</li>';
-        } else {       
+        } else {
             $query = sprintf("SELECT id, username FROM vmembers WHERE username LIKE '%%%s%%'", $db->real_escape_string($searchterm));
             $result = $db->query($query);
-        
+
             if ( 0 == $result->num_rows  ) {
                 // No s'ha trobat res
                 $html_code[] = '<li class="list-group-item list-group-item-danger">No he trobat cap resultat</li>';
-                
+
             } else {
                 // Hem trobat informacio
                 while ( $row = $result->fetch_assoc() ) {
@@ -79,31 +79,31 @@ function getSearchResults( $searchterm ) {
 
 function printProfile($user_id) {
     global $db;
-    
+
     // user_id must be integer
     $user_id = intval($user_id);
-    
+
     // check if user to view profile is admin
     $admin = userHasPrivileges($user_id, 'administrator');
-    
-    $query = sprintf("SELECT t1.id, t1.username, t1.total_points, t1.month_points, t1.last_access, t2.name AS level_name, t2.image AS level_image,t2.experience_needed FROM vmembers AS t1, levels AS t2 WHERE t1.level_id = t2.id AND t1.id = '%d' LIMIT 1", $user_id);    
+
+    $query = sprintf("SELECT t1.id, t1.username, t1.total_points, t1.month_points, t1.last_access, t2.name AS level_name, t2.image AS level_image,t2.experience_needed FROM vmembers AS t1, levels AS t2 WHERE t1.level_id = t2.id AND t1.id = '%d' LIMIT 1", $user_id);
     $result = $db->query($query);
     $row = $result->fetch_assoc();
-    
+
     $query = sprintf("SELECT profile_image FROM members WHERE id='%d' LIMIT 1", $user_id);
     $result = $db->query($query);
     $row2 = $result->fetch_assoc();
     $row['profile_image'] = $row2['profile_image'];
-    
+
     if (false === $admin) {
-        $query = sprintf( "SELECT * FROM levels WHERE experience_needed >= '%d' LIMIT 1", $row['total_points']);    
+        $query = sprintf( "SELECT * FROM levels WHERE experience_needed >= '%d' LIMIT 1", $row['total_points']);
         $result = $db->query($query);
         $row2 = $result->fetch_assoc();
-    
+
         $levelper= round($row['total_points'] / $row2['experience_needed'] * 100);
     }
-     
-    ?>        
+
+    ?>
         <div class="row" style="margin-top:50px;">
             <div class="col-md-7">
                 <div class="row">
@@ -114,7 +114,7 @@ function printProfile($user_id) {
                         }
                         ?>
                         <img src="<?= $row['profile_image']; ?>" class="img-thumbnail" id="profileImage">
-                        <?php 
+                        <?php
                         if ($user_id == $_SESSION['member']['id']) {
                             // L'usuari por editar la seva imatge.
                         ?>
@@ -140,7 +140,7 @@ function printProfile($user_id) {
                                 } );
                             } );
                         </script>
-                            
+
                         <?php
                         }
                         ?>
@@ -151,7 +151,7 @@ function printProfile($user_id) {
                         <p class="small">Darrera connexió el <?php echo strftime('%A, %d de %B', $row['last_access']); ?></p>
                     </div>
                 </div>
-                <?php 
+                <?php
                 if (false === $admin) {
                 ?>
                 <h3>Activitat <small>darrers 10 events</small></h3>
@@ -170,7 +170,7 @@ function printProfile($user_id) {
                 }
                 ?>
             </div>
-                
+
             <div class="col-md-offset-1 col-md-4">
                 <h3>Experiència</h3>
                 <div class="media">
@@ -198,7 +198,7 @@ function printProfile($user_id) {
                 $result = $db->query($query);
                 $row = $result->fetch_assoc();
                 $badges = $row['completed'];
-                
+
                 $query = sprintf("SELECT t1.image, t1.name, t1.description, t2.status FROM badges AS t1, members_badges AS t2 WHERE t2.id_member='%d' AND t1.id=t2.id_badges", $user_id);
                 $result = $db->query($query);
                 echo '<h3>Insígnies ('. $badges .')</h3>';
@@ -221,9 +221,9 @@ function printProfile($user_id) {
 
 function uploadProfilePicture() {
     global $db;
-    
+
     list($returnedValue, $returnedMessage) = uploadFile('uploadFile', 'uploads');
-    
+
     if (false === $returnedValue) return 'ERROR';
 
     // Deletes previous profile picture file
@@ -231,18 +231,18 @@ function uploadProfilePicture() {
     $result = $db->query($query);
     $row = $result->fetch_assoc();
     if (file_exists($row['profile_image'])) unlink($row['profile_image']);
-        
+
     // ACTION: Si es la primera vegada que puja una imatge... guanya un badge
     if (empty($row['profile_image'])) {
         doSilentAction($_SESSION['member']['id'], 19);
     }
     // END ACTION
-        
-    $query = sprintf("UPDATE members SET profile_image='%s' WHERE id='%d'", 
-            $returnedMessage, 
+
+    $query = sprintf("UPDATE members SET profile_image='%s' WHERE id='%d'",
+            $returnedMessage,
             $_SESSION['member']['id']
             );
     $db->query($query);
-  
-    return $returnedMessage;  
+
+    return $returnedMessage;
 } // END upload_profile_picture()

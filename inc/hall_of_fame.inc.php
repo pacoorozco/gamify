@@ -18,7 +18,7 @@ defined('IN_SCRIPT') or die('Invalid attempt');
             <th>Experiència</th>
             <th>Nivell</th>
             <th class="text-center">Insígnies</th>
-        </tr>  
+        </tr>
     </thead>
     <tbody>
         <?php

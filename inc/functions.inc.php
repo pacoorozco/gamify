@@ -21,9 +21,9 @@ function secureSessionStart() {
     $session_name = 'gamify_GoW';
     // sets the session name to the one set above.
     session_name($session_name);
-    // start the PHP session 
+    // start the PHP session
     session_start();
-    
+
     // check these values into session, prevent session hijacking
     // 20140413 (Paco) - If enable this Live Search doesn't work
     /*
@@ -31,7 +31,7 @@ function secureSessionStart() {
             && isset($_SESSION['_USER_AGENT'])
             && isset($_SESSION['_USER_ACCEPT'])
             && isset($_SESSION['_USER_ACCEPT_ENCODING']) ) {
-        
+
         if ( $_SESSION['_USER_LOOSE_IP'] != long2ip( ip2long($_SERVER['REMOTE_ADDR'] ) & ip2long("255.255.0.0") )
             || $_SESSION['_USER_AGENT'] != $_SERVER['HTTP_USER_AGENT']
             || $_SESSION['_USER_ACCEPT'] != $_SERVER['HTTP_ACCEPT']
@@ -42,7 +42,7 @@ function secureSessionStart() {
         secure_session_destroy();
     }
     */
-    
+
     // store these values into the session so I can check on subsequent requests.
     $_SESSION['_USER_AGENT']            = $_SERVER['HTTP_USER_AGENT'];
     $_SESSION['_USER_ACCEPT']           = $_SERVER['HTTP_ACCEPT'];
@@ -50,7 +50,7 @@ function secureSessionStart() {
 
     // Only use the first two blocks of the IP (loose IP check). Use a
     // netmask of 255.255.0.0 to get the first two blocks only.
-    $_SESSION['_USER_LOOSE_IP'] = long2ip( ip2long($_SERVER['REMOTE_ADDR']) & ip2long("255.255.0.0") );   
+    $_SESSION['_USER_LOOSE_IP'] = long2ip( ip2long($_SERVER['REMOTE_ADDR']) & ip2long("255.255.0.0") );
 } // END secure_session_start();
 
 function secureSessionDestroy() {
@@ -77,35 +77,35 @@ function secureSessionDestroy() {
     }
     return $is_user_logged_in;
  }
- 
+
 /**
  * uploadFile()
- * 
- * This functions gets a $_FILES[] and move to our filesystem in a 
- * secured way. 
- * 
- * Checks if some error has done while uploading. 
+ *
+ * This functions gets a $_FILES[] and move to our filesystem in a
+ * secured way.
+ *
+ * Checks if some error has done while uploading.
  * Checks if filetype is allowed or no.
- * 
+ *
  * @param   string  $file_field     Name of file upload in html form
  * @param   string  $destination    The directory where file will be moved
  * @param   array   $allowed_types  An array containing tiletypes allowed
- * 
+ *
  * This array has the form, this is the defaults one:
  * array(
  *      'jpg' => 'image/jpeg',
  *      'png' => 'image/png',
  *      'gif' => 'image/gif'
  *      );
- * 
+ *
  * @return 	array   first value may be 'true' or 'false'.
  *                      second value is an string.
- * 
+ *
  * On 'false' is an error message string
  * On 'true' is the generated filename.
  */
  function uploadFile($file_field, $destination, $allowed_types = array()) {
-    
+
     // Default allowed list of file to be uploaded
     if (empty($allowed_types) || !is_array($allowed_types)) {
         $allowed_types = array(
@@ -113,15 +113,15 @@ function secureSessionDestroy() {
             'png' => 'image/png',
             'gif' => 'image/gif'
             );
-    }    
-    
+    }
+
     // Undefined | Multiple Files | $_FILES Corruption Attack
     // If this request falls under any of them, treat it invalid.
     if (!isset($_FILES[$file_field]['error']) || is_array($_FILES[$file_field]['error']) ) {
         // Invalid parameters
         return array(false , 'Invalid parameters');
     }
-    
+
     // Check $file['error'] value.
     switch ($_FILES[$file_field]['error']) {
         case UPLOAD_ERR_OK:
@@ -137,10 +137,10 @@ function secureSessionDestroy() {
             // Unknown errors
             return array(false, 'Unknown error');
     }
-    
+
     // Check MIME Type
     $finfo = new finfo(FILEINFO_MIME_TYPE);
-    if (false === $ext = array_search( 
+    if (false === $ext = array_search(
             $finfo->file($_FILES[$file_field]['tmp_name']),
             $allowed_types,
             true
@@ -148,21 +148,21 @@ function secureSessionDestroy() {
         // Invalid file format
         return array(false, 'Invalid file format');
     }
-    
+
     // Generate a new filename (unique)
     $filename = sprintf('%s/%s.%s',
                     $destination,
                     generate_uuid(),
                     $ext);
-    
+
     if (!move_uploaded_file($_FILES[$file_field]['tmp_name'], $filename)) {
         // Failed to move uploaded file
         return array(false, 'Failed to move uploaded file');
-    }    
-    
+    }
+
     return array(true, $filename);
 } // END upload_file()
- 
+
 /**
   * user_has_privileges($user_id, $privilege)
   *
@@ -180,7 +180,7 @@ function secureSessionDestroy() {
 
     $query = sprintf( "SELECT username FROM members WHERE id='%d' AND role='%s' LIMIT 1", intval($user_id), $privilege );
     $result = $db->query($query);
-    
+
     // Si no s'ha trobat res, retornem FALSE
     return ( $result->num_rows == 0 ) ? false : true;
 } // END user_is_admin()
@@ -200,15 +200,15 @@ function printAccessDenied() {
  */
 function getHTMLMessages($messages) {
     $html_code = array();
-    
+
     // defines which css classes we'll use to every message type
-    $css_classes = array( 
+    $css_classes = array(
         'error' => 'alert alert-danger',
         'success' => 'alert alert-success',
         'info' => 'alert alert-info',
         'warning' => 'alert alert-warning'
         );
-    
+
     foreach ($messages as $msg) {
         // $html_code[] = '<p class="' . $css_classes[$msg['type']] . '">' . $msg['msg'] . '</p>';
         $html_code[] = '<div class="alert alert-'. $css_classes[$msg['type']] .' alert-dismissable">';
@@ -236,10 +236,10 @@ function getHTMLSelectOptions( $available_options, $selected_option = '' ) {
 
 function getPendingQuizs( $user_id ) {
     global $db;
-    
+
     $query = sprintf( "SELECT count(*) as pending FROM questions AS q WHERE q.status='active' AND id NOT IN (SELECT id_question FROM members_questions WHERE id_member='%d')", intval($user_id) );
-    $result = $db->query($query);   
+    $result = $db->query($query);
     $row = $result->fetch_assoc();
-    
+
     return ( $row['pending'] > 0 ) ? $row['pending'] : '';
 } // END get_pending_quizs()

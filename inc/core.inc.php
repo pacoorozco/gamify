@@ -97,7 +97,7 @@ function pakus_input($in, $force_slashes=0, $max_length=0) {
 
 function send_message( $subject, $missatge, $receiver = '' ) {
     global $db, $CONFIG;
-    
+
     // If DEBUG mode is on, only send messages to 'debug_receiver'
     if ( $CONFIG['site']['debug'] ) {
         if ( ! isset( $CONFIG['site']['debug_receiver'] ) ) {
@@ -105,7 +105,7 @@ function send_message( $subject, $missatge, $receiver = '' ) {
         }
         $receiver = $CONFIG['site']['debug_receiver'];
     }
-    
+
     // If not receiver is submitted, a message will be sent to everybody
     if ( empty($receiver) ) {
         $query = "SELECT email FROM vmembers WHERE role = 'member'";
@@ -118,10 +118,10 @@ function send_message( $subject, $missatge, $receiver = '' ) {
             }
         }
     }
-       
+
     $service_url = $CONFIG['site']['base_url'];
     $html_message = $missatge;
-    
+
     $mail_body = <<<SEND_MAIL
 <html>
 <body style="border:1px solid #222222; margin-left:auto; margin-right:auto; width:70%;">
@@ -132,18 +132,18 @@ function send_message( $subject, $missatge, $receiver = '' ) {
 $html_message
 </div>
 </body>
-</html>            
+</html>
 SEND_MAIL;
-    
+
     // Create the Transport
     $transport = Swift_SmtpTransport::newInstance('localhost', 25);
-    
+
     // Create the Mailer using your created Transport
     $mailer = Swift_Mailer::newInstance($transport);
-        
+
     // Create the message
     $message = Swift_Message::newInstance()
-  
+
     // Give the message a subject
     ->setSubject($subject)
 
@@ -153,14 +153,14 @@ SEND_MAIL;
     // Give it a body
     ->setBody($mail_body, 'text/html')
     ;
-    
+
     // If we send to a one user use To:, if they're multiple Bcc:
     if ( is_array($receiver) ) {
         $message->setBcc($receiver);
     } else {
         $message->setTo($receiver);
     }
-    
+
     // Send the message
     return $mailer->send($message);
 } // END send_mail()
@@ -211,10 +211,10 @@ function get_username ($user_id) {
 
     $query = sprintf( "SELECT username FROM members WHERE id='%d' LIMIT 1", intval($user_id) );
     $result = $db->query($query);
-    
+
     // Si no s'ha trobat res, retornem FALSE
     if ($result->num_rows == 0 ) return false;
-    
+
     $row = $result->fetch_assoc();
     return $row['username'];
 } // END get_username()
@@ -224,10 +224,10 @@ function get_member_id ($username) {
 
     $query = sprintf( "SELECT id FROM members WHERE username='%s' LIMIT 1", $username );
     $result = $db->query($query);
-    
+
     // Si no s'ha trobat res, retornem FALSE
     if ($result->num_rows == 0 ) return false;
-    
+
     $row = $result->fetch_assoc();
     return $row['id'];
 } // END get_member_id()

@@ -34,15 +34,15 @@ defined('IN_SCRIPT') or die('Invalid attempt');
       <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
       <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
-    
+
     <!-- Load head.js for improved JS loading -->
     <script src="js/head.min.js"></script>
   </head>
 
   <body>
       <div id="wrap">
-          
-          <!-- Fixed navbar -->          
+
+          <!-- Fixed navbar -->
     <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
       <div class="container">
         <div class="navbar-header">
@@ -79,9 +79,9 @@ defined('IN_SCRIPT') or die('Invalid attempt');
                     <div class="navbar-content">
                         <div class="row">
                             <div class="col-md-5">
-                                <?php 
-                                $image = (empty($_SESSION['member']['profile_image'])) 
-                                        ? 'images/profile_default.png' 
+                                <?php
+                                $image = (empty($_SESSION['member']['profile_image']))
+                                        ? 'images/profile_default.png'
                                         : $_SESSION['member']['profile_image'];
                                 ?>
                                 <img src="<?= $image; ?>" alt="<?php echo $_SESSION['member']['username']; ?>" class="img-thumbnail img-responsive">
@@ -104,19 +104,19 @@ defined('IN_SCRIPT') or die('Invalid attempt');
                                 <div class="col-md-6">
                                     <a href="login.php?a=logout" title="Sortir" class="btn btn-danger btn-sm pull-right"><span class="glyphicon glyphicon-log-out"></span> Sortir</a>
                                 </div>
-                            </div>                            
+                            </div>
                         </div>
                     </div>
-                </li> 
+                </li>
             </ul>
         </li>
         </ul>
-                <?php 
+                <?php
             }
             ?>
         </div><!--/.navbar-collapse -->
       </div>
     </div>
-          
+
           <!-- Begin page content -->
           <div class="container">
