@@ -18,11 +18,11 @@ switch ($method) {
         switch ($action) {
             case 'enable':
                 $item = pakus_GET('item');
-                $response = question_set_status($item, 'active');
+                $response = setQuestionStatus($item, 'active');
                 break;
             case 'disable':                 
                 $item = pakus_GET('item');
-                $response = question_set_status($item, 'inactive');
+                $response = setQuestionStatus($item, 'inactive');
                 break;
         }
         break;
@@ -48,7 +48,7 @@ switch ($format) {
         
 /*** FUNCTIONS ***/
 
-function question_set_status($item, $status) {
+function setQuestionStatus($item, $status) {
     global $db;
     
     $results = array();

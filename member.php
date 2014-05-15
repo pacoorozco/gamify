@@ -10,7 +10,7 @@ require_once('inc/functions.inc.php');
 require_once('inc/gamify.inc.php');
 
 // Page only for members
-if ( false === login_check() ) {
+if ( false === loginCheck() ) {
     // save referrer to $_SESSION['nav'] for after login redirect
     $_SESSION['nav'] = urlencode($_SERVER['SCRIPT_NAME'] . '?' . $_SERVER['QUERY_STRING']);
     header('Location: login.php');
@@ -25,12 +25,12 @@ switch ($action) {
     case 'search':
         // Que hem de buscar?
         $searchterm = pakus_GET('q');         
-        echo get_search_results($searchterm);
+        echo getSearchResults($searchterm);
         exit();
         break;
     
     case 'upload':
-        echo upload_profile_picture();
+        echo uploadProfilePicture();
         exit();
         break;
 }
@@ -41,7 +41,7 @@ switch ($action) {
     case 'viewuser':
     default:
         $user_id = pakus_REQUEST('item');
-        print_profile($user_id);
+        printProfile($user_id);
 }
 
     
@@ -49,7 +49,7 @@ require_once('inc/footer.inc.php');
 exit();
 
 /*** FUNCTIONS ***/
-function get_search_results( $searchterm ) {
+function getSearchResults( $searchterm ) {
 	global $db;
 
 	$html_code = array();
@@ -77,14 +77,14 @@ function get_search_results( $searchterm ) {
 	return implode($html_code, PHP_EOL);
 } // END get_search_results()
 
-function print_profile($user_id) {
+function printProfile($user_id) {
     global $db;
     
     // user_id must be integer
     $user_id = intval($user_id);
     
     // check if user to view profile is admin
-    $admin = user_has_privileges($user_id, 'administrator');
+    $admin = userHasPrivileges($user_id, 'administrator');
     
     $query = sprintf("SELECT t1.id, t1.username, t1.total_points, t1.month_points, t1.last_access, t2.name AS level_name, t2.image AS level_image,t2.experience_needed FROM vmembers AS t1, levels AS t2 WHERE t1.level_id = t2.id AND t1.id = '%d' LIMIT 1", $user_id);    
     $result = $db->query($query);
@@ -219,7 +219,7 @@ function print_profile($user_id) {
 
 } // END print_profile()
 
-function upload_profile_picture() {
+function uploadProfilePicture() {
     global $db;
     
     list($returnedValue, $returnedMessage) = uploadFile('uploadFile', 'uploads');
@@ -234,7 +234,7 @@ function upload_profile_picture() {
         
     // ACTION: Si es la primera vegada que puja una imatge... guanya un badge
     if (empty($row['profile_image'])) {
-        silent_action($_SESSION['member']['id'], 19);
+        doSilentAction($_SESSION['member']['id'], 19);
     }
     // END ACTION
         

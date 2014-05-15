@@ -14,9 +14,9 @@ require_once('inc/core.inc.php');
 /*** MAIN ***/
 
 // Start the session (pretty important!)
-secure_session_start();
+secureSessionStart();
 
-function secure_session_start() {
+function secureSessionStart() {
     // set a custom session name
     $session_name = 'gamify_GoW';
     // sets the session name to the one set above.
@@ -53,7 +53,7 @@ function secure_session_start() {
     $_SESSION['_USER_LOOSE_IP'] = long2ip( ip2long($_SERVER['REMOTE_ADDR']) & ip2long("255.255.0.0") );   
 } // END secure_session_start();
 
-function secure_session_destroy() {
+function secureSessionDestroy() {
     // destroy all $_SESSION variables and regenerate session_id
     session_unset();
     session_destroy();
@@ -61,7 +61,7 @@ function secure_session_destroy() {
     session_regenerate_id(true);
 } // END do_logout()
 
- function login_check() {
+ function loginCheck() {
     global $db;
 
     // Run a quick check to see if we are an authenticated user or not
@@ -175,7 +175,7 @@ function secure_session_destroy() {
   * Returns:
   *  $result:   True si és admin
   */
- function user_has_privileges($user_id, $privilege='administrator') {
+ function userHasPrivileges($user_id, $privilege='administrator') {
     global $db;
 
     $query = sprintf( "SELECT username FROM members WHERE id='%d' AND role='%s' LIMIT 1", intval($user_id), $privilege );
@@ -186,7 +186,7 @@ function secure_session_destroy() {
 } // END user_is_admin()
 
 /*** HTML CODE FUNCTIONS ***/
-function print_access_denied() {
+function printAccessDenied() {
     ?>
     <h1>Accés denegat</h1>
     <p class="lead">El teu usuari no te permissos per accedir a aquesta pàgina.</p>
@@ -198,7 +198,7 @@ function print_access_denied() {
  *
  * @param array $messages (contains 'type' and 'msg')
  */
-function get_html_messages($messages) {
+function getHTMLMessages($messages) {
     $html_code = array();
     
     // defines which css classes we'll use to every message type
@@ -222,7 +222,7 @@ function get_html_messages($messages) {
     return implode(PHP_EOL, $html_code);
 } // END get_html_messages()
 
-function get_html_select_options( $available_options, $selected_option = '' ) {
+function getHTMLSelectOptions( $available_options, $selected_option = '' ) {
     $html_code = array();
     foreach ( $available_options as $key => $value) {
         if ( $key == $selected_option ) {
@@ -234,7 +234,7 @@ function get_html_select_options( $available_options, $selected_option = '' ) {
     return implode($html_code, PHP_EOL);
 } // END get_html_select_options
 
-function get_pending_quizs( $user_id ) {
+function getPendingQuizs( $user_id ) {
     global $db;
     
     $query = sprintf( "SELECT count(*) as pending FROM questions AS q WHERE q.status='active' AND id NOT IN (SELECT id_question FROM members_questions WHERE id_member='%d')", intval($user_id) );

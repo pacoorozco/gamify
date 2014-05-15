@@ -10,7 +10,7 @@ require_once('inc/functions.inc.php');
 
 require_once('inc/header.inc.php');
 
-if ( true === login_check() ) { ?>
+if ( true === loginCheck() ) { ?>
 
 <div class="row">
     

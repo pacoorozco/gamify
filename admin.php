@@ -10,7 +10,7 @@ require_once('inc/functions.inc.php');
 require_once('inc/gamify.inc.php');
 
 // Page only for members
-if ( false === login_check() ) {
+if ( false === loginCheck() ) {
     // save referrer to $_SESSION['nav'] for after login redirect
     $_SESSION['nav'] = urlencode($_SERVER['SCRIPT_NAME'] . '?' . $_SERVER['QUERY_STRING']);
     header('Location: login.php');
@@ -18,10 +18,10 @@ if ( false === login_check() ) {
 }
 
 // Check if user has privileges
-if ( ! user_has_privileges($_SESSION['member']['id'], 'administrator') ) {
+if ( ! userHasPrivileges($_SESSION['member']['id'], 'administrator') ) {
     // User has no privileges
     require_once('inc/header.inc.php');
-    print_access_denied();
+    printAccessDenied();
     require_once('inc/footer.inc.php');
     exit();
 } 
@@ -289,7 +289,7 @@ exit();
 function print_admin_header( $a = 'users', $msg = array() ) {
     ?>
             <h1>Administració</h1>
-            <p><?php echo get_html_messages($msg); ?></p>
+            <p><?php echo getHTMLMessages($msg); ?></p>
             
             <ul class="nav nav-tabs">
                 <li<?php echo ( $a == 'actions' ) ? ' class="active"' : ''; ?>><a href="admin.php?a=actions">Accions</a></li>
@@ -317,7 +317,7 @@ function print_actions ( $msg = array() ) {
                     <div class="row">
                         <div class="col-md-6">
                     <h2>Donar experiència</h2>
-                    <p><?php echo get_html_messages($msg); ?></p>
+                    <p><?php echo getHTMLMessages($msg); ?></p>
                     <form action="admin.php" method="post" class="form-horizontal" role="form">
                         <div class="form-group">
                             <label for="username" class="col-sm-2 control-label">Usuari</label>
@@ -570,7 +570,7 @@ function print_newuser_form( $data = array(), $msg = array() ) {
     global $CONFIG;
     ?>
                         <h1>Nou usuari</h1>
-                        <p><?php echo get_html_messages($msg); ?></p>
+                        <p><?php echo getHTMLMessages($msg); ?></p>
                         <form action="admin.php" method="post" class="form-horizontal" role="form">
                             <div class="form-group">
                                 <label for="username" class="col-sm-2 control-label">Usuari</label>
@@ -707,7 +707,7 @@ function print_edituser_form($user_id, $msg = array()) {
     $row = $result->fetch_assoc();
     ?>
                         <h1>Editar usuari</h1>
-                        <p><?php echo get_html_messages($msg); ?></p>
+                        <p><?php echo getHTMLMessages($msg); ?></p>
                         <form action="admin.php" method="post" class="form-horizontal" role="form">
                             <div class="form-group">
                                 <label for="username" class="col-sm-2 control-label">Usuari</label>
@@ -837,7 +837,7 @@ function delete_user($user_id) {
 function print_newlevel_form( $data = array(), $msg = array() ) {
     ?>
                         <h1>Nou nivell</h1>
-                        <p><?php echo get_html_messages($msg); ?></p>
+                        <p><?php echo getHTMLMessages($msg); ?></p>
                         <form action="admin.php" method="post" class="form-horizontal" role="form">
                             <div class="form-group">
                                 <label for="levelname" class="col-sm-2 control-label">Nom</label>
@@ -933,7 +933,7 @@ function print_editlevel_form($level_id, $msg = array()) {
     $data = $result->fetch_assoc();
     ?>
                         <h1>Editar nivell</h1>
-                        <p><?php echo get_html_messages($msg); ?></p>
+                        <p><?php echo getHTMLMessages($msg); ?></p>
                         <form action="admin.php" method="post" class="form-horizontal" role="form">
                            <div class="form-group">
                                 <label for="levelname" class="col-sm-2 control-label">Nom</label>
@@ -1041,7 +1041,7 @@ function delete_level($level_id) {
 function print_newbadge_form( $data = array(), $msg = array() ) {
     ?>
                         <h1>Nova insígnia</h1>
-                        <p><?php echo get_html_messages($msg); ?></p>
+                        <p><?php echo getHTMLMessages($msg); ?></p>
                         <form action="admin.php" method="post" class="form-horizontal" role="form">
                             <div class="form-group">
                                 <label for="achievementname" class="col-sm-2 control-label">Nom de la insígnia</label>
@@ -1136,7 +1136,7 @@ function print_editbadge_form($badge_id, $msg = array()) {
     $data = $result->fetch_assoc();
     ?>
                         <h1>Editar insígnia</h1>
-                        <p><?php echo get_html_messages($msg); ?></p>
+                        <p><?php echo getHTMLMessages($msg); ?></p>
                         <form action="admin.php" method="post" class="form-horizontal" role="form">
                             <div class="form-group">
                                 <label for="achievementname" class="col-sm-2 control-label">Nom de la insígnia</label>
@@ -1302,7 +1302,7 @@ function add_experience ( $data = array() ) {
         $query = sprintf( "UPDATE members SET level_id='%d' WHERE id = '%d' LIMIT 1", $data['level_id'], $data['id'] );
         $result = $db->query($query);
         // Send a mail to user in order to tell him/her, his/her new level
-        notify_level_2_user($data);
+        notifyLevelToUser($data);
         $missatges[] = array('type' => "info", 'msg' => "L'usuari '<strong>". $data['username'] ."</strong>' ha aconseguit el nivell '<strong>". $data['name'] ."</strong>'.");
     } 
     
@@ -1377,8 +1377,8 @@ function action( $data = array() ) {
             $missatges[] = array('type' => "success", 'msg' => "Dades de l'usuari '<strong>". $data['username'] ."</strong>' actualitzades.");
             if ( 'completed' == $status ) {
                 // send a mail to user in order to tell him/her, his/her new badge  
-                silent_add_experience( $data['id_member'], 5, 'desbloquejar la ins&iacute;gnia: '. $data['name'] );
-                notify_badge_2_user($data);
+                doSilentAddExperience( $data['id_member'], 5, 'desbloquejar la ins&iacute;gnia: '. $data['name'] );
+                notifyBadgeToUser($data);
                 $missatges[] = array('type' => "info", 'msg' => "L'usuari '<strong>". $data['username'] ."</strong>' ha aconseguit la insíngia '<strong>". $data['name'] ."</strong>'.");
             } 
             print_actions($missatges);
@@ -1410,7 +1410,7 @@ function action( $data = array() ) {
             
             if ( $db->query($query) ) {
                 // send a mail to user in order to tell him/her, his/her new achievement          
-                notify_badge_2_user($data);
+                notifyBadgeToUser($data);
                 $missatges[] = array('type' => "success", 'msg' => "Dades de l'usuari '<strong>". $data['username'] ."</strong>' actualitzades.");
                 $missatges[] = array('type' => "info", 'msg' => "L'usuari '<strong>". $data['username'] ."</strong>' ha aconseguit la insíngia '<strong>". $data['name'] ."</strong>'.");
                 print_actions($missatges);
@@ -1461,7 +1461,7 @@ function print_send_message( $msg = array() ) {
                <div class="panel panel-default">
                 <div class="panel-body">
                     <h2>Enviar mail als usuaris</h2>
-                    <p><?php echo get_html_messages($msg); ?></p>         
+                    <p><?php echo getHTMLMessages($msg); ?></p>         
                     <form action="admin.php" method="post" class="form-horizontal" role="form">
                         <div class="form-group">
                             <label for="subject" class="col-sm-2 control-label">Títol</label>
@@ -1600,7 +1600,7 @@ function print_editquiz_form( $question_id, $msg = array() ) {
     }    
     ?>
                         <h1>Editar pregunta</h1>
-                        <p><?php echo get_html_messages($msg); ?></p>
+                        <p><?php echo getHTMLMessages($msg); ?></p>
                         <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post" class="form-horizontal" role="form">
  
                             <?php print_quiz_form_content($data); ?>                            
@@ -1621,7 +1621,7 @@ function print_newquiz_form( $data = array(), $msg = array() ) {
     global $db;
     ?>
                         <h1>Nova pregunta</h1>
-                        <p><?php echo get_html_messages($msg); ?></p>
+                        <p><?php echo getHTMLMessages($msg); ?></p>
                         <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post" class="form-horizontal" role="form">
                             
                             <?php print_quiz_form_content($data); ?>
@@ -1813,7 +1813,7 @@ function print_quiz_form_content( $data ) {
                                         'hidden' => 'Oculta',
                                         'inactive' => 'Inactiva'
                                         );
-                                    echo get_html_select_options($available_options, $data['status']);
+                                    echo getHTMLSelectOptions($available_options, $data['status']);
                                     ?>
                                     </select>
                                 </div>
@@ -1842,7 +1842,7 @@ function print_quiz_form_content( $data ) {
                                         'single' => 'Resposta única',
                                         'multi' => 'Resposta multiple'
                                         );
-                                    echo get_html_select_options($available_options, $data['type']);
+                                    echo getHTMLSelectOptions($available_options, $data['type']);
                                     ?>
                                     </select>
                                 </div>
@@ -1874,7 +1874,7 @@ function print_quiz_form_content( $data ) {
                                                 'yes' => 'Si',
                                                 'no' => 'No'
                                         );
-                                        echo get_html_select_options($available_options, $data['correct'][$key]);
+                                        echo getHTMLSelectOptions($available_options, $data['correct'][$key]);
                                         ?>
                                         </select>
                                     </div>
@@ -1903,7 +1903,7 @@ function print_quiz_form_content( $data ) {
                                                 'yes' => 'Si',
                                                 'no' => 'No'
                                         );
-                                        echo get_html_select_options($available_options, 'no');
+                                        echo getHTMLSelectOptions($available_options, 'no');
                                         ?>
                                         </select>
                                     </div>
@@ -1947,7 +1947,7 @@ function print_quiz_form_content( $data ) {
                                     <div class="col-sm-4">
                                         <select name="actions[]" class="form-control">
                                             <option value="">Sense acció</option>
-                                            <?php echo get_html_select_options($available_actions, $value); ?>
+                                            <?php echo getHTMLSelectOptions($available_actions, $value); ?>
                                         </select>
                                     </div>                                    
                                     <label class="col-sm-1 control-label">Quan</label>
@@ -1959,7 +1959,7 @@ function print_quiz_form_content( $data ) {
                                             'fail' => 'Resposta incorrecta',
                                             'always' => 'Sempre'
                                             );
-                                        echo get_html_select_options($available_options, $data['when'][$key]);
+                                        echo getHTMLSelectOptions($available_options, $data['when'][$key]);
                                         ?>
                                         </select>
                                     </div>
@@ -1978,7 +1978,7 @@ function print_quiz_form_content( $data ) {
                                     <div class="col-sm-4">
                                         <select name="actions[]" class="form-control">
                                             <option value="">Sense acció</option>
-                                            <?php echo get_html_select_options($available_actions); ?>
+                                            <?php echo getHTMLSelectOptions($available_actions); ?>
                                         </select>
                                     </div>
                                     <label class="col-sm-1 control-label">Quan</label>
@@ -1990,7 +1990,7 @@ function print_quiz_form_content( $data ) {
                                             'fail' => 'Resposta incorrecta',
                                             'always' => 'Sempre'
                                             );
-                                        echo get_html_select_options($available_options, 'always');
+                                        echo getHTMLSelectOptions($available_options, 'always');
                                         ?>
                                         </select>
                                     </div>

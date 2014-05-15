@@ -9,7 +9,7 @@
 defined('IN_SCRIPT') or die('Invalid attempt');
 
 /*** FUNCTIONS ***/
-function silent_add_experience ( $user_id, $experience, $memo = '' ) {
+function doSilentAddExperience ( $user_id, $experience, $memo = '' ) {
     global $db;
     
     // validate data
@@ -63,13 +63,13 @@ function silent_add_experience ( $user_id, $experience, $memo = '' ) {
         $query = sprintf( "UPDATE members SET level_id='%d' WHERE id = '%d' LIMIT 1", $data['level_id'], $data['id'] );
         $result = $db->query($query);
         // Send a mail to user in order to tell him/her, his/her new level
-        notify_level_2_user($data);
+        notifyLevelToUser($data);
     } 
     
     return true;  
 } // END silent_add_experience()
 
-function silent_action( $user_id, $action_id ) {
+function doSilentAction( $user_id, $action_id ) {
     global $db;
     
     $missatges = array();
@@ -121,9 +121,9 @@ function silent_action( $user_id, $action_id ) {
         
         if ( $db->query($query) ) {
             if ( 'completed' == $status ) {
-                silent_add_experience( $user_id, 5, 'desbloquejar la ins&iacute;gnia: '. $data['name'] );
+                doSilentAddExperience( $user_id, 5, 'desbloquejar la ins&iacute;gnia: '. $data['name'] );
                 // send a mail to user in order to tell him/her, his/her new badge          
-                notify_badge_2_user($data);
+                notifyBadgeToUser($data);
                 return $data['id_badge'];
             } 
         }
@@ -150,7 +150,7 @@ function silent_action( $user_id, $action_id ) {
             
             if ( $db->query($query) ) {
                 // send a mail to user in order to tell him/her, his/her new achievement          
-                notify_badge_2_user($data);
+                notifyBadgeToUser($data);
                 return $data['id_badge'];
             } else {
                 return false;
@@ -169,7 +169,7 @@ function silent_action( $user_id, $action_id ) {
 } // silent_action()
 
 
-function notify_badge_2_user( $data = array() ) {
+function notifyBadgeToUser( $data = array() ) {
     global $CONFIG;
     
     $badge_name = $data['name'];
@@ -191,7 +191,7 @@ BADGE_MAIL;
     return send_message($subject, $mail_body, $data['email']);
 } // END notify_badge_2_user()
 
-function notify_level_2_user( $data = array() ) {
+function notifyLevelToUser( $data = array() ) {
     global $CONFIG;
        
     $level_name = $data['name'];
@@ -213,7 +213,7 @@ LEVEL_MAIL;
     return send_message($subject, $mail_body, $data['email']);
 } // END notify_badge_2_user()
 
-function get_user_level($user_id) {
+function getUserLevelById($user_id) {
     global $db;
         
     $query = sprintf( "SELECT level_id FROM vmembers WHERE id='%d' LIMIT 1", intval($user_id));

@@ -14,7 +14,7 @@ $action = pakus_REQUEST('a');
 // first we use some action that user header(), none can be echoed before
 switch ($action) {   
     case 'logout':
-        do_logout();
+        doLogout();
         break;
 
     case 'login':
@@ -22,7 +22,7 @@ switch ($action) {
         $password = pakus_POST('password');
         $errors = array();
 
-        if ( true === do_login($username, $password) ) {
+        if ( true === doLogin($username, $password) ) {
             // go to previous referrer, if exists
             $nav = pakus_POST('nav');
             $nav = (!empty($nav)) ? $nav : 'index.php';
@@ -34,7 +34,7 @@ switch ($action) {
         break;
         
     default:
-        if (true === login_check()) {
+        if (true === loginCheck()) {
             // ja esta autenticat
             header('Location: index.php');
             exit();
@@ -46,11 +46,11 @@ require_once('inc/header.inc.php');
 
 switch ($action) {
     case 'login':
-        print_login_form($username, $errors);
+        printLoginForm($username, $errors);
         break;
 
     case 'register':
-        print_register_form();
+        printRegisterForm();
         break;
     
     case 'do_register':
@@ -58,12 +58,12 @@ switch ($action) {
         $data['username'] = pakus_POST('username');
         $data['password'] = pakus_POST('password');
         $data['email'] = pakus_POST('email');
-        do_register($data);
+        doRegister($data);
         break;
     
     case 'logout':
     default:
-        print_login_form();
+        printLoginForm();
 }
 
 require_once('inc/footer.inc.php');
@@ -71,7 +71,7 @@ exit();
 
 /*** FUNCTIONS ***/
 
-function print_login_form( $username = '', $missatges = array() ) {
+function printLoginForm( $username = '', $missatges = array() ) {
     global $CONFIG;
     
     // get after login url if exists
@@ -88,7 +88,7 @@ function print_login_form( $username = '', $missatges = array() ) {
 
                     <div style="padding-top:30px" class="panel-body" >
 
-                        <p><?php echo get_html_messages($missatges); ?></p>
+                        <p><?php echo getHTMLMessages($missatges); ?></p>
                             
                         <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post" class="form-horizontal" role="form">
                                     
@@ -137,17 +137,17 @@ function print_login_form( $username = '', $missatges = array() ) {
 <?php
 } // END print_login_form()
 
-function do_logout() {
+function doLogout() {
     global $db;
     
     // updates members to put session_id to NULL
     $query = sprintf( "UPDATE members SET session_id=NULL WHERE id='%d' LIMIT 1", intval($_SESSION['member']['id']) );
     $db->query($query);
     
-    secure_session_destroy();
+    secureSessionDestroy();
 } // END do_logout()
 
-function do_login($username, $password) {
+function doLogin($username, $password) {
     global $CONFIG, $db;
 
     // Primer fixem a FALS la resposta d'aquesta funcio
@@ -171,7 +171,7 @@ function do_login($username, $password) {
     switch ( $CONFIG['authentication']['type'] ) {
         case 'LDAP':
             // we will use LDAP authentication
-            if ( LDAP_auth( $usuari['username'], $password, 
+            if ( getLDAPAuth( $usuari['username'], $password, 
                     $CONFIG['LDAP']['host'], $CONFIG['LDAP']['basedn'], $CONFIG['LDAP']['filter'] ) ) {
                 // Usuari validat i es member
                 $user_is_member = true;
@@ -195,7 +195,7 @@ function do_login($username, $password) {
     return $user_is_member;
 } // END do_login()
 
-function print_register_form( $missatges = array() ) {
+function printRegisterForm( $missatges = array() ) {
 ?>
         <div id="signupbox" style="margin-top:50px;" class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
             <div class="panel panel-info">
@@ -207,7 +207,7 @@ function print_register_form( $missatges = array() ) {
                 </div>  
                 <div class="panel-body">
                     <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post" class="form-horizontal" role="form">                       
-                            <p><?php echo get_html_messages($missatges); ?></p>
+                            <p><?php echo getHTMLMessages($missatges); ?></p>
                                                
                         <div class="form-group">  
                             <label for="username" class="col-md-3 control-label">Usuari</label>
@@ -244,7 +244,7 @@ function print_register_form( $missatges = array() ) {
 <?php
 } // END print_register_form()
 
-function do_register( $data = array() ) {
+function doRegister( $data = array() ) {
     global $db, $CONFIG;
     
     $missatges = array();
@@ -252,23 +252,23 @@ function do_register( $data = array() ) {
     // check supplied data
     if ( ! filter_var($data['email'], FILTER_VALIDATE_EMAIL) ) {
         $missatges[] = array('type' => "error", 'msg' => "L'adreça electrònica no és correcta.");
-        print_register_form($missatges);
+        printRegisterForm($missatges);
     }
     
     // check if user exists
     if ( user_exists($data['username']) ) {
         $missatges[] = array('type' => "info", 'msg' => "L'usuari '<strong>". $data['username'] ."</strong>' ja existeix al sistema.");
-        print_login_form($data['username'], $missatges);
+        printLoginForm($data['username'], $missatges);
         return false;
     }
     
     // check autoregistration
     switch ($CONFIG['authentication']['type']) {
         case 'LDAP':
-            if ( false === LDAP_auth( $data['username'], $data['password'] ) ) {
+            if ( false === getLDAPAuth( $data['username'], $data['password'] ) ) {
                 // User has not been validated.
                 $missatges[] = array('type' => "error", 'msg' => "No hem pogut comprovar les credencials al LDAP. Revisa-les si us plau");
-                print_register_form($missatges);
+                printRegisterForm($missatges);
                 return false;
             }
             break;
@@ -290,16 +290,16 @@ function do_register( $data = array() ) {
     
     if ( 0 === $user_id ) {
         $missatges[] = array('type' => "error", 'msg' => "No s'ha pogut crear l'usuari.");
-        print_register_form($missatges);
+        printRegisterForm($missatges);
         return false;
     } else {
         $missatges[] = array('type' => "success", 'msg' => "L'usuari '<strong>". $data['username'] ."</strong>' creat correctament.");
-        print_login_form($data['username'], $missatges);
+        printLoginForm($data['username'], $missatges);
         return true;
     } 
 } // END do_register()
 
-function LDAP_auth($username, $password) {
+function getLDAPAuth($username, $password) {
     global $CONFIG;
 
     if ( empty($username) ) return false;

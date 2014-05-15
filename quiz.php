@@ -10,7 +10,7 @@ require_once('inc/functions.inc.php');
 require_once('inc/gamify.inc.php');
 
 // Page only for members
-if ( false === login_check() ) {
+if ( false === loginCheck() ) {
     // save referrer to $_SESSION['nav'] for after login redirect
     $_SESSION['nav'] = urlencode($_SERVER['SCRIPT_NAME'] . '?' . $_SERVER['QUERY_STRING']);
     header('Location: login.php');
@@ -24,34 +24,34 @@ $action = pakus_REQUEST('a');
 switch ($action) {
     case 'answerqz':
         $quiz_id = pakus_REQUEST('item');
-        answer_qz($quiz_id);
+        printAnswerQuestionForm($quiz_id);
         break;
 
     case 'answer':
         $quiz_id = pakus_POST('item');
         $choices = pakus_POST('choices');
-        answer( $quiz_id, $choices );
+        answerQuestion( $quiz_id, $choices );
         break;
 
     case 'seeqz':
         $quiz_id = pakus_REQUEST('item');
-        see_qz($quiz_id);
+        viewQuestionByUUID($quiz_id);
         break;
 
     case 'historic':
-        list_questions_historic();
+        printHistoricQuestionList();
         break;
 
     case 'list':
     default:
-        list_questions();
+        printQuestionList();
 }
     
 require_once('inc/footer.inc.php');
 exit();
 
 /*** FUNCTIONS ***/
-function answer( $question_uuid, $answers ) {
+function answerQuestion( $question_uuid, $answers ) {
     global $db;
     
     $html_code = array();
@@ -61,7 +61,7 @@ function answer( $question_uuid, $answers ) {
     
     if ( 0 == $result->num_rows ) {
         // La pregunta que ens han passat no existeix, per tant tornem a mostrar la llista.
-        list_questions();
+        printQuestionList();
         return false;        
     }
     
@@ -81,7 +81,7 @@ function answer( $question_uuid, $answers ) {
     $result = $db->query($query);
     if ( $result->num_rows > 0 ) {
         // L'usuari ja ha respost la pregunta 
-        see_qz($question_uuid);
+        viewQuestionByUUID($question_uuid);
         return;
     } 
     
@@ -90,7 +90,7 @@ function answer( $question_uuid, $answers ) {
     $result = $db->query($query);
     
     if ( 0 == $result->num_rows ) {
-        list_questions();
+        printQuestionList();
         return false;        
     }  
     
@@ -121,7 +121,7 @@ function answer( $question_uuid, $answers ) {
     $result = $db->query($query);
     if ($result->num_rows === 0) {
         // Es el primero, hay que dar badge
-        silent_action(intval($_SESSION['member']['id']), 1);
+        doSilentAction(intval($_SESSION['member']['id']), 1);
     }
     // END ACTION
     
@@ -133,9 +133,9 @@ function answer( $question_uuid, $answers ) {
     
     $db->query($query);
     
-    $old_level = get_user_level($_SESSION['member']['id']);
-    silent_add_experience( $_SESSION['member']['id'], $points, 'respondre la pregunta: '. $question['name'] );
-    $new_level = get_user_level($_SESSION['member']['id']);
+    $old_level = getUserLevelById($_SESSION['member']['id']);
+    doSilentAddExperience( $_SESSION['member']['id'], $points, 'respondre la pregunta: '. $question['name'] );
+    $new_level = getUserLevelById($_SESSION['member']['id']);
     
     if ($old_level != $new_level) {
         $query = sprintf("SELECT name FROM levels WHERE id='%d'", $new_level);
@@ -154,7 +154,7 @@ function answer( $question_uuid, $answers ) {
     if ( $result->num_rows > 0 ) {
         // hi ha accions a realitzar
         while ( $row = $result->fetch_assoc() ) {
-            if (silent_action($_SESSION['member']['id'], $row['badge_id']) == $row['badge_id']) {
+            if (doSilentAction($_SESSION['member']['id'], $row['badge_id']) == $row['badge_id']) {
                 $query = sprintf("SELECT name FROM badges WHERE id='%d'", $row['badge_id']);
                 $result2 = $db->query($query);
                 $row2 = $result2->fetch_assoc();
@@ -163,7 +163,7 @@ function answer( $question_uuid, $answers ) {
         }
     }  
     
-    print_quiz_header('question');    
+    printQuestionHeader('question');    
     ?>
 
     <div class="panel panel-default" width="70%">
@@ -176,7 +176,7 @@ function answer( $question_uuid, $answers ) {
     <?php
 }
 
-function answer_qz( $question_uuid ) {
+function printAnswerQuestionForm( $question_uuid ) {
     global $db;
       
     $query = sprintf( "SELECT * FROM questions WHERE uuid='%s' AND ( status='active' OR status='hidden' ) LIMIT 1", $db->real_escape_string($question_uuid) );
@@ -184,7 +184,7 @@ function answer_qz( $question_uuid ) {
     
     if ( 0 == $result->num_rows ) {
         // La pregunta que ens han passat no existeix, per tant tornem a mostrar la llista.
-        list_questions();
+        printQuestionList();
         return false;        
     }
     
@@ -200,7 +200,7 @@ function answer_qz( $question_uuid ) {
     $result = $db->query($query);
     if ( ($result->num_rows > 0) || ('inactive' == $question['status']) ) {
         // L'usuari ja ha respost la pregunta o aquest està tancada
-        see_qz($question_uuid);
+        viewQuestionByUUID($question_uuid);
         return;
     }    
     
@@ -209,7 +209,7 @@ function answer_qz( $question_uuid ) {
     $result = $db->query($query);
     
     if ( 0 == $result->num_rows ) {
-        list_questions();
+        printQuestionList();
         return false;        
     }  
     
@@ -222,7 +222,7 @@ function answer_qz( $question_uuid ) {
         $question['image'] = 'images/question_default.png';
     }
     
-    print_quiz_header('question');
+    printQuestionHeader('question');
     ?>
     <div class="panel panel-default" width="70%">
         <div class="panel-heading">
@@ -261,7 +261,7 @@ function answer_qz( $question_uuid ) {
     <?php
 } // END answer_qz()
 
-function print_quiz_header( $a = 'list' ) {
+function printQuestionHeader( $a = 'list' ) {
     ?>
             <h1>Participa</h1>
             
@@ -273,12 +273,12 @@ function print_quiz_header( $a = 'list' ) {
     <?php
 } // END print_quiz_header()
 
-function list_questions() {
+function printQuestionList() {
     global $db;
     
     $message = array();
     
-    print_quiz_header('list');
+    printQuestionHeader('list');
     ?>    
     <div class="panel panel-default" width="70%">
         <div class="panel-body">
@@ -299,7 +299,7 @@ function list_questions() {
             if ( 0 === $result->num_rows ) {
                 // No hi ha cap pregunta pendent
                 $message[] = array('type' => "info", 'msg' => "<strong>Enhorabona</strong>. No tens cap pregunta pendent. ¡Encara pots trobar com seguir participant!");
-                echo get_html_messages($message);
+                echo getHTMLMessages($message);
             } else {
                 $html_code = array();
                 
@@ -321,12 +321,12 @@ function list_questions() {
             }   
 } // END list_questions()
 
-function list_questions_historic() {
+function printHistoricQuestionList() {
     global $db;
     
     $message = array();
     
-    print_quiz_header('historic');
+    printQuestionHeader('historic');
     ?>    
     <div class="panel panel-default" width="70%">
         <div class="panel-body">
@@ -346,7 +346,7 @@ function list_questions_historic() {
             if ( 0 === $result->num_rows ) {
                 // No hi ha cap pregunta pendent
                 $message[] = array('type' => "info", 'msg' => "No hi ha cap pregunta a l'arxiu");
-                echo get_html_messages($message);
+                echo getHTMLMessages($message);
             } else {
                 $html_code = array();
                 
@@ -368,7 +368,7 @@ function list_questions_historic() {
             }        
 }
 
-function see_qz($question_uuid) {
+function viewQuestionByUUID($question_uuid) {
     global $db;
     
     $query = sprintf( "SELECT * FROM questions WHERE uuid='%s' AND status != 'draft' LIMIT 1", $db->real_escape_string($question_uuid) );
@@ -376,7 +376,7 @@ function see_qz($question_uuid) {
     
     if ( 0 == $result->num_rows ) {
         // La pregunta que ens han passat no existeix, per tant tornem a mostrar la llista.
-        list_questions();
+        printQuestionList();
         return false;        
     }
     
@@ -398,7 +398,7 @@ function see_qz($question_uuid) {
     
     if ( ( false === $answered ) && ('active' == $question['status']) ) {
         // L'usuari no ha respost la pregunta i està oberta
-        answer_qz($question_uuid);
+        printAnswerQuestionForm($question_uuid);
         return;
     }       
     
@@ -407,7 +407,7 @@ function see_qz($question_uuid) {
     $result = $db->query($query);
     
     if ( 0 == $result->num_rows ) {
-        list_questions();
+        printQuestionList();
         return false;        
     }  
     
@@ -420,7 +420,7 @@ function see_qz($question_uuid) {
         $question['image'] = 'images/question_default.jpg';
     }
     
-    print_quiz_header('question');
+    printQuestionHeader('question');
     ?>
     <div class="panel panel-default" width="70%">
         <div class="panel-heading">

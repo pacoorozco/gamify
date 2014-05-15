@@ -58,18 +58,18 @@ defined('IN_SCRIPT') or die('Invalid attempt');
             <ul class="nav navbar-nav">
                 <li><a href="index.php" title="Inici"><span class="glyphicon glyphicon-home"></span> Inici</a></li>
                 <?php
-                if( true === login_check() ) {
+                if( true === loginCheck() ) {
                 ?>
-                <li><a href="quiz.php" title="Participa amb nosaltres"><span class="glyphicon glyphicon-question-sign"></span> Participa <span class="badge"><?php echo get_pending_quizs($_SESSION['member']['id']); ?></span></a></li>
+                <li><a href="quiz.php" title="Participa amb nosaltres"><span class="glyphicon glyphicon-question-sign"></span> Participa <span class="badge"><?php echo getPendingQuizs($_SESSION['member']['id']); ?></span></a></li>
                 <?php
-                if (user_has_privileges($_SESSION['member']['id'])) {
+                if (userHasPrivileges($_SESSION['member']['id'])) {
                     echo '<li><a href="admin.php" title="Panell d\'administració"><span class="glyphicon glyphicon-tasks"></span> Administra</a></li>';
                 }
                 }
                 ?>
             </ul>
             <?php
-            if( true === login_check() ) {
+            if( true === loginCheck() ) {
                 ?>
         <ul class="nav navbar-nav navbar-right">
         <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-user"></span> <?php echo $_SESSION['member']['username']; ?>
