@@ -119,13 +119,11 @@ function doSilentAction( $user_id, $action_id ) {
         $query = sprintf("INSERT INTO members_badges SET id_member='%d', id_badges='%d', amount='%d', last_time='%d', status='%s'",
                           $data['id_member'], $data['id_badge'], $data['amount'], time(), $status );
 
-        if ( $db->query($query) ) {
-            if ( 'completed' == $status ) {
+        if ( $db->query($query) && ( 'completed' == $status ) ) {
                 doSilentAddExperience( $user_id, 5, 'desbloquejar la ins&iacute;gnia: '. $data['name'] );
                 // send a mail to user in order to tell him/her, his/her new badge
                 notifyBadgeToUser($data);
                 return $data['id_badge'];
-            }
         }
         return false;
     }
