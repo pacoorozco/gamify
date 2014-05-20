@@ -12,9 +12,9 @@ require_once('inc/functions.inc.php');
 $action = pakus_REQUEST('a');
 
 // first we use some action that user header(), none can be echoed before
-switch ($action) {   
+switch ($action) {
     case 'logout':
-        do_logout();
+        doLogout();
         break;
 
     case 'login':
@@ -22,7 +22,7 @@ switch ($action) {
         $password = pakus_POST('password');
         $errors = array();
 
-        if ( true === do_login($username, $password) ) {
+        if ( true === doLogin($username, $password) ) {
             // go to previous referrer, if exists
             $nav = pakus_POST('nav');
             $nav = (!empty($nav)) ? $nav : 'index.php';
@@ -32,9 +32,9 @@ switch ($action) {
             $errors[] = array('type' => "error", 'msg' => "Usuari o contrasenya incorrectes.");
         }
         break;
-        
+
     default:
-        if (true === login_check()) {
+        if (true === loginCheck()) {
             // ja esta autenticat
             header('Location: index.php');
             exit();
@@ -46,71 +46,71 @@ require_once('inc/header.inc.php');
 
 switch ($action) {
     case 'login':
-        print_login_form($username, $errors);
+        printLoginForm($username, $errors);
         break;
 
     case 'register':
-        print_register_form();
+        printRegisterForm();
         break;
-    
+
     case 'do_register':
         $data = array();
         $data['username'] = pakus_POST('username');
         $data['password'] = pakus_POST('password');
         $data['email'] = pakus_POST('email');
-        do_register($data);
+        doRegister($data);
         break;
-    
+
     case 'logout':
     default:
-        print_login_form();
+        printLoginForm();
 }
 
 require_once('inc/footer.inc.php');
-exit();   
+exit();
 
 /*** FUNCTIONS ***/
 
-function print_login_form( $username = '', $missatges = array() ) {
+function printLoginForm( $username = '', $missatges = array() ) {
     global $CONFIG;
-    
+
     // get after login url if exists
     $nav = pakus_POST('nav');
     $nav = (!empty($nav)) ? $nav : $_SESSION['nav'];
     unset($_SESSION['nav']);
 ?>
-        <div id="loginbox" style="margin-top:50px;" class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">                                     
+        <div id="loginbox" style="margin-top:50px;" class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
             <div class="panel panel-info">
                     <div class="panel-heading">
                         <div class="panel-title">Accedir</div>
                         <div style="float:right; position: relative; top:-10px"><a href="http://www.upcnet.es/CanviContrasenyaUPC" target="_blank">Has oblidat la contrasenya?</a></div>
-                    </div>     
+                    </div>
 
                     <div style="padding-top:30px" class="panel-body" >
 
-                        <p><?php echo get_html_messages($missatges); ?></p>
-                            
+                        <p><?php echo getHTMLMessages($missatges); ?></p>
+
                         <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post" class="form-horizontal" role="form">
-                                    
+
                             <div style="margin-bottom: 25px" class="input-group">
                                 <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
-                                <?php 
+                                <?php
                                 $usertext = 'usuari';
                                 $logintext = 'Accedir';
-                                
+
                                 if ($CONFIG['authentication']['LDAP']) {
                                     $usertext = 'usuari LDAP';
                                     $logintext = 'Accedir amb LDAP';
                                 }
                                 ?>
-                                <input type="text" name="username" class="form-control" value="<?php echo $username; ?>" placeholder="<?= $usertext; ?>" required>  
+                                <input type="text" name="username" class="form-control" value="<?php echo $username; ?>" placeholder="<?= $usertext; ?>" required>
                             </div>
-                                
+
                             <div style="margin-bottom: 25px" class="input-group">
                                 <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
                                 <input type="password" name="password" class="form-control" placeholder="contrasenya" required>
                             </div>
-                            
+
                             <div style="margin-top:10px" class="form-group">
                                 <div class="col-md-12">
                                     <input type="hidden" id="a" name="a" value="login">
@@ -118,36 +118,36 @@ function print_login_form( $username = '', $missatges = array() ) {
                                     <button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-log-in"></span> <?= $logintext; ?></button>
                                 </div>
                             </div>
-                            
+
                             <div class="form-group">
                                 <div class="col-md-12 control">
                                     <div style="border-top: 1px solid#888; padding-top:15px;">
                                         No has accedit mai?
-                                        <a href="<?php echo $_SERVER['PHP_SELF']; ?>?a=register"> 
+                                        <a href="<?php echo $_SERVER['PHP_SELF']; ?>?a=register">
                                             Registra't ara!
                                         </a>
                                     </div>
                                 </div>
-                            </div>    
-                        </form>     
-                    </div>                     
-            </div>  
+                            </div>
+                        </form>
+                    </div>
+            </div>
         </div>
 
 <?php
 } // END print_login_form()
 
-function do_logout() {
+function doLogout() {
     global $db;
-    
+
     // updates members to put session_id to NULL
     $query = sprintf( "UPDATE members SET session_id=NULL WHERE id='%d' LIMIT 1", intval($_SESSION['member']['id']) );
     $db->query($query);
-    
-    secure_session_destroy();
+
+    secureSessionDestroy();
 } // END do_logout()
 
-function do_login($username, $password) {
+function doLogin($username, $password) {
     global $CONFIG, $db;
 
     // Primer fixem a FALS la resposta d'aquesta funcio
@@ -171,7 +171,7 @@ function do_login($username, $password) {
     switch ( $CONFIG['authentication']['type'] ) {
         case 'LDAP':
             // we will use LDAP authentication
-            if ( LDAP_auth( $usuari['username'], $password, 
+            if ( getLDAPAuth( $usuari['username'], $password,
                     $CONFIG['LDAP']['host'], $CONFIG['LDAP']['basedn'], $CONFIG['LDAP']['filter'] ) ) {
                 // Usuari validat i es member
                 $user_is_member = true;
@@ -187,7 +187,7 @@ function do_login($username, $password) {
 
     if ($user_is_member) {
         // Usuari validat, actualitzem session_id
-        $query = sprintf("UPDATE members SET session_id='%s', last_access='%s' WHERE id='%d' LIMIT 1", 
+        $query = sprintf("UPDATE members SET session_id='%s', last_access='%s' WHERE id='%d' LIMIT 1",
                           $db->real_escape_string(session_id()), $db->real_escape_string(time()), intval($usuari['id']));
         $db->query($query);
     }
@@ -195,7 +195,7 @@ function do_login($username, $password) {
     return $user_is_member;
 } // END do_login()
 
-function print_register_form( $missatges = array() ) {
+function printRegisterForm( $missatges = array() ) {
 ?>
         <div id="signupbox" style="margin-top:50px;" class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
             <div class="panel panel-info">
@@ -204,12 +204,12 @@ function print_register_form( $missatges = array() ) {
                     <div style="float:right; position: relative; top:-10px">
                         <a href="<?php echo $_SERVER['PHP_SELF']; ?>">Ja tens usuari? Accedeix!</a>
                     </div>
-                </div>  
+                </div>
                 <div class="panel-body">
-                    <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post" class="form-horizontal" role="form">                       
-                            <p><?php echo get_html_messages($missatges); ?></p>
-                                               
-                        <div class="form-group">  
+                    <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post" class="form-horizontal" role="form">
+                            <p><?php echo getHTMLMessages($missatges); ?></p>
+
+                        <div class="form-group">
                             <label for="username" class="col-md-3 control-label">Usuari</label>
                             <div class="col-md-9">
                                 <input type="text" name="username" id="username" class="form-control" placeholder="usuari" required>
@@ -222,92 +222,92 @@ function print_register_form( $missatges = array() ) {
                                 <input type="password" id="password" class="form-control" name="password" placeholder="contrasenya" required>
                             </div>
                         </div>
-                            
-                        <div class="form-group">  
+
+                        <div class="form-group">
                             <label for="email" class="col-md-3 control-label">Adreça</label>
                             <div class="col-md-9">
                                 <input type="text" name="email" id="email" class="form-control" placeholder="adreça electrónica" required>
                             </div>
-                        </div>                            
-                        
+                        </div>
+
                         <div class="form-group">
                             <div class="col-md-offset-3 col-md-9">
                                 <input type="hidden" id="a" name="a" value="do_register">
                                 <button type="submit" class="btn btn-info"><span class="glyphicon glyphicon-hand-right"></span> &nbsp Registrar</button>
                             </div>
                         </div>
-                        
+
                     </form>
                 </div>
-            </div>   
-         </div>  
+            </div>
+         </div>
 <?php
 } // END print_register_form()
 
-function do_register( $data = array() ) {
+function doRegister( $data = array() ) {
     global $db, $CONFIG;
-    
+
     $missatges = array();
-    
+
     // check supplied data
     if ( ! filter_var($data['email'], FILTER_VALIDATE_EMAIL) ) {
         $missatges[] = array('type' => "error", 'msg' => "L'adreça electrònica no és correcta.");
-        print_register_form($missatges);
+        printRegisterForm($missatges);
     }
-    
+
     // check if user exists
     if ( user_exists($data['username']) ) {
         $missatges[] = array('type' => "info", 'msg' => "L'usuari '<strong>". $data['username'] ."</strong>' ja existeix al sistema.");
-        print_login_form($data['username'], $missatges);
+        printLoginForm($data['username'], $missatges);
         return false;
     }
-    
+
     // check autoregistration
     switch ($CONFIG['authentication']['type']) {
         case 'LDAP':
-            if ( false === LDAP_auth( $data['username'], $data['password'] ) ) {
+            if ( false === getLDAPAuth( $data['username'], $data['password'] ) ) {
                 // User has not been validated.
                 $missatges[] = array('type' => "error", 'msg' => "No hem pogut comprovar les credencials al LDAP. Revisa-les si us plau");
-                print_register_form($missatges);
+                printRegisterForm($missatges);
                 return false;
             }
             break;
-            
+
         default:
             die("TODO: Registration for non LDAP users not implemented, yet!");
     }
-    
+
     // User successfully validated.
     $query = sprintf("INSERT INTO members SET uuid='%s', username='%s', email='%s'",
             $db->real_escape_string(generate_uuid()),
-            $db->real_escape_string($data['username']), 
-            $db->real_escape_string($data['email']) 
+            $db->real_escape_string($data['username']),
+            $db->real_escape_string($data['email'])
             );
     $db->query($query);
 
     // Get new user_id or 0 on error.
     $user_id = $db->insert_id;
-    
+
     if ( 0 === $user_id ) {
         $missatges[] = array('type' => "error", 'msg' => "No s'ha pogut crear l'usuari.");
-        print_register_form($missatges);
+        printRegisterForm($missatges);
         return false;
     } else {
         $missatges[] = array('type' => "success", 'msg' => "L'usuari '<strong>". $data['username'] ."</strong>' creat correctament.");
-        print_login_form($data['username'], $missatges);
+        printLoginForm($data['username'], $missatges);
         return true;
-    } 
+    }
 } // END do_register()
 
-function LDAP_auth($username, $password) {
+function getLDAPAuth($username, $password) {
     global $CONFIG;
 
     if ( empty($username) ) return false;
-   
+
     // creates filter and DN
     $filter = sprintf("(&(cn=%s)%s)", $username, $CONFIG['LDAP']['filter']);
     $dn = sprintf("cn=%s,%s", $username, $CONFIG['LDAP']['basedn']);
-    
+
     // connect to ldaps server
     $connect = ldap_connect($CONFIG['LDAP']['host']);
     if (false === $connect) {
@@ -323,7 +323,6 @@ function LDAP_auth($username, $password) {
     if (false === $bind) return false;
 
     // fitth is 'attrsonly', sixth is how many results. See ldap_search on php.net
-    $sr = ldap_search($connect, $CONFIG['LDAP']['basedn'], $filter, array('mail', 'sn'), 0, 1);   
+    $sr = ldap_search($connect, $CONFIG['LDAP']['basedn'], $filter, array('mail', 'sn'), 0, 1);
     return ( false === ldap_get_entries($connect, $sr) ) ? false : true;
 } // END LDAP_auth()
-?>

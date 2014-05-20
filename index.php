@@ -60,18 +60,23 @@ if ( true === login_check() ) { ?>
             <div class="table-responsive tab-pane fade in active" id="month_top">
             <?php
        
-            $query = "SELECT t1.id, t1.username, t2.points, t1.level_id, (SELECT COUNT(id) FROM members_badges WHERE t1.id = members_badges.id_member AND members_badges.status = 'completed') AS badges FROM vmembers AS t1, vtop_month AS t2 WHERE t1.id = t2.id AND t1.role = 'member' ORDER BY points DESC, badges DESC, username ASC LIMIT 10"; 
+            //$query = "SELECT t1.id, t1.username, t2.points, t1.level_id, (SELECT COUNT(id) FROM members_badges WHERE t1.id = members_badges.id_member AND members_badges.status = 'completed') AS badges FROM vmembers AS t1, vtop_month AS t2 WHERE t1.id = t2.id AND t1.role = 'member' ORDER BY points DESC, badges DESC, username ASC "; 
+            $query = "SELECT t1.id, t1.username, t2.points, t1.level_id, (SELECT COUNT(id) FROM members_badges WHERE t1.id = members_badges.id_member AND members_badges.status = 'completed') AS badges FROM vmembers AS t1, vtop_month AS t2 WHERE t1.id = t2.id  ORDER BY points DESC, badges DESC, username ASC "; 
             $result = $db->query($query);
         
             require('inc/hall_of_fame.inc.php');
+            
+          
+            
             ?>					
             </div>   
             
             <!-- top -->
             <div class="table-responsive tab-pane fade active" id="top">
             <?php
-       
-            $query = "SELECT t1.id, t1.username, t2.points, t1.level_id, (SELECT COUNT(id) FROM members_badges WHERE t1.id = members_badges.id_member AND members_badges.status = 'completed') AS badges FROM vmembers AS t1, vtop AS t2 WHERE t1.id = t2.id AND t1.role = 'member' ORDER BY points DESC, badges DESC, username ASC LIMIT 10"; 
+            //$query = "SELECT t1.id, t1.username, t2.points, t1.level_id, (SELECT COUNT(id) FROM members_badges WHERE t1.id = members_badges.id_member AND members_badges.status = 'completed') AS badges FROM vmembers AS t1, vtop AS t2 WHERE t1.id = t2.id AND t1.role = 'member' ORDER BY points DESC, badges DESC, username ASC "; 
+           
+            $query = "SELECT t1.id, t1.username, t2.points, t1.level_id, (SELECT COUNT(id) FROM members_badges WHERE t1.id = members_badges.id_member AND members_badges.status = 'completed') AS badges FROM vmembers AS t1, vtop AS t2 WHERE t1.id = t2.id  ORDER BY points DESC, badges DESC, username ASC "; 
             $result = $db->query($query);
         
             require('inc/hall_of_fame.inc.php');
