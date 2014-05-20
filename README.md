@@ -12,7 +12,7 @@ As much as possible, we have tried to keep a clean code to work everywhere out o
 
 ## Changelog
 
-See [CHANGELOG](https://git.upcnet.es/paco.orozco/gamify/blob/master/CHANGELOG) file in order to know what changes are implemented in every version.
+See [CHANGELOG](https://git.upcnet.es/bo/gamify/blob/master/CHANGELOG) file in order to know what changes are implemented in every version.
 
 ## Installation
 
@@ -20,10 +20,10 @@ See [CHANGELOG](https://git.upcnet.es/paco.orozco/gamify/blob/master/CHANGELOG) 
 
 Clone GitLab repository
 
-```$ git clone https://git.upcnet.es/paco.orozco/gamify.git gamify```
+```$ git clone https://git.upcnet.es/bo/gamify.git gamify```
 
 ### Configuration
-* Copy [gamify.conf.sample](https://git.upcnet.es/paco.orozco/gamify/blob/master/gamify.conf.sample) to **gamify.conf**. 
+* Copy [gamify.conf.sample](https://git.upcnet.es/bo/gamify/blob/master/gamify.conf.sample) to **gamify.conf**. 
 * Edit it and put valid values
 
 Then enjoy !
@@ -32,13 +32,13 @@ Then enjoy !
 
 Go to the dir where application is installed ($APP_DIR) and use git to pull new code.
 
-```$ git pull https://git.upcnet.es/paco.orozco/gamify.git master```
+```$ git pull https://git.upcnet.es/bo/gamify.git master```
 
-Please see [install/](https://git.upcnet.es/paco.orozco/gamify/tree/master/install) dir in order to see if DB schema must be upgraded.
+Please see [install/](https://git.upcnet.es/bo/gamify/tree/master/install) dir in order to see if DB schema must be upgraded.
 
 ## Reporting issues
 
-If you have issues with **gamify**, you can report them with the [GitLab issues module](https://git.upcnet.es/paco.orozco/gamify/issues?_=1398431084205).
+If you have issues with **gamify**, you can report them with the [GitLab issues module](https://git.upcnet.es/bo/gamify/issues).
 
 Please remember to provide as much information as you can.
 
