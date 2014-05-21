@@ -220,17 +220,19 @@ function printProfile($user_id) {
 } // END print_profile()
 
 function uploadProfilePicture() {
-    global $db;
+    global $CONFIG, $_SESSION, $db;
 
-    list($returnedValue, $returnedMessage) = uploadFile('uploadFile', 'uploads');
+    # upload the file to the filesystem uploads dir
+    $detinationPath = $CONFIG['site']['uploads'] . '/profiles';
+    list($returnedValue, $returnedMessage) = uploadFile('uploadFile', $detinationPath);
 
-    if (false === $returnedValue) return 'ERROR';
+    if (false === $returnedValue) { return 'ERROR'; }
 
     // Deletes previous profile picture file
     $query = sprintf("SELECT profile_image FROM members WHERE id='%d'", $_SESSION['member']['id']);
     $result = $db->query($query);
     $row = $result->fetch_assoc();
-    if (file_exists($row['profile_image'])) unlink($row['profile_image']);
+    if (file_exists($row['profile_image'])) { unlink($row['profile_image']); }
 
     // ACTION: Si es la primera vegada que puja una imatge... guanya un badge
     if (empty($row['profile_image'])) {

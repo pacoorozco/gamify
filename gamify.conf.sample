@@ -14,6 +14,7 @@
 
 [site]
 base_url = https://localhost
+uploads = /var/www/uploads
 
 ; If you want to DEBUG this app, set this to '1'
 ; If you're debugging and you want to receive mail messages
