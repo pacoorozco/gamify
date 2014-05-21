@@ -223,8 +223,8 @@ function uploadProfilePicture() {
     global $CONFIG, $_SESSION, $db;
 
     # upload the file to the filesystem uploads dir
-    $detinationPath = $CONFIG['site']['uploads'] . '/profiles';
-    list($returnedValue, $returnedMessage) = uploadFile('uploadFile', $detinationPath);
+    $destinationPath = $CONFIG['site']['uploads'] . '/profiles';
+    list($returnedValue, $returnedMessage) = uploadFile('uploadFile', $destinationPath);
 
     if (false === $returnedValue) { return 'ERROR'; }
 
