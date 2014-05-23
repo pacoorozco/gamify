@@ -222,3 +222,34 @@ function getUserLevelById($user_id) {
     $row = $result->fetch_assoc();
     return $row['level_id'];
 } // END get_user_level()
+
+function getQuestionAverage( $questionUUID ) {
+    global $db;
+    
+    $query = sprintf("SELECT AVG(t1.amount) AS average
+        FROM members_questions AS t1, questions AS t2
+        WHERE t1.id_question = t2.id
+        AND t2.uuid = '%s'", $questionUUID);
+    $result = $db->query($query);
+    if (0 == $result->num_rows ) {
+        return false;
+    }
+    $row = $result->fetch_assoc();
+    return $row['average'];
+} // END getQuestionStats()
+
+function getQuestionResponses( $questionUUID ) {
+    global $db;
+    
+    $query = sprintf("SELECT COUNT(t1.id_member) AS responses
+        FROM members_questions AS t1, questions AS t2
+        WHERE t1.id_question = t2.id
+        AND t2.uuid = '%s'", $questionUUID);
+    $result = $db->query($query);
+    if (0 == $result->num_rows ) {
+        return false;
+    }
+    $row = $result->fetch_assoc();
+    return $row['responses'];
+} // END getQuestionStats()
+

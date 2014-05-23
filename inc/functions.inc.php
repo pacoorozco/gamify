@@ -234,6 +234,39 @@ function getHTMLSelectOptions( $available_options, $selected_option = '' ) {
     return implode($html_code, PHP_EOL);
 } // END get_html_select_options
 
+function getHTMLDataTable($id) {
+    $html_code = <<<END
+        <script>
+            head.ready(function() {
+                $('$id').dataTable( {
+                    "bSortClasses": false,
+                    "aoColumnDefs": [
+                        { "bSortable": false, "aTargets": [ -1 ] }
+                    ],
+                    "oLanguage": {
+                        "sProcessing": "Processant...",
+                        "sLengthMenu": "Mostra _MENU_ registres",
+                        "sZeroRecords": "No s'han trobat registres.",
+                        "sInfo": "Mostrant de _START_ a _END_ de _TOTAL_ registres",
+                        "sInfoEmpty": "Mostrant de 0 a 0 de 0 registres",
+                        "sInfoFiltered": "(filtrat de _MAX_ registres totals)",
+                        "sInfoPostFix": "",
+                        "sSearch": "Filtrar:",
+                        "sUrl": "",
+                        "oPaginate": {
+                            "sFirst": "Primer",
+                            "sNext": "",
+                            "sPrevious": "",
+                            "sLast": "&Uacute;ltim"
+                        }
+                    }
+                } );
+            } );
+        </script>
+END;
+    return $html_code;
+} // END getHTMLDataTable()
+
 function getPendingQuizs( $user_id ) {
     global $db;
 

@@ -1507,17 +1507,19 @@ function printQuestionManagement( $msg = array() ) {
                                 <p class="text-right">
                                     <a href="<?php echo $_SERVER['PHP_SELF']; ?>?a=newquiz" class="btn btn-success" role="button"><span class="glyphicon glyphicon-plus"></span> Nova pregunta</a>
                                 </p>
-                <table class="table table-hover">
+                <table class="table table-hover" id="questions">
                     <thead>
                     <tr>
                         <th>Pregunta</th>
-                        <th>Enllaç públic</th>
+                        <th>Estat</th>
+                        <th><abbr title="Respostes"><span class="glyphicon glyphicon-comment"></span></abbr></th>
+                        <th><span class="glyphicon glyphicon-tags"></span></th>
                         <th>Accions</th>
                     </tr>
                     </thead>
                     <tbody>
     <?php
-    $query = "SELECT id, uuid, name, status FROM questions ORDER BY status";
+    $query = "SELECT id, uuid, name, status FROM questions ORDER BY name";
     $result = $db->query($query);
 
     // Per incrementar la velocitat, guardem tot el codi en una variable i fem nomes un echo.
@@ -1525,7 +1527,10 @@ function printQuestionManagement( $msg = array() ) {
     while ($row = $result->fetch_assoc()) {
         $html_code[] = '<tr>';
         $html_code[] = '<td>';
-        $html_code[] = '<a href="'. $_SERVER['PHP_SELF'] .'?a=editquiz&item=' . $row['id'] . '">' . $row['name'] . '</a>';
+        $html_code[] = '<a href="'. $_SERVER['PHP_SELF'] .'?a=editquiz&item=' . $row['id'] . '">' . $row['name'] . '</a> <a href="quiz.php?a=answerqz&item=' . $row['uuid'] . '" title="Enllaç p&uacute;blic" target="_blank"><span class="glyphicon glyphicon-link"></span></a>';
+        $html_code[] = '</td>';
+        $html_code[] = '<td>';
+        
         if ( 'inactive' == $row['status'] ) {
             $html_code[] = '<span class="label label-danger">inactiva</span>';
         }
@@ -1535,9 +1540,13 @@ function printQuestionManagement( $msg = array() ) {
         if ( 'hidden' == $row['status'] ) {
             $html_code[] = '<span class="label label-warning">oculta</span>';
         }
+        if ( 'active' == $row['status'] ) {
+            $html_code[] = '<span class="label label-success">publicada</span>';
+        }
 
         $html_code[] = '</td>';
-        $html_code[] = '<td><a href="quiz.php?a=answerqz&item=' . $row['uuid'] . '"><span class="glyphicon glyphicon-link"></span></a></td>';
+        $html_code[] = '<td>' . getQuestionResponses($row['uuid']) . '</td>';
+        $html_code[] = '<td></td>';
         $html_code[] = '<td>';
         $html_code[] = '<a href="'. $_SERVER['PHP_SELF'] .'?a=editquiz&item='. $row['id'] .'" class="btn btn-default" role="button"><span class="glyphicon glyphicon-edit"></span> Editar</a>';
         $html_code[] = '<a href="'. $_SERVER['PHP_SELF'] .'?a=previewquiz&item='. $row['id'] .'" class="btn btn-default" role="button"><span class="glyphicon glyphicon-eye-open"></span> Veure</a>';
@@ -1553,6 +1562,7 @@ function printQuestionManagement( $msg = array() ) {
                             </div>
                         </div>
     <?php
+    echo getHTMLDataTable('#questions');
 } // END print_quiz_management()
 
 function printEditQuestionForm( $question_id, $msg = array() ) {

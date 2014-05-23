@@ -27,6 +27,8 @@ defined('IN_SCRIPT') or die('Invalid attempt');
                 "//code.jquery.com/jquery-migrate-1.2.1.min.js",
                 "//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js",
                 "//tinymce.cachefly.net/4.0/tinymce.min.js",
+                "//cdn.datatables.net/1.10.0/js/jquery.dataTables.js",
+                "//cdn.datatables.net/plug-ins/28e7751dbec/integration/bootstrap/3/dataTables.bootstrap.js",
                 "js/jquery.liveSearch.js",
                 "js/chosen/chosen.jquery.min.js",
                 "js/jQuery-custom-input-file.js",
