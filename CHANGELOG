@@ -1,6 +1,8 @@
 Version 2.8
 -----------
 * Add 'public link' column on quiz management
+* Use of jQuery DataTables on large tables
+* Modify QuestionsManagement to add more info
 
 Version 2.7
 -----------
