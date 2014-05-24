@@ -120,7 +120,7 @@ while ($data = $result2->fetch_assoc()) {
     $data['status'] = ( 1 === intval($data['open']) ) ? 'active' : 'inactive';
 
     $query = sprintf("INSERT INTO questions SET uuid='%s', name='%s', image='%s', question='%s', tip='%s', solution='%s', type='%s', status='%s'",
-            $db->real_escape_string(generate_uuid()),
+            $db->real_escape_string(getNewUUID()),
             $db->real_escape_string($data['name']),
             $db->real_escape_string($data['url_image']),
             $db->real_escape_string($data['text']),
@@ -222,7 +222,7 @@ $result2 = $db->query($query);
 
 while ($row = $result2->fetch_assoc()) {
     $query = sprintf("UPDATE members SET uuid='%s' WHERE id='%d' LIMIT 1",
-            $db->real_escape_string(generate_uuid()),
+            $db->real_escape_string(getNewUUID()),
             $row['id']
             );
     $db->query($query);
@@ -240,7 +240,7 @@ printf("<h2>L'actualitzacio a la v2.x ha estat un exit</h2>\n");
 exit();
 
 /*** FUNCTIONS ***/
-function generate_uuid() {
+function getNewUUID() {
     return sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
 
       // 32 bits for "time_low"

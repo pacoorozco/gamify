@@ -17,7 +17,7 @@ function doSilentAddExperience ( $user_id, $experience, $memo = '' ) {
     $data['experience'] = intval($experience);
     $data['memo'] = $memo;
 
-    if ( false === user_exists($data['id']) ) {
+    if ( false === getUserExists($data['id']) ) {
         // L'usuari que ens han passat no existeix, per tant tornem a mostrar la llista.
         // $missatges[] = array('type' => "error", 'msg' => "No he trobat informaci&oacute; per aquest usuari.");
         return false;
@@ -186,7 +186,7 @@ function notifyBadgeToUser( $data = array() ) {
 BADGE_MAIL;
 
     // Send the message
-    return send_message($subject, $mail_body, $data['email']);
+    return sendMessage($subject, $mail_body, $data['email']);
 } // END notify_badge_2_user()
 
 function notifyLevelToUser( $data = array() ) {
@@ -208,7 +208,7 @@ function notifyLevelToUser( $data = array() ) {
 LEVEL_MAIL;
 
     // Send the message
-    return send_message($subject, $mail_body, $data['email']);
+    return sendMessage($subject, $mail_body, $data['email']);
 } // END notify_badge_2_user()
 
 function getUserLevelById($user_id) {

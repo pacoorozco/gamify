@@ -18,9 +18,9 @@ secureSessionStart();
 
 function secureSessionStart() {
     // set a custom session name
-    $session_name = 'gamify_GoW';
+    $sessionName = 'gamify_GoW';
     // sets the session name to the one set above.
-    session_name($session_name);
+    session_name($sessionName);
     // start the PHP session
     session_start();
 
@@ -66,16 +66,16 @@ function secureSessionDestroy() {
 
     // Run a quick check to see if we are an authenticated user or not
     // First, we set a 'is the user logged in' flag to false by default.
-    $is_user_logged_in = false;
+    $isUserLoggedIn = false;
     $query = sprintf("SELECT uuid, id, username, email, role, disabled, profile_image FROM members WHERE session_id='%s' LIMIT 1", $db->real_escape_string(session_id()));
     $result = $db->query($query);
     if ( 1 === $result->num_rows ) {
         $row = $result->fetch_assoc();
         $_SESSION['member'] = $row;
         // Si l'usuari esta deshabilitat no pot accedir
-        $is_user_logged_in = ($row['disabled'] == 1) ? false : true;
+        $isUserLoggedIn = ($row['disabled'] == 1) ? false : true;
     }
-    return $is_user_logged_in;
+    return $isUserLoggedIn;
  }
 
 /**
@@ -152,7 +152,7 @@ function secureSessionDestroy() {
     // Generate a new filename (unique)
     $filename = sprintf('%s/%s.%s',
                     $destination,
-                    generate_uuid(),
+                    getNewUUID(),
                     $ext);
 
     if (!move_uploaded_file($_FILES[$file_field]['tmp_name'], $filename)) {
@@ -161,7 +161,7 @@ function secureSessionDestroy() {
     }
 
     return array(true, $filename);
-} // END upload_file()
+}
 
 /**
   * user_has_privileges($user_id, $privilege)
@@ -183,7 +183,7 @@ function secureSessionDestroy() {
 
     // Si no s'ha trobat res, retornem FALSE
     return ( $result->num_rows == 0 ) ? false : true;
-} // END user_is_admin()
+}
 
 /*** HTML CODE FUNCTIONS ***/
 function printAccessDenied() {
@@ -191,7 +191,7 @@ function printAccessDenied() {
     <h1>Accés denegat</h1>
     <p class="lead">El teu usuari no te permissos per accedir a aquesta pàgina.</p>
     <?php
-} // END print_access_denied()
+}
 
 /**
  * Return html code for formatted messages.
@@ -220,7 +220,7 @@ function getHTMLMessages($messages) {
 
     // Use PHP_EOL constant for insert \n after every line
     return implode(PHP_EOL, $html_code);
-} // END get_html_messages()
+}
 
 function getHTMLSelectOptions( $available_options, $selected_option = '' ) {
     $html_code = array();
@@ -232,7 +232,7 @@ function getHTMLSelectOptions( $available_options, $selected_option = '' ) {
         }
     }
     return implode($html_code, PHP_EOL);
-} // END get_html_select_options
+}
 
 function getHTMLDataTable($id) {
     $html_code = <<<END
@@ -265,7 +265,7 @@ function getHTMLDataTable($id) {
         </script>
 END;
     return $html_code;
-} // END getHTMLDataTable()
+}
 
 function getPendingQuizs( $user_id ) {
     global $db;
@@ -275,5 +275,5 @@ function getPendingQuizs( $user_id ) {
     $row = $result->fetch_assoc();
 
     return ( $row['pending'] > 0 ) ? $row['pending'] : '';
-} // END get_pending_quizs()
+}
 

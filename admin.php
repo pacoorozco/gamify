@@ -31,7 +31,7 @@ require_once('inc/header.inc.php');
 $missatges = array();
 
 // Que hem de fer?
-$action = pakus_REQUEST('a');
+$action = getREQUESTVar('a');
 switch ($action) {
     case 'actions':
         printActions();
@@ -39,18 +39,18 @@ switch ($action) {
 
     case 'giveexperience':
         $data = array();
-        $data['id'] = pakus_POST('item');
-        $data['experience'] = pakus_POST('experience');
-        $data['memo'] = pakus_POST('memo');
+        $data['id'] = getPOSTVar('item');
+        $data['experience'] = getPOSTVar('experience');
+        $data['memo'] = getPOSTVar('memo');
 
         addExperience($data);
         break;
 
     case 'givebadge':
         $data = array();
-        $data['id_member'] = pakus_POST('item');
-        $data['id_badge'] = pakus_POST('achievement');
-        $data['amount'] = pakus_POST('amount');
+        $data['id_member'] = getPOSTVar('item');
+        $data['id_badge'] = getPOSTVar('achievement');
+        $data['amount'] = getPOSTVar('amount');
 
         action($data);
         break;
@@ -65,33 +65,33 @@ switch ($action) {
 
     case 'createuser':
         $data = array();
-        $data['username'] = pakus_POST('username');
-        $data['password'] = pakus_POST('password');
-        $data['repeatpassword'] = pakus_POST('repeatpassword');
-        $data['email'] = pakus_POST('email');
-        $data['role'] = pakus_POST('role');
+        $data['username'] = getPOSTVar('username');
+        $data['password'] = getPOSTVar('password');
+        $data['repeatpassword'] = getPOSTVar('repeatpassword');
+        $data['email'] = getPOSTVar('email');
+        $data['role'] = getPOSTVar('role');
 
         createUser($data);
         break;
 
     case 'edituser':
-        $userId = pakus_REQUEST('item');
+        $userId = getREQUESTVar('item');
         printEditUserForm($userId);
         break;
 
     case 'saveuser':
         $data = array();
-        $data['id'] = pakus_POST('item');
-        $data['password'] = pakus_POST('password');
-        $data['repeatpassword'] = pakus_POST('repeatpassword');
-        $data['email'] = pakus_POST('email');
-        $data['role'] = pakus_POST('role');
+        $data['id'] = getPOSTVar('item');
+        $data['password'] = getPOSTVar('password');
+        $data['repeatpassword'] = getPOSTVar('repeatpassword');
+        $data['email'] = getPOSTVar('email');
+        $data['role'] = getPOSTVar('role');
 
         saveUserData($data);
         break;
 
     case 'deleteuser':
-        $userId = pakus_REQUEST('item');
+        $userId = getREQUESTVar('item');
 
         if(deleteUser($userId)) {
            $missatges[] = array('type' => "success", 'msg' => "L'usuari s'ha el&middot;liminat correctament.");
@@ -111,30 +111,30 @@ switch ($action) {
 
     case 'createlevel':
         $data = array();
-        $data['name'] = pakus_POST('name');
-        $data['experience_needed'] = pakus_POST('experience_needed');
-        $data['image'] = pakus_POST('image');
+        $data['name'] = getPOSTVar('name');
+        $data['experience_needed'] = getPOSTVar('experience_needed');
+        $data['image'] = getPOSTVar('image');
 
         createLevel($data);
         break;
 
     case 'editlevel':
-        $level_id = pakus_REQUEST('item');
+        $level_id = getREQUESTVar('item');
         printEditLevelForm($level_id);
         break;
 
     case 'savelevel':
         $data = array();
-        $data['id'] = pakus_POST('item');
-        $data['name'] = pakus_POST('name');
-        $data['experience_needed'] = pakus_POST('experience_needed');
-        $data['image'] = pakus_POST('image');
+        $data['id'] = getPOSTVar('item');
+        $data['name'] = getPOSTVar('name');
+        $data['experience_needed'] = getPOSTVar('experience_needed');
+        $data['image'] = getPOSTVar('image');
 
         saveLevelData($data);
         break;
 
     case 'deletelevel':
-        $level_id = pakus_REQUEST('item');
+        $level_id = getREQUESTVar('item');
 
         if(deleteLevel($level_id)) {
            $missatges[] = array('type' => "success", 'msg' => "El n&iacute;vell s'ha el&middot;liminat correctament.");
@@ -154,32 +154,32 @@ switch ($action) {
 
     case 'createbadge':
         $data = array();
-        $data['name'] = pakus_POST('name');
-        $data['image'] = pakus_POST('image');
-        $data['description'] = pakus_POST('description');
-        $data['amount_needed'] = pakus_POST('amount_needed');
+        $data['name'] = getPOSTVar('name');
+        $data['image'] = getPOSTVar('image');
+        $data['description'] = getPOSTVar('description');
+        $data['amount_needed'] = getPOSTVar('amount_needed');
 
         createBadge($data);
         break;
 
     case 'editbadge':
-        $badge_id = pakus_REQUEST('item');
+        $badge_id = getREQUESTVar('item');
         printEditBadgeForm($badge_id);
         break;
 
     case 'savebadge':
         $data = array();
-        $data['id'] = pakus_POST('item');
-        $data['name'] = pakus_POST('name');
-        $data['image'] = pakus_POST('image');
-        $data['description'] = pakus_POST('description');
-        $data['amount_needed'] = pakus_POST('amount_needed');
+        $data['id'] = getPOSTVar('item');
+        $data['name'] = getPOSTVar('name');
+        $data['image'] = getPOSTVar('image');
+        $data['description'] = getPOSTVar('description');
+        $data['amount_needed'] = getPOSTVar('amount_needed');
 
         saveBadgeData($data);
         break;
 
     case 'deletebadge':
-        $badge_id = pakus_REQUEST('item');
+        $badge_id = getREQUESTVar('item');
 
         if(deleteBadge($badge_id)) {
            $missatges[] = array('type' => "success", 'msg' => "La insígnia s'ha el&middot;liminat correctament.");
@@ -196,10 +196,10 @@ switch ($action) {
     case 'sendmessage':
         $missatges = array();
         $data = array();
-        $subject = pakus_POST('subject');
-        $missatge = pakus_POST('missatge');
+        $subject = getPOSTVar('subject');
+        $missatge = getPOSTVar('missatge');
 
-        if ( send_message($subject, $missatge) ) {
+        if ( sendMessage($subject, $missatge) ) {
            $missatges[] = array('type' => "success", 'msg' => "El missatge s'ha enviat correctament.");
         } else {
            $missatges[] = array('type' => "error", 'msg' => "No s'ha pogut enviar el missatge.");
@@ -217,52 +217,52 @@ switch ($action) {
 
     case 'createquiz':
         $data = array();
-        $data['name'] = pakus_POST('name');
-        $data['image'] = pakus_POST('image');
-        $data['question'] = pakus_POST('question');
-        $data['tip'] = pakus_POST('tip');
-        $data['solution'] = pakus_POST('solution');
-        $data['type'] = pakus_POST('type');
-        $data['status'] = pakus_POST('status');
+        $data['name'] = getPOSTVar('name');
+        $data['image'] = getPOSTVar('image');
+        $data['question'] = getPOSTVar('question');
+        $data['tip'] = getPOSTVar('tip');
+        $data['solution'] = getPOSTVar('solution');
+        $data['type'] = getPOSTVar('type');
+        $data['status'] = getPOSTVar('status');
 
-        $data['choices'] = pakus_POST('choices');
-        $data['points'] = pakus_POST('points');
-        $data['correct'] = pakus_POST('correct');
+        $data['choices'] = getPOSTVar('choices');
+        $data['points'] = getPOSTVar('points');
+        $data['correct'] = getPOSTVar('correct');
 
-        $data['actions'] = pakus_POST('actions');
-        $data['when'] = pakus_POST('when');
+        $data['actions'] = getPOSTVar('actions');
+        $data['when'] = getPOSTVar('when');
 
         createQuestion($data);
         break;
 
     case 'editquiz':
-        $question_id = pakus_REQUEST('item');
+        $question_id = getREQUESTVar('item');
         printEditQuestionForm($question_id);
         break;
 
     case 'savequiz':
         $data = array();
-        $data['id'] = pakus_POST('item');
-        $data['name'] = pakus_POST('name');
-        $data['image'] = pakus_POST('image');
-        $data['question'] = pakus_POST('question');
-        $data['tip'] = pakus_POST('tip');
-        $data['solution'] = pakus_POST('solution');
-        $data['type'] = pakus_POST('type');
-        $data['status'] = pakus_POST('status');
+        $data['id'] = getPOSTVar('item');
+        $data['name'] = getPOSTVar('name');
+        $data['image'] = getPOSTVar('image');
+        $data['question'] = getPOSTVar('question');
+        $data['tip'] = getPOSTVar('tip');
+        $data['solution'] = getPOSTVar('solution');
+        $data['type'] = getPOSTVar('type');
+        $data['status'] = getPOSTVar('status');
 
-        $data['choices'] = pakus_POST('choices');
-        $data['points'] = pakus_POST('points');
-        $data['correct'] = pakus_POST('correct');
+        $data['choices'] = getPOSTVar('choices');
+        $data['points'] = getPOSTVar('points');
+        $data['correct'] = getPOSTVar('correct');
 
-        $data['actions'] = pakus_POST('actions');
-        $data['when'] = pakus_POST('when');
+        $data['actions'] = getPOSTVar('actions');
+        $data['when'] = getPOSTVar('when');
 
         saveQuestionData($data);
         break;
 
     case 'deletequiz':
-        $question_id = pakus_REQUEST('item');
+        $question_id = getREQUESTVar('item');
 
         if(deleteQuestion($question_id)) {
            $missatges[] = array('type' => "success", 'msg' => "La pregunta s'ha el&middot;liminat correctament.");
@@ -273,7 +273,7 @@ switch ($action) {
         break;
 
     case 'previewquiz':
-        $question_id = pakus_REQUEST('item');
+        $question_id = getREQUESTVar('item');
         printPreviewQuestion($question_id);
         break;
 
@@ -329,11 +329,11 @@ function printActions ( $msg = array() ) {
     $result = $db->query($query);
 
     // Per incrementar la velocitat, guardem tot el codi en una variable i fem nomes un echo.
-    $html_code = array();
+    $htmlCode = array();
     while ($row = $result->fetch_assoc()) {
-        $html_code[] = '<option value="' . $row['id'] . '">' . $row['username'] . '</option>';
+        $htmlCode[] = '<option value="' . $row['id'] . '">' . $row['username'] . '</option>';
     }
-    echo implode(PHP_EOL, $html_code);
+    echo implode(PHP_EOL, $htmlCode);
     ?>
 
                                 </select>
@@ -373,7 +373,7 @@ function printActions ( $msg = array() ) {
                             <div class="col-sm-10">
                                 <select data-placeholder="escull un usuari..." name="item" id="username" class="form-control chosen-select">
                                     <option value=""></option>
-                                    <?php echo implode(PHP_EOL, $html_code); ?>
+                                    <?php echo implode(PHP_EOL, $htmlCode); ?>
                                 </select>
                             </div>
                         </div>
@@ -387,12 +387,12 @@ function printActions ( $msg = array() ) {
     $result = $db->query($query);
 
     // Per incrementar la velocitat, guardem tot el codi en una variable i fem nomes un echo.
-    unset($html_code);
-    $html_code = array();
+    unset($htmlCode);
+    $htmlCode = array();
     while ($row = $result->fetch_assoc()) {
-        $html_code[] = '<option value="' . $row['id'] . '">' . $row['name'] . '</option>';
+        $htmlCode[] = '<option value="' . $row['id'] . '">' . $row['name'] . '</option>';
     }
-    echo implode(PHP_EOL, $html_code);
+    echo implode(PHP_EOL, $htmlCode);
     ?>
                                 </select>
                             </div>
@@ -436,21 +436,21 @@ function printUserManagement ( $msg = array() ) {
     $result = $db->query($query);
 
     // Per incrementar la velocitat, guardem tot el codi en una variable i fem nomes un echo.
-    $html_code = array();
+    $htmlCode = array();
     while ($row = $result->fetch_assoc()) {
-        $html_code[] = '<tr>';
-        $html_code[] = '<td>';
-        $html_code[] = '<a href="admin.php?a=edituser&item=' . $row['id'] . '">' . $row['username'] . '</a>';
-        $html_code[] = '</td>';
-        $html_code[] = '<td>' . $row['role'] . '</td>';
-        $html_code[] = '<td>';
-        $html_code[] = '<a href="admin.php?a=edituser&item='. $row['id'] .'" class="btn btn-default" role="button"><span class="glyphicon glyphicon-edit"></span> Editar</a>';
-        $html_code[] = '<a href="admin.php?a=deleteuser&item='. $row['id'] .'" class="btn btn-danger" role="button"><span class="glyphicon glyphicon-trash"></span> El·liminar</a>';
-        $html_code[] = '</td>';
-        $html_code[] = '</tr>';
+        $htmlCode[] = '<tr>';
+        $htmlCode[] = '<td>';
+        $htmlCode[] = '<a href="admin.php?a=edituser&item=' . $row['id'] . '">' . $row['username'] . '</a>';
+        $htmlCode[] = '</td>';
+        $htmlCode[] = '<td>' . $row['role'] . '</td>';
+        $htmlCode[] = '<td>';
+        $htmlCode[] = '<a href="admin.php?a=edituser&item='. $row['id'] .'" class="btn btn-default" role="button"><span class="glyphicon glyphicon-edit"></span> Editar</a>';
+        $htmlCode[] = '<a href="admin.php?a=deleteuser&item='. $row['id'] .'" class="btn btn-danger" role="button"><span class="glyphicon glyphicon-trash"></span> El·liminar</a>';
+        $htmlCode[] = '</td>';
+        $htmlCode[] = '</tr>';
     }
-    echo implode(PHP_EOL, $html_code);
-    unset($html_code);
+    echo implode(PHP_EOL, $htmlCode);
+    unset($htmlCode);
     ?>
                     </tbody>
                 </table>
@@ -484,26 +484,26 @@ function printLevelManagement( $msg = array() ) {
     $result = $db->query($query);
 
     // Per incrementar la velocitat, guardem tot el codi en una variable i fem nomes un echo.
-    $html_code = array();
+    $htmlCode = array();
     while ($row = $result->fetch_assoc()) {
-        $html_code[] = '<tr>';
-        $html_code[] = '<td>';
-        $html_code[] = '<a href="admin.php?a=editlevel&item=' . $row['id'] . '">' . $row['name'] . '</a>';
-        $html_code[] = '</td>';
-        $html_code[] = '<td>' . $row['experience_needed'] . '</td>';
+        $htmlCode[] = '<tr>';
+        $htmlCode[] = '<td>';
+        $htmlCode[] = '<a href="admin.php?a=editlevel&item=' . $row['id'] . '">' . $row['name'] . '</a>';
+        $htmlCode[] = '</td>';
+        $htmlCode[] = '<td>' . $row['experience_needed'] . '</td>';
         if ( empty($row['image']) ) {
-            $html_code[] = '<td><img data-src="holder.js/64x64" alt="..."></td>';
+            $htmlCode[] = '<td><img data-src="holder.js/64x64" alt="..."></td>';
         } else {
-            $html_code[] = '<td><img src="images/levels/'. $row['image'] .'" alt="'. $row['name'] .'" width="64"></td>';
+            $htmlCode[] = '<td><img src="images/levels/'. $row['image'] .'" alt="'. $row['name'] .'" width="64"></td>';
         }
-        $html_code[] = '<td>';
-        $html_code[] = '<a href="admin.php?a=editlevel&item='. $row['id'] .'" class="btn btn-default" role="button"><span class="glyphicon glyphicon-edit"></span> Editar</a>';
-        $html_code[] = '<a href="admin.php?a=deletelevel&item='. $row['id'] .'" class="btn btn-danger" role="button"><span class="glyphicon glyphicon-trash"></span> El·liminar</a>';
-        $html_code[] = '</td>';
-        $html_code[] = '</tr>';
+        $htmlCode[] = '<td>';
+        $htmlCode[] = '<a href="admin.php?a=editlevel&item='. $row['id'] .'" class="btn btn-default" role="button"><span class="glyphicon glyphicon-edit"></span> Editar</a>';
+        $htmlCode[] = '<a href="admin.php?a=deletelevel&item='. $row['id'] .'" class="btn btn-danger" role="button"><span class="glyphicon glyphicon-trash"></span> El·liminar</a>';
+        $htmlCode[] = '</td>';
+        $htmlCode[] = '</tr>';
     }
-    echo implode(PHP_EOL, $html_code);
-    unset($html_code);
+    echo implode(PHP_EOL, $htmlCode);
+    unset($htmlCode);
     ?>
                     </tbody>
                 </table>
@@ -537,26 +537,26 @@ function printBadgeManagement( $msg = array() ) {
     $result = $db->query($query);
 
     // Per incrementar la velocitat, guardem tot el codi en una variable i fem nomes un echo.
-    $html_code = array();
+    $htmlCode = array();
     while ($row = $result->fetch_assoc()) {
-        $html_code[] = '<tr>';
-        $html_code[] = '<td>';
-        $html_code[] = '<a href="admin.php?a=editbadge&item=' . $row['id'] . '">' . $row['name'] . '</a>';
-        $html_code[] = '</td>';
+        $htmlCode[] = '<tr>';
+        $htmlCode[] = '<td>';
+        $htmlCode[] = '<a href="admin.php?a=editbadge&item=' . $row['id'] . '">' . $row['name'] . '</a>';
+        $htmlCode[] = '</td>';
         if ( empty($row['image']) ) {
-            $html_code[] = '<td><img src="images/default_badge_off.png" alt="'. $row['name'] .'" class="img-thumbnail" width="64"></td>';
+            $htmlCode[] = '<td><img src="images/default_badge_off.png" alt="'. $row['name'] .'" class="img-thumbnail" width="64"></td>';
         } else {
-            $html_code[] = '<td><img src="images/badges/'. $row['image'] .'" alt="'. $row['name'] .'" class="img-thumbnail" width="64"></td>';
+            $htmlCode[] = '<td><img src="images/badges/'. $row['image'] .'" alt="'. $row['name'] .'" class="img-thumbnail" width="64"></td>';
         }
-        $html_code[] = '<td>'. $row['amount_needed'] .'</td>';
-        $html_code[] = '<td>';
-        $html_code[] = '<a href="admin.php?a=editbadge&item='. $row['id'] .'" class="btn btn-default" role="button"><span class="glyphicon glyphicon-edit"></span> Editar</a>';
-        $html_code[] = '<a href="admin.php?a=deletebadge&item='. $row['id'] .'" class="btn btn-danger" role="button"><span class="glyphicon glyphicon-trash"></span> El·liminar</a>';
-        $html_code[] = '</td>';
-        $html_code[] = '</tr>';
+        $htmlCode[] = '<td>'. $row['amount_needed'] .'</td>';
+        $htmlCode[] = '<td>';
+        $htmlCode[] = '<a href="admin.php?a=editbadge&item='. $row['id'] .'" class="btn btn-default" role="button"><span class="glyphicon glyphicon-edit"></span> Editar</a>';
+        $htmlCode[] = '<a href="admin.php?a=deletebadge&item='. $row['id'] .'" class="btn btn-danger" role="button"><span class="glyphicon glyphicon-trash"></span> El·liminar</a>';
+        $htmlCode[] = '</td>';
+        $htmlCode[] = '</tr>';
     }
-    echo implode(PHP_EOL, $html_code);
-    unset($html_code);
+    echo implode(PHP_EOL, $htmlCode);
+    unset($htmlCode);
     ?>
                     </tbody>
                 </table>
@@ -634,7 +634,7 @@ function createUser( $data = array() ) {
         $missatges[] = array('type' => "error", 'msg' => "El nom d'usuari no &eacute;s v&agrave;lid.");
     }
 
-    if ( user_exists($data['username']) ) {
+    if ( getUserExists($data['username']) ) {
         $missatges[] = array('type' => "error", 'msg' => "El nom d'usuari ja existeix.");
     }
 
@@ -666,7 +666,7 @@ function createUser( $data = array() ) {
 
     // User data is correct, now we can insert it to DB
     $query = sprintf( "INSERT INTO members SET uuid='%s', username='%s', password='%s', email='%s', role='%s'",
-            $db->real_escape_string(generate_uuid()),
+            $db->real_escape_string(getNewUUID()),
             $db->real_escape_string($data['username']),
             $db->real_escape_string(md5($data['password'])),
             $db->real_escape_string($data['email']),
@@ -681,7 +681,7 @@ function createUser( $data = array() ) {
         $missatges[] = array('type' => "error", 'msg' => "No s'ha pogut crear l'usuari.");
         printNewUserForm($data, $missatges);
     } else {
-        $missatges[] = array('type' => "success", 'msg' => "L'usuari '<strong>". get_username($user_id) ."</strong>' s'ha creat correctament.");
+        $missatges[] = array('type' => "success", 'msg' => "L'usuari '<strong>". getUserName($user_id) ."</strong>' s'ha creat correctament.");
         printUserManagement($missatges);
     }
 } // END create_user()
@@ -777,7 +777,7 @@ function saveUserData( $data = array() ) {
 
     // Validate supplied data
     $data['id'] = intval($data['id']);
-    if ( ! user_exists($data['id']) ) {
+    if ( ! getUserExists($data['id']) ) {
         $missatges[] = array('type' => "error", 'msg' => "<strong>ATENCI&Oacute;</strong>: L'usuari suministrat per actualitzar no existeix.");
         printUserManagement($missatges);
         return false;
@@ -810,7 +810,7 @@ function saveUserData( $data = array() ) {
     }
 
     if ( $db->query($query) ) {
-        $missatges[] = array('type' => "success", 'msg' => "Dades d'usuari '<strong>". get_username($data['id']) ."</strong>' actualitzades.");
+        $missatges[] = array('type' => "success", 'msg' => "Dades d'usuari '<strong>". getUserName($data['id']) ."</strong>' actualitzades.");
         printUserManagement($missatges);
 
     } else {
@@ -824,12 +824,12 @@ function deleteUser($user_id) {
 
     // user_id must be an integer
     $user_id = intval($user_id);
-    if ( ! user_exists($user_id) ) return false;
+    if ( ! getUserExists($user_id) ) return false;
 
     $query = sprintf( "DELETE FROM members WHERE id = '%d' LIMIT 1", $user_id );
     $db->query($query);
 
-    return ( ! user_exists($user_id) );
+    return ( ! getUserExists($user_id) );
 } // END delete_user()
 
 /*** LEVELS ***/
@@ -1252,7 +1252,7 @@ function addExperience ( $data = array() ) {
     $data['id'] = intval($data['id']);
     $data['experience'] = intval($data['experience']);
 
-    if ( false === user_exists($data['id']) ) {
+    if ( false === getUserExists($data['id']) ) {
         // L'usuari que ens han passat no existeix, per tant tornem a mostrar la llista.
         $missatges[] = array('type' => "error", 'msg' => "No he trobat informaci&oacute; per aquest usuari.");
     }
@@ -1523,39 +1523,39 @@ function printQuestionManagement( $msg = array() ) {
     $result = $db->query($query);
 
     // Per incrementar la velocitat, guardem tot el codi en una variable i fem nomes un echo.
-    $html_code = array();
+    $htmlCode = array();
     while ($row = $result->fetch_assoc()) {
-        $html_code[] = '<tr>';
-        $html_code[] = '<td>';
-        $html_code[] = '<a href="'. $_SERVER['PHP_SELF'] .'?a=editquiz&item=' . $row['id'] . '">' . $row['name'] . '</a> <a href="quiz.php?a=answerqz&item=' . $row['uuid'] . '" title="Enllaç p&uacute;blic" target="_blank"><span class="glyphicon glyphicon-link"></span></a>';
-        $html_code[] = '</td>';
-        $html_code[] = '<td>';
+        $htmlCode[] = '<tr>';
+        $htmlCode[] = '<td>';
+        $htmlCode[] = '<a href="'. $_SERVER['PHP_SELF'] .'?a=editquiz&item=' . $row['id'] . '">' . $row['name'] . '</a> <a href="quiz.php?a=answerqz&item=' . $row['uuid'] . '" title="Enllaç p&uacute;blic" target="_blank"><span class="glyphicon glyphicon-link"></span></a>';
+        $htmlCode[] = '</td>';
+        $htmlCode[] = '<td>';
 
         if ( 'inactive' == $row['status'] ) {
-            $html_code[] = '<span class="label label-danger">inactiva</span>';
+            $htmlCode[] = '<span class="label label-danger">inactiva</span>';
         }
         if ( 'draft' == $row['status'] ) {
-            $html_code[] = '<span class="label label-info">esborrany</span>';
+            $htmlCode[] = '<span class="label label-info">esborrany</span>';
         }
         if ( 'hidden' == $row['status'] ) {
-            $html_code[] = '<span class="label label-warning">oculta</span>';
+            $htmlCode[] = '<span class="label label-warning">oculta</span>';
         }
         if ( 'active' == $row['status'] ) {
-            $html_code[] = '<span class="label label-success">publicada</span>';
+            $htmlCode[] = '<span class="label label-success">publicada</span>';
         }
 
-        $html_code[] = '</td>';
-        $html_code[] = '<td>' . getQuestionResponses($row['uuid']) . '</td>';
-        $html_code[] = '<td></td>';
-        $html_code[] = '<td>';
-        $html_code[] = '<a href="'. $_SERVER['PHP_SELF'] .'?a=editquiz&item='. $row['id'] .'" class="btn btn-default" role="button"><span class="glyphicon glyphicon-edit"></span> Editar</a>';
-        $html_code[] = '<a href="'. $_SERVER['PHP_SELF'] .'?a=previewquiz&item='. $row['id'] .'" class="btn btn-default" role="button"><span class="glyphicon glyphicon-eye-open"></span> Veure</a>';
-        $html_code[] = '<a href="'. $_SERVER['PHP_SELF'] .'?a=deletequiz&item='. $row['id'] .'" class="btn btn-danger" role="button"><span class="glyphicon glyphicon-trash"></span> El·liminar</a>';
-        $html_code[] = '</td>';
-        $html_code[] = '</tr>';
+        $htmlCode[] = '</td>';
+        $htmlCode[] = '<td>' . getQuestionResponses($row['uuid']) . '</td>';
+        $htmlCode[] = '<td></td>';
+        $htmlCode[] = '<td>';
+        $htmlCode[] = '<a href="'. $_SERVER['PHP_SELF'] .'?a=editquiz&item='. $row['id'] .'" class="btn btn-default" role="button"><span class="glyphicon glyphicon-edit"></span> Editar</a>';
+        $htmlCode[] = '<a href="'. $_SERVER['PHP_SELF'] .'?a=previewquiz&item='. $row['id'] .'" class="btn btn-default" role="button"><span class="glyphicon glyphicon-eye-open"></span> Veure</a>';
+        $htmlCode[] = '<a href="'. $_SERVER['PHP_SELF'] .'?a=deletequiz&item='. $row['id'] .'" class="btn btn-danger" role="button"><span class="glyphicon glyphicon-trash"></span> El·liminar</a>';
+        $htmlCode[] = '</td>';
+        $htmlCode[] = '</tr>';
     }
-    echo implode(PHP_EOL, $html_code);
-    unset($html_code);
+    echo implode(PHP_EOL, $htmlCode);
+    unset($htmlCode);
     ?>
                     </tbody>
                 </table>
@@ -1657,7 +1657,7 @@ function createQuestion( $data = array() ) {
 
     // Question data is correct, now we can insert it to DB
     $query = sprintf( "INSERT INTO questions SET uuid='%s', name='%s', image='%s', question='%s', tip='%s', solution='%s', type='%s', status='%s'",
-            $db->real_escape_string(generate_uuid()),
+            $db->real_escape_string(getNewUUID()),
             $db->real_escape_string($data['name']),
             $db->real_escape_string($data['image']),
             $db->real_escape_string($data['question']),
@@ -2055,20 +2055,20 @@ function printPreviewQuestion($question_id) {
             <h4><?php echo $question['question']; ?></h4>
                 <ul class="list-group">
                     <?php
-                        $html_code = array();
+                        $htmlCode = array();
                         foreach ($question['choices'] as $choice) {
-                            $html_code[] = '<li class="list-group-item">';
+                            $htmlCode[] = '<li class="list-group-item">';
                                 if ( 'yes' == $choice['correct'] ) {
-                                    $html_code[] = '<span class="glyphicon glyphicon-ok"></span>';
+                                    $htmlCode[] = '<span class="glyphicon glyphicon-ok"></span>';
                                 } else {
-                                    $html_code[] = '<span class="glyphicon glyphicon-remove"></span>';
+                                    $htmlCode[] = '<span class="glyphicon glyphicon-remove"></span>';
                                 }
-                            $html_code[] = $choice['choice'];
-                            $html_code[] = '<span class="badge pull-right">' . $choice['points'] .'</span>';
-                            $html_code[] = '</li>';
+                            $htmlCode[] = $choice['choice'];
+                            $htmlCode[] = '<span class="badge pull-right">' . $choice['points'] .'</span>';
+                            $htmlCode[] = '</li>';
 
                         }
-                        echo implode(PHP_EOL, $html_code);
+                        echo implode(PHP_EOL, $htmlCode);
                     ?>
                 </ul>
             <?php

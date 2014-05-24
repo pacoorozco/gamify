@@ -5,23 +5,23 @@ define('IN_SCRIPT',1);
 
 require_once('inc/core.inc.php');
 
-$method = pakus_GET('method');
-$format = pakus_GET('format');
+$method = getGETVar('method');
+$format = getGETVar('format');
 
 $data = array();
 $response = array();
 
 switch ($method) {
     case 'question':
-        $action = pakus_GET('action');
+        $action = getGETVar('action');
 
         switch ($action) {
             case 'enable':
-                $item = pakus_GET('item');
+                $item = getGETVar('item');
                 $response = setQuestionStatus($item, 'active');
                 break;
             case 'disable':
-                $item = pakus_GET('item');
+                $item = getGETVar('item');
                 $response = setQuestionStatus($item, 'inactive');
                 break;
         }

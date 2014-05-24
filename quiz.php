@@ -19,22 +19,22 @@ if ( false === loginCheck() ) {
 
 require_once('inc/header.inc.php');
 // Que hem de fer?
-$action = pakus_REQUEST('a');
+$action = getREQUESTVar('a');
 
 switch ($action) {
     case 'answerqz':
-        $quiz_id = pakus_REQUEST('item');
+        $quiz_id = getREQUESTVar('item');
         printAnswerQuestionForm($quiz_id);
         break;
 
     case 'answer':
-        $quiz_id = pakus_POST('item');
-        $choices = pakus_POST('choices');
+        $quiz_id = getPOSTVar('item');
+        $choices = getPOSTVar('choices');
         answerQuestion( $quiz_id, $choices );
         break;
 
     case 'seeqz':
-        $quiz_id = pakus_REQUEST('item');
+        $quiz_id = getREQUESTVar('item');
         viewQuestionByUUID($quiz_id);
         break;
 

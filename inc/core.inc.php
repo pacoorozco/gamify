@@ -28,24 +28,24 @@ $db = mysqli_connect( $CONFIG['mysql']['host'], $CONFIG['mysql']['user'],
         or die( 'ERROR: No he pogut connectar amb la base de dades (' . mysqli_connect_errno() . ') ' . mysqli_connect_error() );
 
 /*** FUNCTIONS ***/
-function pakus_GET($in, $default = '') {
-        return isset($_GET[$in]) ? pakus_input($_GET[$in]) : $default;
-} // END pakus_GET()
+function getGETVar($in, $default = '') {
+        return isset($_GET[$in]) ? getSanitizedInput($_GET[$in]) : $default;
+}
 
-function pakus_POST($in, $default = '') {
-        return isset($_POST[$in]) ? pakus_input($_POST[$in]) : $default;
-} // END pakus_POST()
+function getPOSTVar($in, $default = '') {
+        return isset($_POST[$in]) ? getSanitizedInput($_POST[$in]) : $default;
+}
 
-function pakus_REQUEST($in, $default = false) {
-        return isset($_POST[$in]) ? pakus_POST($in) : ( isset($_GET[$in]) ? pakus_GET($in) : $default );
-} // END pakus_REQUEST()
+function getREQUESTVar($in, $default = false) {
+        return isset($_POST[$in]) ? getPOSTVar($in) : ( isset($_GET[$in]) ? getGETVar($in) : $default );
+}
 
-function pakus_input($in, $force_slashes=0, $max_length=0) {
+function getSanitizedInput($in, $force_slashes=0, $max_length=0) {
 
     // If $in is array we process every value
     if (is_array($in)) {
         foreach ($in as &$element) {
-            $element = pakus_input($element, $force_slashes=0, $max_length=0);
+            $element = getSanitizedInput($element, $force_slashes=0, $max_length=0);
         }
         unset ($element);
     } else {
@@ -63,9 +63,9 @@ function pakus_input($in, $force_slashes=0, $max_length=0) {
     }
     // Return processed value
     return $in;
-} // END pakus_input()
+}
 
- function time_elapsed_string($datetime, $full = false) {
+ function getElapsedTimeString($datetime, $full = false) {
     $now = new DateTime;
     $ago = new DateTime($datetime);
     $diff = $now->diff($ago);
@@ -93,9 +93,9 @@ function pakus_input($in, $force_slashes=0, $max_length=0) {
     if (!$full) $string = array_slice($string, 0, 1);
 
     return $string ? 'fa '. implode(', ', $string) : 'ara mateix';
-} // END time_elapsed_string()
+}
 
-function send_message( $subject, $missatge, $receiver = '' ) {
+function sendMessage( $subject, $missatge, $receiver = '' ) {
     global $db, $CONFIG;
 
     // If DEBUG mode is on, only send messages to 'debug_receiver'
@@ -163,9 +163,9 @@ SEND_MAIL;
 
     // Send the message
     return $mailer->send($message);
-} // END send_mail()
+}
 
-function generate_uuid() {
+function getNewUUID() {
     return sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
 
       // 32 bits for "time_low"
@@ -198,15 +198,15 @@ function generate_uuid() {
   * Returns:
   *  $result:   True si existeix, false en cas contrari
   */
- function user_exists($user) {
+ function getUserExists($user) {
     if (is_int($user)) {
-        return (get_username($user) === false ) ? false : true;
+        return (getUserName($user) === false ) ? false : true;
     } else {
-        return (get_member_id($user) === false ) ? false : true;
+        return (getUserId($user) === false ) ? false : true;
     }
-} // END user_exists()
+}
 
-function get_username ($user_id) {
+function getUserName ($user_id) {
     global $db;
 
     $query = sprintf( "SELECT username FROM members WHERE id='%d' LIMIT 1", intval($user_id) );
@@ -217,9 +217,9 @@ function get_username ($user_id) {
 
     $row = $result->fetch_assoc();
     return $row['username'];
-} // END get_username()
+}
 
-function get_member_id ($username) {
+function getUserId ($username) {
     global $db;
 
     $query = sprintf( "SELECT id FROM members WHERE username='%s' LIMIT 1", $username );
@@ -230,4 +230,4 @@ function get_member_id ($username) {
 
     $row = $result->fetch_assoc();
     return $row['id'];
-} // END get_member_id()
+}

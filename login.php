@@ -9,7 +9,7 @@ define('IN_SCRIPT', 1);
 require_once('inc/functions.inc.php');
 
 // Que hem de fer?
-$action = pakus_REQUEST('a');
+$action = getREQUESTVar('a');
 
 // first we use some action that user header(), none can be echoed before
 switch ($action) {
@@ -18,13 +18,13 @@ switch ($action) {
         break;
 
     case 'login':
-        $username = pakus_POST('username');
-        $password = pakus_POST('password');
+        $username = getPOSTVar('username');
+        $password = getPOSTVar('password');
         $errors = array();
 
         if ( true === doLogin($username, $password) ) {
             // go to previous referrer, if exists
-            $nav = pakus_POST('nav');
+            $nav = getPOSTVar('nav');
             $nav = (!empty($nav)) ? $nav : 'index.php';
             header('Location: ' . urldecode($nav));
             exit();
@@ -55,9 +55,9 @@ switch ($action) {
 
     case 'do_register':
         $data = array();
-        $data['username'] = pakus_POST('username');
-        $data['password'] = pakus_POST('password');
-        $data['email'] = pakus_POST('email');
+        $data['username'] = getPOSTVar('username');
+        $data['password'] = getPOSTVar('password');
+        $data['email'] = getPOSTVar('email');
         doRegister($data);
         break;
 
@@ -75,7 +75,7 @@ function printLoginForm( $username = '', $missatges = array() ) {
     global $CONFIG;
 
     // get after login url if exists
-    $nav = pakus_POST('nav');
+    $nav = getPOSTVar('nav');
     $nav = (!empty($nav)) ? $nav : $_SESSION['nav'];
     unset($_SESSION['nav']);
 ?>
@@ -151,7 +151,7 @@ function doLogin($username, $password) {
     global $CONFIG, $db;
 
     // Primer fixem a FALS la resposta d'aquesta funcio
-    $user_is_member = false;
+    $userIsMember = false;
 
     // Comprovem que l'usuari consti com a membre
     $query = sprintf("SELECT id, username, password, disabled FROM members WHERE username='%s' LIMIT 1", $db->real_escape_string($username));
@@ -174,25 +174,25 @@ function doLogin($username, $password) {
             if ( getLDAPAuth( $usuari['username'], $password,
                     $CONFIG['LDAP']['host'], $CONFIG['LDAP']['basedn'], $CONFIG['LDAP']['filter'] ) ) {
                 // Usuari validat i es member
-                $user_is_member = true;
+                $userIsMember = true;
             }
             break;
         default:
             // we will use LOCAL authentication
             if (md5($password) == $usuari['password']) {
                 // Usuari validat i es membre
-                $user_is_member = true;
+                $userIsMember = true;
             }
     }
 
-    if ($user_is_member) {
+    if ($userIsMember) {
         // Usuari validat, actualitzem session_id
         $query = sprintf("UPDATE members SET session_id='%s', last_access='%s' WHERE id='%d' LIMIT 1",
                           $db->real_escape_string(session_id()), $db->real_escape_string(time()), intval($usuari['id']));
         $db->query($query);
     }
 
-    return $user_is_member;
+    return $userIsMember;
 } // END do_login()
 
 function printRegisterForm( $missatges = array() ) {
@@ -256,7 +256,7 @@ function doRegister( $data = array() ) {
     }
 
     // check if user exists
-    if ( user_exists($data['username']) ) {
+    if ( getUserExists($data['username']) ) {
         $missatges[] = array('type' => "info", 'msg' => "L'usuari '<strong>". $data['username'] ."</strong>' ja existeix al sistema.");
         printLoginForm($data['username'], $missatges);
         return false;
@@ -279,16 +279,16 @@ function doRegister( $data = array() ) {
 
     // User successfully validated.
     $query = sprintf("INSERT INTO members SET uuid='%s', username='%s', email='%s'",
-            $db->real_escape_string(generate_uuid()),
+            $db->real_escape_string(getNewUUID()),
             $db->real_escape_string($data['username']),
             $db->real_escape_string($data['email'])
             );
     $db->query($query);
 
     // Get new user_id or 0 on error.
-    $user_id = $db->insert_id;
+    $userId = $db->insert_id;
 
-    if ( 0 === $user_id ) {
+    if ( 0 === $userId ) {
         $missatges[] = array('type' => "error", 'msg' => "No s'ha pogut crear l'usuari.");
         printRegisterForm($missatges);
         return false;

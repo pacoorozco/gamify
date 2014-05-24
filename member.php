@@ -18,13 +18,13 @@ if ( false === loginCheck() ) {
 }
 
 // Que hem de fer?
-$action = pakus_REQUEST('a');
+$action = getREQUESTVar('a');
 
 // There are some actions that doesn't need header / footer
 switch ($action) {
     case 'search':
         // Que hem de buscar?
-        $searchterm = pakus_GET('q');
+        $searchterm = getGETVar('q');
         echo getSearchResults($searchterm);
         exit();
         break;
@@ -40,7 +40,7 @@ require_once('inc/header.inc.php');
 switch ($action) {
     case 'viewuser':
     default:
-        $userUUID = pakus_REQUEST('item');
+        $userUUID = getREQUESTVar('item');
         if (is_int($userUUID)) {
             // OLD behaviour, use UUID instead.
             $userUUID = getUserUUID($userUUID);
@@ -56,29 +56,29 @@ exit();
 function getSearchResults( $searchterm ) {
 	global $db;
 
-	$html_code = array();
-        $html_code[] = '<ul class="list-unstyled list-group">';
+	$htmlCode = array();
+        $htmlCode[] = '<ul class="list-unstyled list-group">';
 
         // Nomes farem cerques si busquen mes de tres caracters, aixo evita que sobrecarreguem la BDD
         if ( ! isset($searchterm[3]) ) {
-            $html_code[] = '<li class="list-group-item list-group-item-info">Tecleja m&eacute;s de 3 car&agrave;cters per fer la cerca</li>';
+            $htmlCode[] = '<li class="list-group-item list-group-item-info">Tecleja m&eacute;s de 3 car&agrave;cters per fer la cerca</li>';
         } else {
             $query = sprintf("SELECT uuid, username FROM vmembers WHERE username LIKE '%%%s%%'", $db->real_escape_string($searchterm));
             $result = $db->query($query);
 
             if ( 0 == $result->num_rows  ) {
                 // No s'ha trobat res
-                $html_code[] = '<li class="list-group-item list-group-item-danger">No he trobat cap resultat</li>';
+                $htmlCode[] = '<li class="list-group-item list-group-item-danger">No he trobat cap resultat</li>';
 
             } else {
                 // Hem trobat informacio
                 while ( $row = $result->fetch_assoc() ) {
-                    $html_code[] = '<li><a href="member.php?a=viewuser&item=' . $row['uuid'] . '" title="Veure ' . $row['username'] . '" class="list-group-item"><span class="glyphicon glyphicon-user"></span> ' . $row['username'] . "</a></li>";
+                    $htmlCode[] = '<li><a href="member.php?a=viewuser&item=' . $row['uuid'] . '" title="Veure ' . $row['username'] . '" class="list-group-item"><span class="glyphicon glyphicon-user"></span> ' . $row['username'] . "</a></li>";
                 }
             }
         }
-        $html_code[] = '</ul>';
-	return implode($html_code, PHP_EOL);
+        $htmlCode[] = '</ul>';
+	return implode($htmlCode, PHP_EOL);
 } // END get_search_results()
 
 function printProfile($userUUID) {
@@ -160,15 +160,15 @@ function printProfile($userUUID) {
                 <?php
                 $query = sprintf("SELECT * FROM points WHERE id_member='%d' ORDER BY date DESC LIMIT 10", $userId);
                 $result = $db->query($query);
-                $html_code = array();
+                $htmlCode = array();
                 while ( $row3 = $result->fetch_assoc() ) {
-                        $html_code[] = sprintf ("<p>%s va rebre <strong>%d punts</strong> d'experiència per <em>%s</em></p>",
-                                time_elapsed_string($row3['date']),
+                        $htmlCode[] = sprintf ("<p>%s va rebre <strong>%d punts</strong> d'experiència per <em>%s</em></p>",
+                                getElapsedTimeString($row3['date']),
                                 $row3['points'],
                                 $row3['memo']
                                 );
                 }
-                echo implode(PHP_EOL, $html_code);
+                echo implode(PHP_EOL, $htmlCode);
                 }
                 ?>
             </div>
@@ -204,15 +204,15 @@ function printProfile($userUUID) {
                 $query = sprintf("SELECT t1.image, t1.name, t1.description, t2.status FROM badges AS t1, members_badges AS t2 WHERE t2.id_member='%d' AND t1.id=t2.id_badges", $userId);
                 $result = $db->query($query);
                 echo '<h3>Insígnies ('. $badges .')</h3>';
-                $html_code = array();
+                $htmlCode = array();
                 while ($row = $result->fetch_assoc()) {
                     $title = sprintf("%s\n%s", $row['name'], $row['description']);
-                    $html_code[] = '<a href="#" title="' . $title . '">';
+                    $htmlCode[] = '<a href="#" title="' . $title . '">';
                     $image = ('completed' == $row['status']) ? 'images/badges/' . $row['image'] : 'images/default_badge_off.png';
-                    $html_code[] = '<img src="' . $image .'" alt="'. $row['name'] . '" class="img-thumbnail" width="80">';
-                    $html_code[] = '</a>';
+                    $htmlCode[] = '<img src="' . $image .'" alt="'. $row['name'] . '" class="img-thumbnail" width="80">';
+                    $htmlCode[] = '</a>';
                 }
-                echo implode(PHP_EOL, $html_code);
+                echo implode(PHP_EOL, $htmlCode);
                 }
                 ?>
             </div>
