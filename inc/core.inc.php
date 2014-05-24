@@ -200,16 +200,16 @@ function getNewUUID() {
   */
  function getUserExists($user) {
     if (is_int($user)) {
-        return (getUserName($user) === false ) ? false : true;
+        return (getUserNameById($user) === false ) ? false : true;
     } else {
-        return (getUserId($user) === false ) ? false : true;
+        return (getUserIdByName($user) === false ) ? false : true;
     }
 }
 
-function getUserName ($user_id) {
+function getUserNameById ($userId) {
     global $db;
 
-    $query = sprintf( "SELECT username FROM members WHERE id='%d' LIMIT 1", intval($user_id) );
+    $query = sprintf( "SELECT username FROM members WHERE id='%d' LIMIT 1", intval($userId) );
     $result = $db->query($query);
 
     // Si no s'ha trobat res, retornem FALSE
@@ -219,7 +219,7 @@ function getUserName ($user_id) {
     return $row['username'];
 }
 
-function getUserId ($username) {
+function getUserIdByName ($username) {
     global $db;
 
     $query = sprintf( "SELECT id FROM members WHERE username='%s' LIMIT 1", $username );
