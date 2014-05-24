@@ -292,19 +292,19 @@ function printAdminHeader( $a = 'users', $msg = array() ) {
             <p><?php echo getHTMLMessages($msg); ?></p>
 
             <ul class="nav nav-tabs">
-                <li<?php echo ( $a == 'actions' ) ? ' class="active"' : ''; ?>><a href="admin.php?a=actions">Accions</a></li>
-                <li<?php echo ( $a == 'users' ) ? ' class="active"' : ''; ?>><a href="admin.php?a=users">Gestió d'usuaris</a></li>
-                <li<?php echo ( $a == 'levels' ) ? ' class="active"' : ''; ?>><a href="admin.php?a=levels">Gestió de nivells</a></li>
-                <li<?php echo ( $a == 'badges' ) ? ' class="active"' : ''; ?>><a href="admin.php?a=badges">Gestió d'insígnies</a></li>
-                <li<?php echo ( $a == 'quiz' ) ? ' class="active"' : ''; ?>><a href="admin.php?a=quiz">Gestió de preguntes</a></li>
-                <li<?php echo ( $a == 'messages' ) ? ' class="active"' : ''; ?>><a href="admin.php?a=messages">Enviament missatges</a></li>
+                <li<?php echo ( $a == 'actions' ) ? ' class="active"' : ''; ?>><a href="admin.php?a=actions"><span class="glyphicon glyphicon-dashboard"></span> Accions</a></li>
+                <li<?php echo ( $a == 'users' ) ? ' class="active"' : ''; ?>><a href="admin.php?a=users"><span class="glyphicon glyphicon-user"></span>  Gestió d'usuaris</a></li>
+                <li<?php echo ( $a == 'levels' ) ? ' class="active"' : ''; ?>><a href="admin.php?a=levels"><span class="glyphicon glyphicon-list-alt"></span> Gestió de nivells</a></li>
+                <li<?php echo ( $a == 'badges' ) ? ' class="active"' : ''; ?>><a href="admin.php?a=badges"><span class="glyphicon glyphicon-certificate"></span> Gestió d'insígnies</a></li>
+                <li<?php echo ( $a == 'quiz' ) ? ' class="active"' : ''; ?>><a href="admin.php?a=quiz"><span class="glyphicon glyphicon-comment"></span> Gestió de preguntes</a></li>
+                <li<?php echo ( $a == 'messages' ) ? ' class="active"' : ''; ?>><a href="admin.php?a=messages"><span class="glyphicon glyphicon-envelope"></span> Enviament missatges</a></li>
 
             </ul>
     <?php
 }
 
 function printAdminDashboard() {
-    printActions();
+    printQuestionManagement();
 }
 
 function printActions ( $msg = array() ) {
@@ -1541,17 +1541,20 @@ function printQuestionManagement( $msg = array() ) {
         $htmlCode[] = '</td>';
         $htmlCode[] = '<td>';
 
-        if ( 'inactive' == $row['status'] ) {
-            $htmlCode[] = '<span class="label label-danger">inactiva</span>';
-        }
-        if ( 'draft' == $row['status'] ) {
-            $htmlCode[] = '<span class="label label-info">esborrany</span>';
-        }
-        if ( 'hidden' == $row['status'] ) {
-            $htmlCode[] = '<span class="label label-warning">oculta</span>';
-        }
-        if ( 'active' == $row['status'] ) {
-            $htmlCode[] = '<span class="label label-success">publicada</span>';
+        switch ($row['status']) {
+            case 'inactive':
+                $htmlCode[] = '<span class="label label-danger">inactiva</span>';
+                break;
+            case 'draft':
+                $htmlCode[] = '<span class="label label-info">esborrany</span>';
+                break;
+            case 'hidden':
+                $htmlCode[] = '<span class="label label-warning">oculta</span>';
+                break;
+            case 'active':
+            default:
+                $htmlCode[] = '<span class="label label-success">publicada</span>';
+                break;
         }
 
         $htmlCode[] = '</td>';
