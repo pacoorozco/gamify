@@ -422,7 +422,7 @@ function printUserManagement ( $msg = array() ) {
                                     <a href="admin.php?a=newuser" class="btn btn-success" role="button"><span class="glyphicon glyphicon-plus"></span> Nou usuari</a>
                                 </p>
 
-                <table class="table table-hover">
+                <table class="table table-hover" id="users">
                     <thead>
                     <tr>
                         <th>Usuari</th>
@@ -457,6 +457,7 @@ function printUserManagement ( $msg = array() ) {
                             </div>
                         </div>
     <?php
+    echo getHTMLDataTable('#users');
 }
 
 function printLevelManagement( $msg = array() ) {
@@ -469,7 +470,7 @@ function printLevelManagement( $msg = array() ) {
                                 <p class="text-right">
                                     <a href="admin.php?a=newlevel" class="btn btn-success" role="button"><span class="glyphicon glyphicon-plus"></span> Nou nivell</a>
                                 </p>
-                <table class="table table-hover">
+                <table class="table table-hover" id="levels">
                     <thead>
                     <tr>
                         <th>Nivell</th>
@@ -510,6 +511,7 @@ function printLevelManagement( $msg = array() ) {
                             </div>
                         </div>
     <?php
+    echo getHTMLDataTable('#levels');
 }
 
 function printBadgeManagement( $msg = array() ) {
@@ -522,12 +524,13 @@ function printBadgeManagement( $msg = array() ) {
                                 <p class="text-right">
                                     <a href="admin.php?a=newbadge" class="btn btn-success" role="button"><span class="glyphicon glyphicon-plus"></span> Nova insígnia</a>
                                 </p>
-                <table class="table table-hover">
+                <table class="table table-hover" id="badges">
                     <thead>
                     <tr>
                         <th>Nom</th>
                         <th>Imatge</th>
                         <th>Quantitat</th>
+                        <th><abbr title="Assignacions"><span class="glyphicon glyphicon-signal"></span></abbr></th>
                         <th>Accions</th>
                     </tr>
                     </thead>
@@ -542,6 +545,9 @@ function printBadgeManagement( $msg = array() ) {
         $htmlCode[] = '<tr>';
         $htmlCode[] = '<td>';
         $htmlCode[] = '<a href="admin.php?a=editbadge&item=' . $row['id'] . '">' . $row['name'] . '</a>';
+        if ( 'inactive' == $row['status'] ) {
+            $htmlCode[] = '<span class="label label-danger">inactiva</span>';
+        }
         $htmlCode[] = '</td>';
         if ( empty($row['image']) ) {
             $htmlCode[] = '<td><img src="images/default_badge_off.png" alt="'. $row['name'] .'" class="img-thumbnail" width="64"></td>';
@@ -549,6 +555,7 @@ function printBadgeManagement( $msg = array() ) {
             $htmlCode[] = '<td><img src="images/badges/'. $row['image'] .'" alt="'. $row['name'] .'" class="img-thumbnail" width="64"></td>';
         }
         $htmlCode[] = '<td>'. $row['amount_needed'] .'</td>';
+        $htmlCode[] = '<td>' . getBadgeAssignements($row['id']) . '</td>';
         $htmlCode[] = '<td>';
         $htmlCode[] = '<a href="admin.php?a=editbadge&item='. $row['id'] .'" class="btn btn-default" role="button"><span class="glyphicon glyphicon-edit"></span> Editar</a>';
         $htmlCode[] = '<a href="admin.php?a=deletebadge&item='. $row['id'] .'" class="btn btn-danger" role="button"><span class="glyphicon glyphicon-trash"></span> El·liminar</a>';
@@ -563,6 +570,7 @@ function printBadgeManagement( $msg = array() ) {
                             </div>
                         </div>
     <?php
+    echo getHTMLDataTable('#badges');
 }
 
 /*** USERS ***/

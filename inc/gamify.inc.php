@@ -274,3 +274,15 @@ function getUserId( $userUUID ) {
     return $row['id'];
 }
 
+function getBadgeAssignements($badgeId) {
+    global $db;
+
+    $query = sprintf("SELECT COUNT(id_member) AS assignements FROM members_badges WHERE id_badges='%d' AND status='completed'", $badgeId);
+    $result = $db->query($query);
+    if (0 == $result->num_rows ) {
+        return false;
+    }
+    $row = $result->fetch_assoc();
+    return $row['assignements'];    
+}
+
