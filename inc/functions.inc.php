@@ -24,25 +24,6 @@ function secureSessionStart() {
     // start the PHP session
     session_start();
 
-    // check these values into session, prevent session hijacking
-    // 20140413 (Paco) - If enable this Live Search doesn't work
-    /*
-    if ( isset($_SESSION['_USER_LOOSE_IP'])
-            && isset($_SESSION['_USER_AGENT'])
-            && isset($_SESSION['_USER_ACCEPT'])
-            && isset($_SESSION['_USER_ACCEPT_ENCODING']) ) {
-
-        if ( $_SESSION['_USER_LOOSE_IP'] != long2ip( ip2long($_SERVER['REMOTE_ADDR'] ) & ip2long("255.255.0.0") )
-            || $_SESSION['_USER_AGENT'] != $_SERVER['HTTP_USER_AGENT']
-            || $_SESSION['_USER_ACCEPT'] != $_SERVER['HTTP_ACCEPT']
-            || $_SESSION['_USER_ACCEPT_ENCODING'] != $_SERVER['HTTP_ACCEPT_ENCODING']) {
-            secure_session_destroy();
-        }
-    } else {
-        secure_session_destroy();
-    }
-    */
-
     // store these values into the session so I can check on subsequent requests.
     $_SESSION['_USER_AGENT']            = $_SERVER['HTTP_USER_AGENT'];
     $_SESSION['_USER_ACCEPT']           = $_SERVER['HTTP_ACCEPT'];
@@ -51,7 +32,7 @@ function secureSessionStart() {
     // Only use the first two blocks of the IP (loose IP check). Use a
     // netmask of 255.255.0.0 to get the first two blocks only.
     $_SESSION['_USER_LOOSE_IP'] = long2ip( ip2long($_SERVER['REMOTE_ADDR']) & ip2long("255.255.0.0") );
-} // END secure_session_start();
+}
 
 function secureSessionDestroy() {
     // destroy all $_SESSION variables and regenerate session_id
@@ -59,7 +40,7 @@ function secureSessionDestroy() {
     session_destroy();
     session_start();
     session_regenerate_id(true);
-} // END do_logout()
+}
 
  function loginCheck() {
     global $db;
@@ -89,7 +70,7 @@ function secureSessionDestroy() {
  *
  * @param   string  $file_field     Name of file upload in html form
  * @param   string  $destination    The directory where file will be moved
- * @param   array   $allowed_types  An array containing tiletypes allowed
+ * @param   array   $allowedTypes  An array containing tiletypes allowed
  *
  * This array has the form, this is the defaults one:
  * array(
@@ -104,11 +85,11 @@ function secureSessionDestroy() {
  * On 'false' is an error message string
  * On 'true' is the generated filename.
  */
- function uploadFile($file_field, $destination, $allowed_types = array()) {
+ function uploadFile($file_field, $destination, $allowedTypes = array()) {
 
     // Default allowed list of file to be uploaded
-    if (empty($allowed_types) || !is_array($allowed_types)) {
-        $allowed_types = array(
+    if (empty($allowedTypes) || !is_array($allowedTypes)) {
+        $allowedTypes = array(
             'jpg' => 'image/jpeg',
             'png' => 'image/png',
             'gif' => 'image/gif'
@@ -142,7 +123,7 @@ function secureSessionDestroy() {
     $finfo = new finfo(FILEINFO_MIME_TYPE);
     if (false === $ext = array_search(
             $finfo->file($_FILES[$file_field]['tmp_name']),
-            $allowed_types,
+            $allowedTypes,
             true
             )) {
         // Invalid file format
@@ -175,10 +156,10 @@ function secureSessionDestroy() {
   * Returns:
   *  $result:   True si és admin
   */
- function userHasPrivileges($user_id, $privilege='administrator') {
+ function userHasPrivileges($userId, $privilege='administrator') {
     global $db;
 
-    $query = sprintf( "SELECT username FROM members WHERE id='%d' AND role='%s' LIMIT 1", intval($user_id), $privilege );
+    $query = sprintf( "SELECT username FROM members WHERE id='%d' AND role='%s' LIMIT 1", intval($userId), $privilege );
     $result = $db->query($query);
 
     // Si no s'ha trobat res, retornem FALSE
@@ -199,10 +180,10 @@ function printAccessDenied() {
  * @param array $messages (contains 'type' and 'msg')
  */
 function getHTMLMessages($messages) {
-    $html_code = array();
+    $htmlCode = array();
 
     // defines which css classes we'll use to every message type
-    $css_classes = array(
+    $cssClasses = array(
         'error' => 'alert alert-danger',
         'success' => 'alert alert-success',
         'info' => 'alert alert-info',
@@ -210,32 +191,31 @@ function getHTMLMessages($messages) {
         );
 
     foreach ($messages as $msg) {
-        // $html_code[] = '<p class="' . $css_classes[$msg['type']] . '">' . $msg['msg'] . '</p>';
-        $html_code[] = '<div class="alert alert-'. $css_classes[$msg['type']] .' alert-dismissable">';
-        $html_code[] = '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>';
-        $html_code[] = $msg['msg'];
-        $html_code[] = '</div>';
+        $htmlCode[] = '<div class="alert alert-'. $cssClasses[$msg['type']] .' alert-dismissable">';
+        $htmlCode[] = '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>';
+        $htmlCode[] = $msg['msg'];
+        $htmlCode[] = '</div>';
 
     }
 
     // Use PHP_EOL constant for insert \n after every line
-    return implode(PHP_EOL, $html_code);
+    return implode(PHP_EOL, $htmlCode);
 }
 
 function getHTMLSelectOptions( $available_options, $selected_option = '' ) {
-    $html_code = array();
+    $htmlCode = array();
     foreach ( $available_options as $key => $value) {
         if ( $key == $selected_option ) {
-            $html_code[] = '<option value="' . $key . '" selected="selected">' . $value . '</option>';
+            $htmlCode[] = '<option value="' . $key . '" selected="selected">' . $value . '</option>';
         } else {
-            $html_code[] = '<option value="' . $key . '">' . $value . '</option>';
+            $htmlCode[] = '<option value="' . $key . '">' . $value . '</option>';
         }
     }
-    return implode($html_code, PHP_EOL);
+    return implode($htmlCode, PHP_EOL);
 }
 
 function getHTMLDataTable($id) {
-    $html_code = <<<END
+    $htmlCode = <<<END
         <script>
             head.ready(function() {
                 $('$id').dataTable( {
@@ -264,7 +244,7 @@ function getHTMLDataTable($id) {
             } );
         </script>
 END;
-    return $html_code;
+    return $htmlCode;
 }
 
 function getPendingQuizs( $user_id ) {

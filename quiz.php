@@ -368,10 +368,10 @@ function printHistoricQuestionList() {
             }
 }
 
-function viewQuestionByUUID($question_uuid) {
+function viewQuestionByUUID($questionUUID) {
     global $db;
 
-    $query = sprintf( "SELECT * FROM questions WHERE uuid='%s' AND status != 'draft' LIMIT 1", $db->real_escape_string($question_uuid) );
+    $query = sprintf( "SELECT * FROM questions WHERE uuid='%s' AND status != 'draft' LIMIT 1", $db->real_escape_string($questionUUID) );
     $result = $db->query($query);
 
     if ( 0 == $result->num_rows ) {
@@ -381,12 +381,12 @@ function viewQuestionByUUID($question_uuid) {
     }
 
     $question = $result->fetch_assoc();
-    $question_id = $question['id'];
+    $questionId = $question['id'];
 
     // Mirem si la pregunta ha estat resposta per aquest usuari
     $query = sprintf( "SELECT * FROM members_questions WHERE id_member='%d' AND id_question='%d' LIMIT 1",
             $_SESSION['member']['id'],
-            $question_id
+            $questionId
             );
 
     $result = $db->query($query);
@@ -398,12 +398,12 @@ function viewQuestionByUUID($question_uuid) {
 
     if ( ( false === $answered ) && ('active' == $question['status']) ) {
         // L'usuari no ha respost la pregunta i està oberta
-        printAnswerQuestionForm($question_uuid);
+        printAnswerQuestionForm($questionUUID);
         return;
     }
 
     // get question's choices, if none, return
-    $query = sprintf( "SELECT * FROM questions_choices WHERE question_id='%d'", $question_id);
+    $query = sprintf( "SELECT * FROM questions_choices WHERE question_id='%d'", $questionId);
     $result = $db->query($query);
 
     if ( 0 == $result->num_rows ) {

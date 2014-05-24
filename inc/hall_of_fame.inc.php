@@ -24,7 +24,7 @@ defined('IN_SCRIPT') or die('Invalid attempt');
         // Per incrementar la velocitat, guardem tot el codi en una variable i fem nomes un echo.
 
 
-        $html_code = array();
+        $htmlCode = array();
         $position = 1;
          $top3 = 3;
         $top10 = 10;
@@ -37,29 +37,27 @@ defined('IN_SCRIPT') or die('Invalid attempt');
 
                 $currentuser = "";
             }
-            $html_code[] = '<tr ' . $currentuser . '>';
+            $htmlCode[] = '<tr ' . $currentuser . '>';
             if ($position<=$top3)
             {
-                 $html_code[] = '<td class="text-center" style=" vertical-align: middle;"><span class="badge alert-warning"><h'.($position+2).'>&nbsp;'.$position.'&nbsp;</h'.($position+2).'></span></td>';
+                 $htmlCode[] = '<td class="text-center" style=" vertical-align: middle;"><span class="badge alert-warning"><h'.($position+2).'>&nbsp;'.$position.'&nbsp;</h'.($position+2).'></span></td>';
             }
             else
             {
-            $html_code[] = '<td class="text-center"  style=" vertical-align: middle;">' . $position . '</td>';
+            $htmlCode[] = '<td class="text-center"  style=" vertical-align: middle;">' . $position . '</td>';
             }
-            $html_code[] = '<td style=" vertical-align: middle;">';
-            $html_code[] = '<a href="member.php?a=viewuser&item=' . $row['uuid'] . '">' . $row['username'] . '</a>';
-            $html_code[] = '</td>';
-            $html_code[] = '<td style=" vertical-align: middle;">' . $row['points'] . '</td>';
-            $html_code[] = '<td style=" vertical-align: middle;">' . $levels[$row['level_id']] . '</td>';
+            $htmlCode[] = '<td style=" vertical-align: middle;">';
+            $htmlCode[] = '<a href="member.php?a=viewuser&item=' . $row['uuid'] . '">' . $row['username'] . '</a>';
+            $htmlCode[] = '</td>';
+            $htmlCode[] = '<td style=" vertical-align: middle;">' . $row['points'] . '</td>';
+            $htmlCode[] = '<td style=" vertical-align: middle;">' . $levels[$row['level_id']] . '</td>';
             $badges = ($row['badges'] > 0) ? '<span class="badge">' . $row['badges'] . '</span>' : '';
-            $html_code[] = '<td style=" vertical-align: middle;" class="text-center">' . $badges . '</td>';
-            $html_code[] = '</tr>';
-            $ranking[$position] = implode("", $html_code);
-            unset($html_code);
+            $htmlCode[] = '<td style=" vertical-align: middle;" class="text-center">' . $badges . '</td>';
+            $htmlCode[] = '</tr>';
+            $ranking[$position] = implode(PHP_EOL, $htmlCode);
+            unset($htmlCode);
             $position += 1;
         }
-        // echo implode(PHP_EOL, $html_code);
-
 
         if ($currentranking <= $top3) {
             for ($i = 1; $i <= $top10; $i++) {

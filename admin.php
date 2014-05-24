@@ -119,8 +119,8 @@ switch ($action) {
         break;
 
     case 'editlevel':
-        $level_id = getREQUESTVar('item');
-        printEditLevelForm($level_id);
+        $levelId = getREQUESTVar('item');
+        printEditLevelForm($levelId);
         break;
 
     case 'savelevel':
@@ -134,9 +134,9 @@ switch ($action) {
         break;
 
     case 'deletelevel':
-        $level_id = getREQUESTVar('item');
+        $levelId = getREQUESTVar('item');
 
-        if(deleteLevel($level_id)) {
+        if(deleteLevel($levelId)) {
            $missatges[] = array('type' => "success", 'msg' => "El n&iacute;vell s'ha el&middot;liminat correctament.");
         } else {
            $missatges[] = array('type' => "error", 'msg' => "No s'ha pogut el&middot;liminar el n&iacute;vell.");
@@ -163,8 +163,8 @@ switch ($action) {
         break;
 
     case 'editbadge':
-        $badge_id = getREQUESTVar('item');
-        printEditBadgeForm($badge_id);
+        $badgeId = getREQUESTVar('item');
+        printEditBadgeForm($badgeId);
         break;
 
     case 'savebadge':
@@ -179,9 +179,9 @@ switch ($action) {
         break;
 
     case 'deletebadge':
-        $badge_id = getREQUESTVar('item');
+        $badgeId = getREQUESTVar('item');
 
-        if(deleteBadge($badge_id)) {
+        if(deleteBadge($badgeId)) {
            $missatges[] = array('type' => "success", 'msg' => "La insígnia s'ha el&middot;liminat correctament.");
         } else {
            $missatges[] = array('type' => "error", 'msg' => "No s'ha pogut el&middot;liminar la insígnia.");
@@ -236,8 +236,8 @@ switch ($action) {
         break;
 
     case 'editquiz':
-        $question_id = getREQUESTVar('item');
-        printEditQuestionForm($question_id);
+        $questionId = getREQUESTVar('item');
+        printEditQuestionForm($questionId);
         break;
 
     case 'savequiz':
@@ -262,9 +262,9 @@ switch ($action) {
         break;
 
     case 'deletequiz':
-        $question_id = getREQUESTVar('item');
+        $questionId = getREQUESTVar('item');
 
-        if(deleteQuestion($question_id)) {
+        if(deleteQuestion($questionId)) {
            $missatges[] = array('type' => "success", 'msg' => "La pregunta s'ha el&middot;liminat correctament.");
         } else {
            $missatges[] = array('type' => "error", 'msg' => "No s'ha pogut el&middot;liminar la pregunta.");
@@ -273,8 +273,8 @@ switch ($action) {
         break;
 
     case 'previewquiz':
-        $question_id = getREQUESTVar('item');
-        printPreviewQuestion($question_id);
+        $questionId = getREQUESTVar('item');
+        printPreviewQuestion($questionId);
         break;
 
     default:
@@ -305,7 +305,7 @@ function printAdminHeader( $a = 'users', $msg = array() ) {
 
 function printAdminDashboard() {
     printActions();
-} // END print_admin_dashboard()
+}
 
 function printActions ( $msg = array() ) {
     global $db;
@@ -409,7 +409,7 @@ function printActions ( $msg = array() ) {
                 </div>
             </div>
     <?php
-} // END print_action()
+}
 
 function printUserManagement ( $msg = array() ) {
     global $db;
@@ -457,7 +457,7 @@ function printUserManagement ( $msg = array() ) {
                             </div>
                         </div>
     <?php
-} // END print_user_management()
+}
 
 function printLevelManagement( $msg = array() ) {
     global $db;
@@ -510,7 +510,7 @@ function printLevelManagement( $msg = array() ) {
                             </div>
                         </div>
     <?php
-} // END print_level_management()
+}
 
 function printBadgeManagement( $msg = array() ) {
     global $db;
@@ -563,7 +563,7 @@ function printBadgeManagement( $msg = array() ) {
                             </div>
                         </div>
     <?php
-} // END print_badge_management()
+}
 
 /*** USERS ***/
 function printNewUserForm( $data = array(), $msg = array() ) {
@@ -622,7 +622,7 @@ function printNewUserForm( $data = array(), $msg = array() ) {
                         </form>
 
     <?php
-} // END print_newuser_form()
+}
 
 function createUser( $data = array() ) {
     global $db, $CONFIG;
@@ -675,27 +675,27 @@ function createUser( $data = array() ) {
     $db->query($query);
 
     // Get new user_id or 0 on error.
-    $user_id = $db->insert_id;
+    $userId = $db->insert_id;
 
-    if ( $user_id == 0 ) {
+    if ( $userId == 0 ) {
         $missatges[] = array('type' => "error", 'msg' => "No s'ha pogut crear l'usuari.");
         printNewUserForm($data, $missatges);
     } else {
-        $missatges[] = array('type' => "success", 'msg' => "L'usuari '<strong>". getUserName($user_id) ."</strong>' s'ha creat correctament.");
+        $missatges[] = array('type' => "success", 'msg' => "L'usuari '<strong>". getUserName($userId) ."</strong>' s'ha creat correctament.");
         printUserManagement($missatges);
     }
-} // END create_user()
+}
 
-function printEditUserForm($user_id, $msg = array()) {
+function printEditUserForm($userId, $msg = array()) {
     global $db, $CONFIG;
 
     $missatges = array();
 
     // user_id must be integer
-    $user_id = intval($user_id);
+    $userId = intval($userId);
 
     // Get user data from DB
-    $query = sprintf( "SELECT * FROM members WHERE id = '%d' LIMIT 1", $user_id );
+    $query = sprintf( "SELECT * FROM members WHERE id = '%d' LIMIT 1", $userId );
     $result = $db->query($query);
 
     if ($result->num_rows == 0) {
@@ -744,8 +744,8 @@ function printEditUserForm($user_id, $msg = array()) {
                                 <div class="col-sm-10">
                                     <select name="role" id="role" class="form-control">
                             <?php
-                            $available_roles = array('member', 'administrator');
-                            foreach ($available_roles as $opt_key) {
+                            $availableRoles = array('member', 'administrator');
+                            foreach ($availableRoles as $opt_key) {
                                 if ( $opt_key == $row['role'] ) {
                                     echo '<option value="' . $opt_key . '" selected="selected">' . $opt_key . '</option>';
                                 } else {
@@ -759,7 +759,7 @@ function printEditUserForm($user_id, $msg = array()) {
 
                             <div class="form-group">
                                 <div class="col-sm-offset-2 col-sm-10">
-                                    <input type="hidden" id="item" name="item" value="<?php echo $user_id; ?>">
+                                    <input type="hidden" id="item" name="item" value="<?php echo $userId; ?>">
                                     <input type="hidden" id="a" name="a" value="saveuser">
                                     <button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-save"></span> Actualitzar dades</button>
                                     <a href="<?php echo $_SERVER['PHP_SELF']; ?>?a=users" class="btn btn-danger" role="button"><span class="glyphicon glyphicon-retweet"></span> Tornar</a>
@@ -768,7 +768,7 @@ function printEditUserForm($user_id, $msg = array()) {
                         </form>
 
     <?php
-} // END print_edituser_form()
+}
 
 function saveUserData( $data = array() ) {
     global $db, $CONFIG;
@@ -817,20 +817,20 @@ function saveUserData( $data = array() ) {
         $missatges[] = array('type' => "error", 'msg' => "No s'ha pogut actualitzar les dades de l'usuari.");
         printEditUserForm($data, $missatges);
     }
-} // END save_user_data()
+}
 
-function deleteUser($user_id) {
+function deleteUser($userId) {
     global $db;
 
     // user_id must be an integer
-    $user_id = intval($user_id);
-    if ( ! getUserExists($user_id) ) return false;
+    $userId = intval($userId);
+    if ( ! getUserExists($userId) ) return false;
 
-    $query = sprintf( "DELETE FROM members WHERE id = '%d' LIMIT 1", $user_id );
+    $query = sprintf( "DELETE FROM members WHERE id = '%d' LIMIT 1", $userId );
     $db->query($query);
 
-    return ( ! getUserExists($user_id) );
-} // END delete_user()
+    return ( ! getUserExists($userId) );
+}
 
 /*** LEVELS ***/
 
@@ -867,7 +867,7 @@ function printNewLevelForm( $data = array(), $msg = array() ) {
                         </form>
 
     <?php
-} // END print_newlevel_form()
+}
 
 function createLevel( $data = array() ) {
     global $db;
@@ -901,27 +901,27 @@ function createLevel( $data = array() ) {
     $db->query($query);
 
     // Get new level_id or 0 on error.
-    $level_id = $db->insert_id;
+    $levelId = $db->insert_id;
 
-    if ( $level_id == 0 ) {
+    if ( $levelId == 0 ) {
         $missatges[] = array('type' => "error", 'msg' => "No s'ha pogut crear el nivell.");
         printNewLevelForm($data, $missatges);
     } else {
         $missatges[] = array('type' => "success", 'msg' => "El nivell '<strong>". $data['name'] ."</strong>' s'ha creat correctament.");
         printLevelManagement($missatges);
     }
-} // END create_level()
+}
 
-function printEditLevelForm($level_id, $msg = array()) {
+function printEditLevelForm($levelId, $msg = array()) {
     global $db;
 
     $missatges = array();
 
     // level_id must be integer
-    $level_id = intval($level_id);
+    $levelId = intval($levelId);
 
     // Get user data from DB
-    $query = sprintf( "SELECT * FROM levels WHERE id = '%d' LIMIT 1", $level_id );
+    $query = sprintf( "SELECT * FROM levels WHERE id = '%d' LIMIT 1", $levelId );
     $result = $db->query($query);
 
     if ($result->num_rows == 0) {
@@ -964,7 +964,7 @@ function printEditLevelForm($level_id, $msg = array()) {
                         </form>
 
     <?php
-} // END print_editlevel_form()
+}
 
 function saveLevelData( $data = array() ) {
     global $db;
@@ -1017,24 +1017,24 @@ function saveLevelData( $data = array() ) {
         $missatges[] = array('type' => "error", 'msg' => "No s'ha pogut actualitzar les dades del nivell.");
         printEditLevelForm($data, $missatges);
     }
-} // END save_level_data()
+}
 
-function deleteLevel($level_id) {
+function deleteLevel($levelId) {
     global $db;
 
     // level_id must be an integer
-    $level_id = intval($level_id);
-    $query = sprintf( "SELECT id FROM levels WHERE id = '%d'", $level_id );
+    $levelId = intval($levelId);
+    $query = sprintf( "SELECT id FROM levels WHERE id = '%d'", $levelId );
     $result = $db->query($query);
     if ($result->num_rows == 0) return false;
 
-    $query = sprintf( "DELETE FROM levels WHERE id = '%d' LIMIT 1", $level_id );
+    $query = sprintf( "DELETE FROM levels WHERE id = '%d' LIMIT 1", $levelId );
     $db->query($query);
 
-    $query = sprintf( "SELECT id FROM levels WHERE id = '%d'", $level_id );
+    $query = sprintf( "SELECT id FROM levels WHERE id = '%d'", $levelId );
     $result = $db->query($query);
     return ($result->num_rows == 0);
-} // END delete_level()
+}
 
 /*** BADGES ***/
 
@@ -1077,7 +1077,7 @@ function printNewBadgeForm( $data = array(), $msg = array() ) {
                         </form>
 
     <?php
-} // END print_newbadge_form()
+}
 
 function createBadge( $data = array() ) {
     global $db;
@@ -1104,27 +1104,27 @@ function createBadge( $data = array() ) {
     $db->query($query);
 
     // Get new achieve_id or 0 on error.
-    $badge_id = $db->insert_id;
+    $badgeId = $db->insert_id;
 
-    if ( $badge_id == 0 ) {
+    if ( $badgeId == 0 ) {
         $missatges[] = array('type' => "error", 'msg' => "No s'ha pogut crear la insígnia.");
         printNewLevelForm($data, $missatges);
     } else {
         $missatges[] = array('type' => "success", 'msg' => "La insígnia '<strong>". $data['name'] ."</strong>' s'ha creat correctament.");
         printBadgeManagement($missatges);
     }
-} // END create_badge()
+}
 
-function printEditBadgeForm($badge_id, $msg = array()) {
+function printEditBadgeForm($badgeId, $msg = array()) {
     global $db;
 
     $missatges = array();
 
     // level_id must be integer
-    $badge_id = intval($badge_id);
+    $badgeId = intval($badgeId);
 
     // Get user data from DB
-    $query = sprintf( "SELECT * FROM badges WHERE id = '%d' LIMIT 1", $badge_id );
+    $query = sprintf( "SELECT * FROM badges WHERE id = '%d' LIMIT 1", $badgeId );
     $result = $db->query($query);
 
     if ($result->num_rows == 0) {
@@ -1164,7 +1164,7 @@ function printEditBadgeForm($badge_id, $msg = array()) {
                             </div>
                             <div class="form-group">
                                 <div class="col-sm-offset-2 col-sm-10">
-                                    <input type="hidden" id="item" name="item" value="<?php echo $badge_id; ?>">
+                                    <input type="hidden" id="item" name="item" value="<?php echo $badgeId; ?>">
                                     <input type="hidden" id="a" name="a" value="savebadge">
                                     <button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-save"></span> Actualitzar dades</button>
                                     <a href="admin.php?a=badges" class="btn btn-danger" role="button"><span class="glyphicon glyphicon-retweet"></span> Tornar</a>
@@ -1173,7 +1173,7 @@ function printEditBadgeForm($badge_id, $msg = array()) {
                         </form>
 
     <?php
-} // END print_editbadge_form()
+}
 
 function saveBadgeData( $data = array() ) {
     global $db;
@@ -1224,24 +1224,24 @@ function saveBadgeData( $data = array() ) {
         $missatges[] = array('type' => "error", 'msg' => "No s'ha pogut actualitzar les dades de la insígnia.");
         printEditBadgeForm($data, $missatges);
     }
-} // END save_badge_data()
+}
 
-function deleteBadge($badge_id) {
+function deleteBadge($badgeId) {
     global $db;
 
     // badge_id must be an integer
-    $badge_id = intval($badge_id);
-    $query = sprintf( "SELECT id FROM badges WHERE id = '%d'", $badge_id );
+    $badgeId = intval($badgeId);
+    $query = sprintf( "SELECT id FROM badges WHERE id = '%d'", $badgeId );
     $result = $db->query($query);
     if ($result->num_rows == 0) return false;
 
-    $query = sprintf( "DELETE FROM badges WHERE id = '%d' LIMIT 1", $badge_id );
+    $query = sprintf( "DELETE FROM badges WHERE id = '%d' LIMIT 1", $badgeId );
     $db->query($query);
 
-    $query = sprintf( "SELECT id FROM badges WHERE id = '%d'", $badge_id );
+    $query = sprintf( "SELECT id FROM badges WHERE id = '%d'", $badgeId );
     $result = $db->query($query);
     return ($result->num_rows == 0);
-} // END delete_badge()
+}
 
 function addExperience ( $data = array() ) {
     global $db;
@@ -1309,7 +1309,7 @@ function addExperience ( $data = array() ) {
     $missatges[] = array('type' => "success", 'msg' => "Dades de l'usuari '<strong>". $data['username'] ."</strong>' actualitzades.");
     printActions($missatges);
     return true;
-} // END add_experience()
+}
 
 function action( $data = array() ) {
     global $db;
@@ -1450,10 +1450,10 @@ function printSendMessage( $msg = array() ) {
     $query = "SELECT email FROM vmembers WHERE role = 'member'";
     $result = $db->query($query);
 
-    $bcc_mail = array();
+    $bccRecipients = array();
     while ( $row = $result->fetch_assoc() ) {
         if ( !empty($row['email']) ) {
-            $bcc_mail[] = $row['email'];
+            $bccRecipients[] = $row['email'];
         }
     }
 
@@ -1480,7 +1480,7 @@ function printSendMessage( $msg = array() ) {
                             <div class="form-group">
                                 <label for="bcc" class="col-sm-2 control-label">Destinataris</label>
                                 <div class="col-sm-10">
-                                    <textarea id="bcc" class="form-control" rows="3" style="display:none;" disabled><?php echo implode(',', $bcc_mail); ?></textarea>
+                                    <textarea id="bcc" class="form-control" rows="3" style="display:none;" disabled><?php echo implode(',', $bccRecipients); ?></textarea>
                                     <a id="bcc_btn" href="#" class="btn btn-default" onClick="$('#bcc_btn').hide(); $('#bcc').show()"><span class="glyphicon glyphicon-eye-open"></span> Mostrar destinataris</a>
                                 </div>
                             </div>
@@ -1495,7 +1495,7 @@ function printSendMessage( $msg = array() ) {
                 </div>
             </div>
     <?php
-} // END print_send_message()
+}
 
 function printQuestionManagement( $msg = array() ) {
     global $db;
@@ -1563,18 +1563,18 @@ function printQuestionManagement( $msg = array() ) {
                         </div>
     <?php
     echo getHTMLDataTable('#questions');
-} // END print_quiz_management()
+}
 
-function printEditQuestionForm( $question_id, $msg = array() ) {
+function printEditQuestionForm( $questionId, $msg = array() ) {
     global $db;
 
     $missatges = array();
 
     // question_id must be integer
-    $question_id = intval($question_id);
+    $questionId = intval($questionId);
 
     // get question data from DB
-    $query = sprintf( "SELECT * FROM questions WHERE id='%d' LIMIT 1", $question_id );
+    $query = sprintf( "SELECT * FROM questions WHERE id='%d' LIMIT 1", $questionId );
     $result = $db->query($query);
 
     if ($result->num_rows == 0) {
@@ -1586,7 +1586,7 @@ function printEditQuestionForm( $question_id, $msg = array() ) {
     $data = $result->fetch_assoc();
 
     // get all question_choices data from DB
-    $query = sprintf( "SELECT * FROM questions_choices WHERE question_id='%d'", $question_id );
+    $query = sprintf( "SELECT * FROM questions_choices WHERE question_id='%d'", $questionId );
     $result = $db->query($query);
 
     $data['choices'] = array();
@@ -1599,7 +1599,7 @@ function printEditQuestionForm( $question_id, $msg = array() ) {
     }
 
     // get all question_actions data from DB
-    $query = sprintf( "SELECT * FROM questions_badges WHERE question_id='%d'", $question_id );
+    $query = sprintf( "SELECT * FROM questions_badges WHERE question_id='%d'", $questionId );
     $result = $db->query($query);
 
     $data['actions'] = array();
@@ -1625,7 +1625,7 @@ function printEditQuestionForm( $question_id, $msg = array() ) {
                             </div>
                         </form>
     <?php
-} // END print_editquiz_form()
+}
 
 function printNewQuestionForm( $data = array(), $msg = array() ) {
     global $db;
@@ -1646,7 +1646,7 @@ function printNewQuestionForm( $data = array(), $msg = array() ) {
                         </form>
 
     <?php
-} // END print_newquiz_form()
+}
 
 function createQuestion( $data = array() ) {
     global $db;
@@ -1670,9 +1670,9 @@ function createQuestion( $data = array() ) {
     $db->query($query);
 
     // Get new question_id or 0 on error.
-    $question_id = $db->insert_id;
+    $questionId = $db->insert_id;
 
-    if ( 0 == $question_id ) {
+    if ( 0 == $questionId ) {
             die($query);
             $missatges[] = array('type' => "error", 'msg' => "No s'ha pogut crear la pregunta.");
             printNewQuestionForm($data, $missatges);
@@ -1686,7 +1686,7 @@ function createQuestion( $data = array() ) {
         if ( empty($value) ) continue;
 
         $query = sprintf( "INSERT INTO questions_choices SET question_id='%d', choice='%s', correct='%s', points='%d'",
-                $question_id,
+                $questionId,
                 $db->real_escape_string($value),
                 $data['correct'][$key],
                 intval($data['points'][$key])
@@ -1702,7 +1702,7 @@ function createQuestion( $data = array() ) {
         if ( empty($value) ) continue;
 
         $query = sprintf( "INSERT INTO questions_badges SET question_id='%d', badge_id='%d', type='%s'",
-                $question_id,
+                $questionId,
                 $value,
                 $data['when'][$key]
                 );
@@ -1712,7 +1712,7 @@ function createQuestion( $data = array() ) {
     $missatges[] = array('type' => "success", 'msg' => "La pregunta s'ha creat correctament.");
     printQuestionManagement($missatges);
     return true;
-} // END create_quiz()
+}
 
 function saveQuestionData( $data = array() ) {
     global $db;
@@ -1780,25 +1780,25 @@ function saveQuestionData( $data = array() ) {
         $missatges[] = array('type' => "error", 'msg' => "No s'ha pogut actualitzar les dades.");
         printEditQuestionForm($data, $missatges);
     }
-} // END save_quiz_data()
+}
 
-function deleteQuestion($question_id) {
+function deleteQuestion($questionId) {
     global $db;
 
     // question_id must be an integer
-    $question_id = intval($question_id);
+    $questionId = intval($questionId);
 
     // delete all choices
-    $query = sprintf( "DELETE FROM questions_choices WHERE question_id='%d'", $question_id );
+    $query = sprintf( "DELETE FROM questions_choices WHERE question_id='%d'", $questionId );
     $db->query($query);
 
     // delete all actions
-    $query = sprintf( "DELETE FROM questions_badges WHERE question_id='%d'", $question_id );
+    $query = sprintf( "DELETE FROM questions_badges WHERE question_id='%d'", $questionId );
     $db->query($query);
 
-    $query = sprintf( "DELETE FROM questions WHERE id='%d' LIMIT 1", $question_id );
+    $query = sprintf( "DELETE FROM questions WHERE id='%d' LIMIT 1", $questionId );
     return $db->query($query);
-} // END delete_quiz()
+}
 
 function printQuestionContentForm( $data ) {
     global $db;
@@ -1817,13 +1817,13 @@ function printQuestionContentForm( $data ) {
                                 <div class="col-sm-2">
                                     <select name="status" class="form-control">
                                     <?php
-                                    $available_options = array(
+                                    $availableOptions = array(
                                         'draft' => 'Esborrany',
                                         'active' => 'Activa',
                                         'hidden' => 'Oculta',
                                         'inactive' => 'Inactiva'
                                         );
-                                    echo getHTMLSelectOptions($available_options, $data['status']);
+                                    echo getHTMLSelectOptions($availableOptions, $data['status']);
                                     ?>
                                     </select>
                                 </div>
@@ -1848,11 +1848,11 @@ function printQuestionContentForm( $data ) {
                                 <div class="col-sm-2">
                                     <select name="type" class="form-control">
                                     <?php
-                                    $available_options = array(
+                                    $availableOptions = array(
                                         'single' => 'Resposta única',
                                         'multi' => 'Resposta multiple'
                                         );
-                                    echo getHTMLSelectOptions($available_options, $data['type']);
+                                    echo getHTMLSelectOptions($availableOptions, $data['type']);
                                     ?>
                                     </select>
                                 </div>
@@ -1880,11 +1880,11 @@ function printQuestionContentForm( $data ) {
                                     <div class="col-sm-1">
                                         <select name="correct[]" class="form-control">
                                         <?php
-                                            $available_options = array(
+                                            $availableOptions = array(
                                                 'yes' => 'Si',
                                                 'no' => 'No'
                                         );
-                                        echo getHTMLSelectOptions($available_options, $data['correct'][$key]);
+                                        echo getHTMLSelectOptions($availableOptions, $data['correct'][$key]);
                                         ?>
                                         </select>
                                     </div>
@@ -1909,11 +1909,11 @@ function printQuestionContentForm( $data ) {
                                     <div class="col-sm-1">
                                         <select name="correct[]" class="form-control">
                                         <?php
-                                            $available_options = array(
+                                            $availableOptions = array(
                                                 'yes' => 'Si',
                                                 'no' => 'No'
                                         );
-                                        echo getHTMLSelectOptions($available_options, 'no');
+                                        echo getHTMLSelectOptions($availableOptions, 'no');
                                         ?>
                                         </select>
                                     </div>
@@ -1940,9 +1940,9 @@ function printQuestionContentForm( $data ) {
                             <?php
                             $query = "SELECT id, name FROM badges WHERE status='active'";
                             $result = $db->query($query);
-                            $available_actions = array();
+                            $availableActions = array();
                             while( $row = $result->fetch_assoc() ) {
-                                $available_actions[$row['id']] = $row['name'];
+                                $availableActions[$row['id']] = $row['name'];
                             }
                             ?>
 
@@ -1957,19 +1957,19 @@ function printQuestionContentForm( $data ) {
                                     <div class="col-sm-4">
                                         <select name="actions[]" class="form-control">
                                             <option value="">Sense acció</option>
-                                            <?php echo getHTMLSelectOptions($available_actions, $value); ?>
+                                            <?php echo getHTMLSelectOptions($availableActions, $value); ?>
                                         </select>
                                     </div>
                                     <label class="col-sm-1 control-label">Quan</label>
                                     <div class="col-sm-4">
                                         <select name="when[]" class="form-control">
                                         <?php
-                                        $available_options = array(
+                                        $availableOptions = array(
                                             'success' => 'Resposta correcta',
                                             'fail' => 'Resposta incorrecta',
                                             'always' => 'Sempre'
                                             );
-                                        echo getHTMLSelectOptions($available_options, $data['when'][$key]);
+                                        echo getHTMLSelectOptions($availableOptions, $data['when'][$key]);
                                         ?>
                                         </select>
                                     </div>
@@ -1988,19 +1988,19 @@ function printQuestionContentForm( $data ) {
                                     <div class="col-sm-4">
                                         <select name="actions[]" class="form-control">
                                             <option value="">Sense acció</option>
-                                            <?php echo getHTMLSelectOptions($available_actions); ?>
+                                            <?php echo getHTMLSelectOptions($availableActions); ?>
                                         </select>
                                     </div>
                                     <label class="col-sm-1 control-label">Quan</label>
                                     <div class="col-sm-4">
                                         <select name="when[]" class="form-control">
                                         <?php
-                                        $available_options = array(
+                                        $availableOptions = array(
                                             'success' => 'Resposta correcta',
                                             'fail' => 'Resposta incorrecta',
                                             'always' => 'Sempre'
                                             );
-                                        echo getHTMLSelectOptions($available_options, 'always');
+                                        echo getHTMLSelectOptions($availableOptions, 'always');
                                         ?>
                                         </select>
                                     </div>
@@ -2010,12 +2010,12 @@ function printQuestionContentForm( $data ) {
                                 </div>
                             </div>
     <?php
-} // END print_quiz_form_content()
+}
 
-function printPreviewQuestion($question_id) {
+function printPreviewQuestion($questionId) {
     global $db;
 
-    $query = sprintf( "SELECT * FROM questions WHERE id='%s' LIMIT 1", $db->real_escape_string($question_id) );
+    $query = sprintf( "SELECT * FROM questions WHERE id='%s' LIMIT 1", $db->real_escape_string($questionId) );
     $result = $db->query($query);
 
     if ( 0 == $result->num_rows ) {
@@ -2028,7 +2028,7 @@ function printPreviewQuestion($question_id) {
     $question = $result->fetch_assoc();
 
     // get question's choices, if none, return
-    $query = sprintf( "SELECT * FROM questions_choices WHERE question_id='%d'", $question_id);
+    $query = sprintf( "SELECT * FROM questions_choices WHERE question_id='%d'", $questionId);
     $result = $db->query($query);
 
     $question['choices'] = array();
@@ -2042,7 +2042,7 @@ function printPreviewQuestion($question_id) {
 
     ?>
     <h1>Veure pregunta
-    <a href="<?php echo $_SERVER['PHP_SELF']; ?>?a=editquiz&item=<?php echo $question_id; ?>" class="btn btn-info" role="button"><span class="glyphicon glyphicon-edit"></span> Editar</a>
+    <a href="<?php echo $_SERVER['PHP_SELF']; ?>?a=editquiz&item=<?php echo $questionId; ?>" class="btn btn-info" role="button"><span class="glyphicon glyphicon-edit"></span> Editar</a>
     <a href="<?php echo $_SERVER['PHP_SELF']; ?>?a=quiz" class="btn btn-danger" role="button"><span class="glyphicon glyphicon-retweet"></span> Tornar</a>
     </h1>
 
@@ -2080,5 +2080,5 @@ function printPreviewQuestion($question_id) {
         </div>
     </div>
     <?php
-} // END print_preview_quiz()
+}
 

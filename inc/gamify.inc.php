@@ -19,12 +19,10 @@ function doSilentAddExperience ( $userId, $experience, $memo = '' ) {
 
     if ( false === getUserExists($data['id']) ) {
         // L'usuari que ens han passat no existeix, per tant tornem a mostrar la llista.
-        // $missatges[] = array('type' => "error", 'msg' => "No he trobat informaci&oacute; per aquest usuari.");
         return false;
     }
 
     if ( empty($data['experience']) ) {
-        // $missatges[] = array('type' => "error", 'msg' => "El camp experiència és obligatori.");
         return false;
     }
 
@@ -43,7 +41,6 @@ function doSilentAddExperience ( $userId, $experience, $memo = '' ) {
     $result = $db->query($query);
 
     if ( !$result ) {
-        // $missatges[] = array('type' => "error", 'msg' => "No s'ha pogut actualitzar les dades de l'usuari '<strong>". $data['username'] ."</strong>'.");
         return false;
     }
 
@@ -176,7 +173,7 @@ function notifyBadgeToUser( $data = array() ) {
                              $CONFIG['site']['base_url'], getUserUUID($data['id_member']));
 
     $subject = 'Has aconseguit una nova insígnia a GoW!';
-    $mail_body = <<<BADGE_MAIL
+    $mailBody = <<<BADGE_MAIL
 <div style="text-align:center;">
 <h2>Enhorabona, acabes d'aconseguir una nova insígnia</h2>
 <img src="$badgeImage">
@@ -186,7 +183,7 @@ function notifyBadgeToUser( $data = array() ) {
 BADGE_MAIL;
 
     // Send the message
-    return sendMessage($subject, $mail_body, $data['email']);
+    return sendMessage($subject, $mailBody, $data['email']);
 }
 
 function notifyLevelToUser( $data = array() ) {
@@ -198,7 +195,7 @@ function notifyLevelToUser( $data = array() ) {
                              $CONFIG['site']['base_url'], getUserUUID($data['id_member']));
 
     $subject = 'Has pujat de nivell a GoW!';
-    $mail_body = <<<LEVEL_MAIL
+    $mailBody = <<<LEVEL_MAIL
 <div style="text-align:center;">
 <h2>Enhorabona, acabes de pujar de nivell.</h2>
 <img src="$levelImage">
@@ -208,7 +205,7 @@ function notifyLevelToUser( $data = array() ) {
 LEVEL_MAIL;
 
     // Send the message
-    return sendMessage($subject, $mail_body, $data['email']);
+    return sendMessage($subject, $mailBody, $data['email']);
 }
 
 function getUserLevelById($userId) {

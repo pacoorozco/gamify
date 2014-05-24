@@ -130,7 +130,7 @@ while ($data = $result2->fetch_assoc()) {
             $data['status']
             );
     $db->query($query);
-    $question_id = $db->insert_id;
+    $questionId = $db->insert_id;
 
     $data['choices'] = array();
     $data['points'] = array();
@@ -163,7 +163,7 @@ while ($data = $result2->fetch_assoc()) {
         }
 
         $query = sprintf( "INSERT INTO questions_choices SET question_id='%d', choice='%s', correct='%s', points='%d'",
-                $question_id,
+                $questionId,
                 $db->real_escape_string($value),
                 $correct,
                 $points
@@ -181,7 +181,7 @@ while ($data = $result2->fetch_assoc()) {
         if ( empty($value) ) continue;
 
         $query = sprintf( "INSERT INTO questions_badges SET question_id='%d', badge_id='%d', type='always'",
-                $question_id,
+                $questionId,
                 $value
                 );
         $db->query($query);
@@ -192,7 +192,7 @@ while ($data = $result2->fetch_assoc()) {
 
     $values = array();
     while ($row = $result->fetch_assoc()) {
-        $values[] = "('". $row['id_member'] ."', '". $question_id ."', '". $row['amount'] ."', FROM_UNIXTIME(". $row['last_time'] ."))";
+        $values[] = "('". $row['id_member'] ."', '". $questionId ."', '". $row['amount'] ."', FROM_UNIXTIME(". $row['last_time'] ."))";
     }
     $query = "INSERT INTO members_questions (id_member, id_question, amount, last_time) VALUES ". implode(',', $values);
     $db->query($query);

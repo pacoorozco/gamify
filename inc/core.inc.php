@@ -40,12 +40,12 @@ function getREQUESTVar($in, $default = false) {
         return isset($_POST[$in]) ? getPOSTVar($in) : ( isset($_GET[$in]) ? getGETVar($in) : $default );
 }
 
-function getSanitizedInput($in, $force_slashes=0, $max_length=0) {
+function getSanitizedInput($in, $force_slashes=0, $maxLength=0) {
 
     // If $in is array we process every value
     if (is_array($in)) {
         foreach ($in as &$element) {
-            $element = getSanitizedInput($element, $force_slashes=0, $max_length=0);
+            $element = getSanitizedInput($element, $force_slashes=0, $maxLength=0);
         }
         unset ($element);
     } else {
@@ -59,7 +59,7 @@ function getSanitizedInput($in, $force_slashes=0, $max_length=0) {
         if ($force_slashes) $in = addslashes($in);
 
         // Check length
-        if ($max_length) $in = substr($in, 0, $max_length);
+        if ($maxLength) $in = substr($in, 0, $maxLength);
     }
     // Return processed value
     return $in;
@@ -119,17 +119,17 @@ function sendMessage( $subject, $missatge, $receiver = '' ) {
         }
     }
 
-    $service_url = $CONFIG['site']['base_url'];
-    $html_message = $missatge;
+    $serviceURL = $CONFIG['site']['base_url'];
+    $htmlCode = $missatge;
 
-    $mail_body = <<<SEND_MAIL
+    $mailBody = <<<SEND_MAIL
 <html>
 <body style="border:1px solid #222222; margin-left:auto; margin-right:auto; width:70%;">
 <div style="background-color:#222222; height:60px; padding-bottom: 10px; text-align:center;">
-    <img src="$service_url/images/logo-gow-long.png">
+    <img src="$serviceURL/images/logo-gow-long.png">
 </div>
 <div style="padding: 10px;">
-$html_message
+$htmlCode
 </div>
 </body>
 </html>
@@ -151,7 +151,7 @@ SEND_MAIL;
     ->setFrom(array('noreply@upcnet.es' => 'GoW! - Game of Work'))
 
     // Give it a body
-    ->setBody($mail_body, 'text/html')
+    ->setBody($mailBody, 'text/html')
     ;
 
     // If we send to a one user use To:, if they're multiple Bcc:

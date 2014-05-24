@@ -54,9 +54,9 @@ exit();
 
 /*** FUNCTIONS ***/
 function getSearchResults( $searchterm ) {
-	global $db;
+        global $db;
 
-	$htmlCode = array();
+        $htmlCode = array();
         $htmlCode[] = '<ul class="list-unstyled list-group">';
 
         // Nomes farem cerques si busquen mes de tres caracters, aixo evita que sobrecarreguem la BDD
@@ -79,7 +79,7 @@ function getSearchResults( $searchterm ) {
         }
         $htmlCode[] = '</ul>';
 	return implode($htmlCode, PHP_EOL);
-} // END get_search_results()
+}
 
 function printProfile($userUUID) {
     global $db;
@@ -88,9 +88,9 @@ function printProfile($userUUID) {
     $result = $db->query($query);
     $row = $result->fetch_assoc();
     $userId = $row['id'];
-    
+
     // check if user to view profile is admin
-    $admin = userHasPrivileges($userId, 'administrator');    
+    $admin = userHasPrivileges($userId, 'administrator');
 
     $query = sprintf("SELECT profile_image FROM members WHERE id='%d' LIMIT 1", $userId);
     $result = $db->query($query);
@@ -218,8 +218,7 @@ function printProfile($userUUID) {
             </div>
         </div>
     <?php
-
-} // END print_profile()
+}
 
 function uploadProfilePicture() {
     global $CONFIG, $_SESSION, $db;
@@ -249,4 +248,4 @@ function uploadProfilePicture() {
     $db->query($query);
 
     return $returnedMessage;
-} // END upload_profile_picture()
+}
