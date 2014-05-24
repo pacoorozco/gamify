@@ -2,7 +2,7 @@ Version 2.8
 -----------
 * Add 'public link' column on quiz management
 * Use of jQuery DataTables on large tables
-* Modify QuestionsManagement to add more info
+* Modify QuestionsManagement, UserManagement, LevelManagement to add more info
 * Update VIEW vmembers, include UUID, remove password
 * Remove VIEW vtop_week
 * Modify members profiles call to use UUID instead of Id
