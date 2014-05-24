@@ -5,6 +5,7 @@ Version 2.8
 * Modify QuestionsManagement to add more info
 * Update VIEW vmembers, include UUID, remove password
 * Remove VIEW vtop_week 
+* Modify members profiles call to use UUID instead of Id
 
 Version 2.7
 -----------

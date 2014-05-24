@@ -67,7 +67,7 @@ function secureSessionDestroy() {
     // Run a quick check to see if we are an authenticated user or not
     // First, we set a 'is the user logged in' flag to false by default.
     $is_user_logged_in = false;
-    $query = sprintf("SELECT id, username, email, role, disabled, profile_image FROM members WHERE session_id='%s' LIMIT 1", $db->real_escape_string(session_id()));
+    $query = sprintf("SELECT uuid, id, username, email, role, disabled, profile_image FROM members WHERE session_id='%s' LIMIT 1", $db->real_escape_string(session_id()));
     $result = $db->query($query);
     if ( 1 === $result->num_rows ) {
         $row = $result->fetch_assoc();

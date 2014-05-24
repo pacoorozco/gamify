@@ -47,7 +47,7 @@ defined('IN_SCRIPT') or die('Invalid attempt');
             $html_code[] = '<td class="text-center"  style=" vertical-align: middle;">' . $position . '</td>';
             }
             $html_code[] = '<td style=" vertical-align: middle;">';
-            $html_code[] = '<a href="member.php?a=viewuser&item=' . $row['id'] . '">' . $row['username'] . '</a>';
+            $html_code[] = '<a href="member.php?a=viewuser&item=' . $row['uuid'] . '">' . $row['username'] . '</a>';
             $html_code[] = '</td>';
             $html_code[] = '<td style=" vertical-align: middle;">' . $row['points'] . '</td>';
             $html_code[] = '<td style=" vertical-align: middle;">' . $levels[$row['level_id']] . '</td>';

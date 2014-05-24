@@ -40,8 +40,12 @@ require_once('inc/header.inc.php');
 switch ($action) {
     case 'viewuser':
     default:
-        $userId = pakus_REQUEST('item');
-        printProfile($userId);
+        $userUUID = pakus_REQUEST('item');
+        if (is_int($userUUID)) {
+            // OLD behaviour, use UUID instead.
+            $userUUID = getUserUUID($userUUID);
+        }
+        printProfile($userUUID);
 }
 
 
@@ -59,7 +63,7 @@ function getSearchResults( $searchterm ) {
         if ( ! isset($searchterm[3]) ) {
             $html_code[] = '<li class="list-group-item list-group-item-info">Tecleja m&eacute;s de 3 car&agrave;cters per fer la cerca</li>';
         } else {
-            $query = sprintf("SELECT id, username FROM vmembers WHERE username LIKE '%%%s%%'", $db->real_escape_string($searchterm));
+            $query = sprintf("SELECT uuid, username FROM vmembers WHERE username LIKE '%%%s%%'", $db->real_escape_string($searchterm));
             $result = $db->query($query);
 
             if ( 0 == $result->num_rows  ) {
@@ -69,7 +73,7 @@ function getSearchResults( $searchterm ) {
             } else {
                 // Hem trobat informacio
                 while ( $row = $result->fetch_assoc() ) {
-                    $html_code[] = '<li><a href="member.php?a=viewuser&item=' . $row['id'] . '" title="Veure ' . $row['username'] . '" class="list-group-item"><span class="glyphicon glyphicon-user"></span> ' . $row['username'] . "</a></li>";
+                    $html_code[] = '<li><a href="member.php?a=viewuser&item=' . $row['uuid'] . '" title="Veure ' . $row['username'] . '" class="list-group-item"><span class="glyphicon glyphicon-user"></span> ' . $row['username'] . "</a></li>";
                 }
             }
         }
@@ -77,20 +81,18 @@ function getSearchResults( $searchterm ) {
 	return implode($html_code, PHP_EOL);
 } // END get_search_results()
 
-function printProfile($user_id) {
+function printProfile($userUUID) {
     global $db;
 
-    // user_id must be integer
-    $user_id = intval($user_id);
-
-    // check if user to view profile is admin
-    $admin = userHasPrivileges($user_id, 'administrator');
-
-    $query = sprintf("SELECT t1.id, t1.username, t1.total_points, t1.month_points, t1.last_access, t2.name AS level_name, t2.image AS level_image,t2.experience_needed FROM vmembers AS t1, levels AS t2 WHERE t1.level_id = t2.id AND t1.id = '%d' LIMIT 1", $user_id);
+    $query = sprintf("SELECT t1.id, t1.username, t1.total_points, t1.month_points, t1.last_access, t2.name AS level_name, t2.image AS level_image,t2.experience_needed FROM vmembers AS t1, levels AS t2 WHERE t1.level_id = t2.id AND t1.uuid='%s' LIMIT 1", $userUUID);
     $result = $db->query($query);
     $row = $result->fetch_assoc();
+    $userId = $row['id'];
+    
+    // check if user to view profile is admin
+    $admin = userHasPrivileges($userId, 'administrator');    
 
-    $query = sprintf("SELECT profile_image FROM members WHERE id='%d' LIMIT 1", $user_id);
+    $query = sprintf("SELECT profile_image FROM members WHERE id='%d' LIMIT 1", $userId);
     $result = $db->query($query);
     $row2 = $result->fetch_assoc();
     $row['profile_image'] = $row2['profile_image'];
@@ -115,7 +117,7 @@ function printProfile($user_id) {
                         ?>
                         <img src="<?= $row['profile_image']; ?>" class="img-thumbnail" id="profileImage">
                         <?php
-                        if ($user_id == $_SESSION['member']['id']) {
+                        if ($userId == $_SESSION['member']['id']) {
                             // L'usuari por editar la seva imatge.
                         ?>
                         <p class="text-center"><a href="#" id="uploadFile" title="Upload"><span class="glyphicon glyphicon-open"></span> Canviar imatge</a></p>
@@ -156,7 +158,7 @@ function printProfile($user_id) {
                 ?>
                 <h3>Activitat <small>darrers 10 events</small></h3>
                 <?php
-                $query = sprintf("SELECT * FROM points WHERE id_member='%d' ORDER BY date DESC LIMIT 10", $user_id);
+                $query = sprintf("SELECT * FROM points WHERE id_member='%d' ORDER BY date DESC LIMIT 10", $userId);
                 $result = $db->query($query);
                 $html_code = array();
                 while ( $row3 = $result->fetch_assoc() ) {
@@ -194,12 +196,12 @@ function printProfile($user_id) {
 
                 <?php
                 if (false === $admin) {
-                $query = sprintf("SELECT COUNT(*) AS completed FROM members_badges WHERE id_member='%d' AND status='completed'", $user_id);
+                $query = sprintf("SELECT COUNT(*) AS completed FROM members_badges WHERE id_member='%d' AND status='completed'", $userId);
                 $result = $db->query($query);
                 $row = $result->fetch_assoc();
                 $badges = $row['completed'];
 
-                $query = sprintf("SELECT t1.image, t1.name, t1.description, t2.status FROM badges AS t1, members_badges AS t2 WHERE t2.id_member='%d' AND t1.id=t2.id_badges", $user_id);
+                $query = sprintf("SELECT t1.image, t1.name, t1.description, t2.status FROM badges AS t1, members_badges AS t2 WHERE t2.id_member='%d' AND t1.id=t2.id_badges", $userId);
                 $result = $db->query($query);
                 echo '<h3>Insígnies ('. $badges .')</h3>';
                 $html_code = array();

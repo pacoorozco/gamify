@@ -95,7 +95,7 @@ defined('IN_SCRIPT') or die('Invalid attempt');
                                 </span>
                                 <p class="text-muted small"><?php echo $_SESSION['member']['email']; ?></p>
                                 <div class="divider"></div>
-                                <a href="member.php?a=viewuser&item=<?php echo $_SESSION['member']['id']; ?>" title="El meu compte" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-user"></span> El meu compte</a>
+                                <a href="member.php?a=viewuser&item=<?php echo $_SESSION['member']['uuid']; ?>" title="El meu compte" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-user"></span> El meu compte</a>
                             </div>
                         </div>
                     </div>

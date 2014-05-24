@@ -173,7 +173,7 @@ function notifyBadgeToUser( $data = array() ) {
     $badge_name = $data['name'];
     $badge_image = sprintf("%s/images/badges/%s", $CONFIG['site']['base_url'], $data['image']);
     $user_profile = sprintf("%s/member.php?a=viewuser&item=%s",
-                             $CONFIG['site']['base_url'], $data[id_member]);
+                             $CONFIG['site']['base_url'], getUserUUID($data['id_member']));
 
     $subject = 'Has aconseguit una nova insígnia a GoW!';
     $mail_body = <<<BADGE_MAIL
@@ -195,7 +195,7 @@ function notifyLevelToUser( $data = array() ) {
     $level_name = $data['name'];
     $level_image = sprintf("%s/images/levels/%s", $CONFIG['site']['base_url'], $data['image']);
     $user_profile = sprintf("%s/member.php?a=viewuser&item=%s",
-                             $CONFIG['site']['base_url'], $data['id_member']);
+                             $CONFIG['site']['base_url'], getUserUUID($data['id_member']));
 
     $subject = 'Has pujat de nivell a GoW!';
     $mail_body = <<<LEVEL_MAIL
@@ -252,4 +252,28 @@ function getQuestionResponses( $questionUUID ) {
     $row = $result->fetch_assoc();
     return $row['responses'];
 } // END getQuestionStats()
+
+function getUserUUID( $userId ) {
+    global $db;
+    
+    $query = sprintf("SELECT uuid FROM vmembers WHERE id='%d' LIMIT 1", $userId);
+    $result = $db->query($query);
+    if (0 == $result->num_rows ) {
+        return false;
+    }
+    $row = $result->fetch_assoc();
+    return $row['uuid'];
+} // END getUserUUID()
+
+function getUserId( $userUUID ) {
+    global $db;
+    
+    $query = sprintf("SELECT id FROM vmembers WHERE uuid='%s' LIMIT 1", $userUUID);
+    $result = $db->query($query);
+    if (0 == $result->num_rows ) {
+        return false;
+    }
+    $row = $result->fetch_assoc();
+    return $row['id'];
+} // END getUserId()
 
