@@ -286,3 +286,14 @@ function getBadgeAssignements($badgeId) {
     return $row['assignements'];    
 }
 
+function getLevelAssignements($levelId) {
+    global $db;
+
+    $query = sprintf("SELECT COUNT(id) AS assignements FROM vmembers WHERE level_id='%d'", $levelId);
+    $result = $db->query($query);
+    if (0 == $result->num_rows ) {
+        return false;
+    }
+    $row = $result->fetch_assoc();
+    return $row['assignements'];    
+}

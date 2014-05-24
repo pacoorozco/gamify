@@ -476,6 +476,7 @@ function printLevelManagement( $msg = array() ) {
                         <th>Nivell</th>
                         <th>Experiència</th>
                         <th>Imatge</th>
+                        <th><abbr title="Assignacions"><span class="glyphicon glyphicon-signal"></span></abbr></th>
                         <th>Accions</th>
                     </tr>
                     </thead>
@@ -497,6 +498,7 @@ function printLevelManagement( $msg = array() ) {
         } else {
             $htmlCode[] = '<td><img src="images/levels/'. $row['image'] .'" alt="'. $row['name'] .'" width="64"></td>';
         }
+        $htmlCode[] = '<td>' . getLevelAssignements($row['id']) . '</td>';
         $htmlCode[] = '<td>';
         $htmlCode[] = '<a href="admin.php?a=editlevel&item='. $row['id'] .'" class="btn btn-default" role="button"><span class="glyphicon glyphicon-edit"></span> Editar</a>';
         $htmlCode[] = '<a href="admin.php?a=deletelevel&item='. $row['id'] .'" class="btn btn-danger" role="button"><span class="glyphicon glyphicon-trash"></span> El·liminar</a>';
@@ -1520,8 +1522,8 @@ function printQuestionManagement( $msg = array() ) {
                     <tr>
                         <th>Pregunta</th>
                         <th>Estat</th>
-                        <th><abbr title="Respostes"><span class="glyphicon glyphicon-comment"></span></abbr></th>
-                        <th><span class="glyphicon glyphicon-tags"></span></th>
+                        <th><span class="glyphicon glyphicon-tags"></span></th>                        
+                        <th><abbr title="Respostes"><span class="glyphicon glyphicon-signal"></span></abbr></th>
                         <th>Accions</th>
                     </tr>
                     </thead>
@@ -1553,8 +1555,8 @@ function printQuestionManagement( $msg = array() ) {
         }
 
         $htmlCode[] = '</td>';
+        $htmlCode[] = '<td></td>';        
         $htmlCode[] = '<td>' . getQuestionResponses($row['uuid']) . '</td>';
-        $htmlCode[] = '<td></td>';
         $htmlCode[] = '<td>';
         $htmlCode[] = '<a href="'. $_SERVER['PHP_SELF'] .'?a=editquiz&item='. $row['id'] .'" class="btn btn-default" role="button"><span class="glyphicon glyphicon-edit"></span> Editar</a>';
         $htmlCode[] = '<a href="'. $_SERVER['PHP_SELF'] .'?a=previewquiz&item='. $row['id'] .'" class="btn btn-default" role="button"><span class="glyphicon glyphicon-eye-open"></span> Veure</a>';
