@@ -326,3 +326,4 @@ function getLDAPAuth($username, $password) {
     $sr = ldap_search($connect, $CONFIG['LDAP']['basedn'], $filter, array('mail', 'sn'), 0, 1);
     return ( false === ldap_get_entries($connect, $sr) ) ? false : true;
 } // END LDAP_auth()
+

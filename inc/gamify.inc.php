@@ -225,7 +225,7 @@ function getUserLevelById($user_id) {
 
 function getQuestionAverage( $questionUUID ) {
     global $db;
-    
+
     $query = sprintf("SELECT AVG(t1.amount) AS average
         FROM members_questions AS t1, questions AS t2
         WHERE t1.id_question = t2.id
@@ -240,7 +240,7 @@ function getQuestionAverage( $questionUUID ) {
 
 function getQuestionResponses( $questionUUID ) {
     global $db;
-    
+
     $query = sprintf("SELECT COUNT(t1.id_member) AS responses
         FROM members_questions AS t1, questions AS t2
         WHERE t1.id_question = t2.id
@@ -255,7 +255,7 @@ function getQuestionResponses( $questionUUID ) {
 
 function getUserUUID( $userId ) {
     global $db;
-    
+
     $query = sprintf("SELECT uuid FROM vmembers WHERE id='%d' LIMIT 1", $userId);
     $result = $db->query($query);
     if (0 == $result->num_rows ) {
@@ -267,7 +267,7 @@ function getUserUUID( $userId ) {
 
 function getUserId( $userUUID ) {
     global $db;
-    
+
     $query = sprintf("SELECT id FROM vmembers WHERE uuid='%s' LIMIT 1", $userUUID);
     $result = $db->query($query);
     if (0 == $result->num_rows ) {

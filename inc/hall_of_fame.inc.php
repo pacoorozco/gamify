@@ -17,13 +17,13 @@ defined('IN_SCRIPT') or die('Invalid attempt');
             <th>Experiència</th>
             <th>Nivell</th>
             <th class="text-center">Insígnies</th>
-        </tr>   
+        </tr>
     </thead>
     <tbody>
         <?php
         // Per incrementar la velocitat, guardem tot el codi en una variable i fem nomes un echo.
 
-      
+
         $html_code = array();
         $position = 1;
          $top3 = 3;
@@ -38,7 +38,7 @@ defined('IN_SCRIPT') or die('Invalid attempt');
                 $currentuser = "";
             }
             $html_code[] = '<tr ' . $currentuser . '>';
-            if ($position<=$top3) 
+            if ($position<=$top3)
             {
                  $html_code[] = '<td class="text-center" style=" vertical-align: middle;"><span class="badge alert-warning"><h'.($position+2).'>&nbsp;'.$position.'&nbsp;</h'.($position+2).'></span></td>';
             }
@@ -59,7 +59,7 @@ defined('IN_SCRIPT') or die('Invalid attempt');
             $position += 1;
         }
         // echo implode(PHP_EOL, $html_code);
-       
+
 
         if ($currentranking <= $top3) {
             for ($i = 1; $i <= $top10; $i++) {
@@ -83,8 +83,8 @@ defined('IN_SCRIPT') or die('Invalid attempt');
                 echo $ranking[$i];
             }
         }
-       
-      
+
+
         ?>
     </tbody>
 </table>

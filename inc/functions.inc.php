@@ -276,3 +276,4 @@ function getPendingQuizs( $user_id ) {
 
     return ( $row['pending'] > 0 ) ? $row['pending'] : '';
 } // END get_pending_quizs()
+

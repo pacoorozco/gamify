@@ -68,18 +68,18 @@ printf("<pre>\n");
 printf( "Creant les taules de la versio: 2.0\n");
 
 $query = "DROP TABLE IF EXISTS members_questions, questions_choices, questions_badges, questions;";
-$db->query($query) 
+$db->query($query)
         or die('[ERROR] No he pogut el.liminar les taules:  members_questions, questions_choices, questions_badges, questions (' . $db->errno .
  ') ' . $db->error );
 
 foreach ($table as $current_table => $create_query) {
     $query = "DROP TABLE IF EXISTS ". $current_table .";";
-    $db->query($query) 
+    $db->query($query)
             or die('[ERROR] No he pogut el.liminar la taula: '. $current_table .' (' . $db->errno . ') ' . $db->error );
-    
+
     $db->query($create_query)
-            or die('[ERROR] Creant la taula: '. $current_table .' (' . $db->errno . ') ' . $db->error ); 
-    
+            or die('[ERROR] Creant la taula: '. $current_table .' (' . $db->errno . ') ' . $db->error );
+
     printf( "   Taula '%s' creada.\n", $current_table);
 }
 
@@ -131,46 +131,46 @@ while ($data = $result2->fetch_assoc()) {
             );
     $db->query($query);
     $question_id = $db->insert_id;
-    
+
     $data['choices'] = array();
     $data['points'] = array();
-    
-    $data['choices'][] = $data['question1']; 
-    $data['points'][] = $data['answer1']; 
-    
-    $data['choices'][] = $data['question2']; 
-    $data['points'][] = $data['answer2']; 
-    
-    $data['choices'][] = $data['question3']; 
-    $data['points'][] = $data['answer3']; 
-    
-    $data['choices'][] = $data['question4']; 
-    $data['points'][] = $data['answer4']; 
-    
-    $data['choices'][] = $data['question5']; 
-    $data['points'][] = $data['answer5']; 
-    
+
+    $data['choices'][] = $data['question1'];
+    $data['points'][] = $data['answer1'];
+
+    $data['choices'][] = $data['question2'];
+    $data['points'][] = $data['answer2'];
+
+    $data['choices'][] = $data['question3'];
+    $data['points'][] = $data['answer3'];
+
+    $data['choices'][] = $data['question4'];
+    $data['points'][] = $data['answer4'];
+
+    $data['choices'][] = $data['question5'];
+    $data['points'][] = $data['answer5'];
+
     // put choices into its table
     foreach ( $data['choices'] as $key => $value ) {
-        
+
         // validate supplied data
         if ( empty($value) ) continue;
         $points = intval($data['points'][$key]);
-        
+
         $correct = 'no';
         if ( $points > 0 ) {
             $correct = 'yes';
         }
-        
-        $query = sprintf( "INSERT INTO questions_choices SET question_id='%d', choice='%s', correct='%s', points='%d'", 
-                $question_id, 
+
+        $query = sprintf( "INSERT INTO questions_choices SET question_id='%d', choice='%s', correct='%s', points='%d'",
+                $question_id,
                 $db->real_escape_string($value),
                 $correct,
                 $points
                 );
         $db->query($query);
     }
-    
+
     $data['actions'] = array();
     $data['actions'][] = $data['id_badge1'];
     $data['actions'][] = $data['id_badge2'];
@@ -179,9 +179,9 @@ while ($data = $result2->fetch_assoc()) {
     foreach ( $data['actions'] as $value ) {
         $value = intval($value);
         if ( empty($value) ) continue;
-        
-        $query = sprintf( "INSERT INTO questions_badges SET question_id='%d', badge_id='%d', type='always'", 
-                $question_id, 
+
+        $query = sprintf( "INSERT INTO questions_badges SET question_id='%d', badge_id='%d', type='always'",
+                $question_id,
                 $value
                 );
         $db->query($query);
@@ -189,7 +189,7 @@ while ($data = $result2->fetch_assoc()) {
 
     $query = sprintf("SELECT * FROM members_quizs WHERE id_quiz='%d'", $data['id']);
     $result = $db->query($query);
-    
+
     $values = array();
     while ($row = $result->fetch_assoc()) {
         $values[] = "('". $row['id_member'] ."', '". $question_id ."', '". $row['amount'] ."', FROM_UNIXTIME(". $row['last_time'] ."))";
@@ -203,7 +203,7 @@ while ($data = $result2->fetch_assoc()) {
 $query = "SELECT * FROM questions";
 $result = $db->query($query);
 $post_migracio = $result->num_rows;
-    
+
 printf( "migrats %s registres de %s totals.\n", $post_migracio, $pre_migracio );
 
 printf( "   members_quizs -> members_questions: ");
@@ -219,7 +219,7 @@ $db->query($query);
 
 $query = sprintf("SELECT id FROM members");
 $result2 = $db->query($query);
-    
+
 while ($row = $result2->fetch_assoc()) {
     $query = sprintf("UPDATE members SET uuid='%s' WHERE id='%d' LIMIT 1",
             $db->real_escape_string(generate_uuid()),

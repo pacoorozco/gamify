@@ -1530,7 +1530,7 @@ function printQuestionManagement( $msg = array() ) {
         $html_code[] = '<a href="'. $_SERVER['PHP_SELF'] .'?a=editquiz&item=' . $row['id'] . '">' . $row['name'] . '</a> <a href="quiz.php?a=answerqz&item=' . $row['uuid'] . '" title="Enllaç p&uacute;blic" target="_blank"><span class="glyphicon glyphicon-link"></span></a>';
         $html_code[] = '</td>';
         $html_code[] = '<td>';
-        
+
         if ( 'inactive' == $row['status'] ) {
             $html_code[] = '<span class="label label-danger">inactiva</span>';
         }
@@ -2081,3 +2081,4 @@ function printPreviewQuestion($question_id) {
     </div>
     <?php
 } // END print_preview_quiz()
+
