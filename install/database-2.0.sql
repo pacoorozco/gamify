@@ -142,7 +142,7 @@ CREATE TABLE IF NOT EXISTS `members_questions` (
 -- View `vmembers`
 -- -----------------------------------------------------
 DROP VIEW IF EXISTS `vmembers`;
-CREATE ALGORITHM=UNDEFINED DEFINER=root@localhost SQL SECURITY DEFINER VIEW vmembers AS select members.id AS id,members.username AS username,members.email AS email,members.`password` AS `password`,members.role AS role,members.level_id AS level_id,members.session_id AS session_id,members.last_access AS last_access,members.disabled AS disabled,vtop.points AS total_points,vtop_week.points AS week_points,vtop_month.points AS month_points from (((members left join vtop on((members.id = vtop.id))) left join vtop_week on((members.id = vtop_week.id))) left join vtop_month on((members.id = vtop_month.id)));
+CREATE ALGORITHM=UNDEFINED DEFINER=root@localhost SQL SECURITY DEFINER VIEW vmembers AS select members.id AS id,members.uuid,members.username AS username,members.email AS email,members.role AS role,members.level_id AS level_id,members.session_id AS session_id,members.last_access AS last_access,members.disabled AS disabled,vtop.points AS total_points,vtop_month.points AS month_points from (((members left join vtop on((members.id = vtop.id))) left join vtop_week on((members.id = vtop_week.id))) left join vtop_month on((members.id = vtop_month.id)));
 
 -- -----------------------------------------------------
 -- View `vtop`
@@ -155,12 +155,6 @@ CREATE ALGORITHM=UNDEFINED DEFINER=root@localhost SQL SECURITY DEFINER VIEW vtop
 -- -----------------------------------------------------
 DROP VIEW IF EXISTS `vtop_month`;
 CREATE ALGORITHM=UNDEFINED DEFINER=root@localhost SQL SECURITY DEFINER VIEW vtop_month AS select members.id AS id,sum(points.points) AS points from (members left join points on(((members.id = points.id_member) and (timestampdiff(MONTH,points.`date`,now()) < 1) and (year(points.`date`) = year(now()))))) group by members.id;
-
--- -----------------------------------------------------
--- View `vtop_week`
--- -----------------------------------------------------
-DROP VIEW IF EXISTS `vtop_week`;
-CREATE ALGORITHM=UNDEFINED DEFINER=root@localhost SQL SECURITY DEFINER VIEW vtop_week AS select members.id AS id,sum(points.points) AS points from (members left join points on(((members.id = points.id_member) and (timestampdiff(DAY,points.`date`,now()) < 7) and (year(points.`date`) = year(now()))))) group by members.id;
 
 ALTER TABLE `members`
   ADD CONSTRAINT members_ibfk_3 FOREIGN KEY (level_id) REFERENCES `levels` (id);
