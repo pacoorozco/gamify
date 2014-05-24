@@ -51,12 +51,12 @@ require_once('inc/footer.inc.php');
 exit();
 
 /*** FUNCTIONS ***/
-function answerQuestion( $question_uuid, $answers ) {
+function answerQuestion( $questionUUID, $answers ) {
     global $db;
 
-    $html_code = array();
+    $htmlCode = array();
 
-    $query = sprintf( "SELECT * FROM questions WHERE uuid='%s' LIMIT 1", $db->real_escape_string($question_uuid) );
+    $query = sprintf( "SELECT * FROM questions WHERE uuid='%s' LIMIT 1", $db->real_escape_string($questionUUID) );
     $result = $db->query($query);
 
     if ( 0 == $result->num_rows ) {
@@ -66,27 +66,27 @@ function answerQuestion( $question_uuid, $answers ) {
     }
 
     $question = $result->fetch_assoc();
-    $question_id = $question['id'];
+    $questionId = $question['id'];
 
     if ( !empty($question['solution']) ) {
-        $html_code[] = sprintf("<p>La resposta correcta és:</p><pre>%s</pre>", $question['solution']);
+        $htmlCode[] = sprintf("<p>La resposta correcta és:</p><pre>%s</pre>", $question['solution']);
     }
 
     // Mirem si la pregunta ha estat resposta per aquest usuari
     $query = sprintf( "SELECT * FROM members_questions WHERE id_member='%d' AND id_question='%d' LIMIT 1",
             $_SESSION['member']['id'],
-            $question_id
+            $questionId
             );
 
     $result = $db->query($query);
     if ( $result->num_rows > 0 ) {
         // L'usuari ja ha respost la pregunta
-        viewQuestionByUUID($question_uuid);
+        viewQuestionByUUID($questionUUID);
         return;
     }
 
     // get question's choices, if none, return
-    $query = sprintf( "SELECT * FROM questions_choices WHERE question_id='%d'", $question_id);
+    $query = sprintf( "SELECT * FROM questions_choices WHERE question_id='%d'", $questionId);
     $result = $db->query($query);
 
     if ( 0 == $result->num_rows ) {
@@ -117,7 +117,7 @@ function answerQuestion( $question_uuid, $answers ) {
     }
 
     // ACTION: Badge RAPIDO
-    $query = sprintf("SELECT id_member FROM members_questions WHERE id_question='%d'", intval($question_id));
+    $query = sprintf("SELECT id_member FROM members_questions WHERE id_question='%d'", intval($questionId));
     $result = $db->query($query);
     if ($result->num_rows === 0) {
         // Es el primero, hay que dar badge
@@ -127,26 +127,26 @@ function answerQuestion( $question_uuid, $answers ) {
 
     $query = sprintf( "INSERT INTO members_questions SET id_member='%d', id_question='%d', amount='%d'",
             intval($_SESSION['member']['id']),
-            intval($question_id),
+            intval($questionId),
             intval($points)
             );
 
     $db->query($query);
 
-    $old_level = getUserLevelById($_SESSION['member']['id']);
+    $oldLevel = getUserLevelById($_SESSION['member']['id']);
     doSilentAddExperience( $_SESSION['member']['id'], $points, 'respondre la pregunta: '. $question['name'] );
-    $new_level = getUserLevelById($_SESSION['member']['id']);
+    $newLevel = getUserLevelById($_SESSION['member']['id']);
 
-    if ($old_level != $new_level) {
-        $query = sprintf("SELECT name FROM levels WHERE id='%d'", $new_level);
+    if ($oldLevel != $newLevel) {
+        $query = sprintf("SELECT name FROM levels WHERE id='%d'", $newLevel);
         $result = $db->query($query);
         $row = $result->fetch_assoc();
-        $html_code[] = sprintf("<p><strong>Enhorabona!</strong> Acabes de pujar de nivell. Ara ets un <strong>'%s'</strong>.</p>", $row['name']);
+        $htmlCode[] = sprintf("<p><strong>Enhorabona!</strong> Acabes de pujar de nivell. Ara ets un <strong>'%s'</strong>.</p>", $row['name']);
     }
 
     // anem a veure si haig d'executar alguna accio
     $query = sprintf("SELECT * FROM questions_badges WHERE question_id='%d' AND ( type='always' OR type='%s' )",
-            $question_id,
+            $questionId,
             $type
             );
     $result = $db->query($query);
@@ -158,7 +158,7 @@ function answerQuestion( $question_uuid, $answers ) {
                 $query = sprintf("SELECT name FROM badges WHERE id='%d'", $row['badge_id']);
                 $result2 = $db->query($query);
                 $row2 = $result2->fetch_assoc();
-                $html_code[] = sprintf("<p><strong>Enhorabona!</strong> Acabes d'aconseguir la insíginia <strong>'%s'</strong>.</p>", $row2['name']);
+                $htmlCode[] = sprintf("<p><strong>Enhorabona!</strong> Acabes d'aconseguir la insíginia <strong>'%s'</strong>.</p>", $row2['name']);
             }
         }
     }
@@ -170,16 +170,16 @@ function answerQuestion( $question_uuid, $answers ) {
         <div class="panel-heading"><h2>Gràcies per la teva resposta</h2></div>
         <div class="panel-body">
             <p>La teva resposta ha obtingut una puntuació de <strong><?php echo $points; ?> punts</strong>.</p>
-            <?php echo implode(PHP_EOL, $html_code); ?>
+            <?php echo implode(PHP_EOL, $htmlCode); ?>
         </div>
     </div>
     <?php
 }
 
-function printAnswerQuestionForm( $question_uuid ) {
+function printAnswerQuestionForm( $questionUUID ) {
     global $db;
 
-    $query = sprintf( "SELECT * FROM questions WHERE uuid='%s' AND ( status='active' OR status='hidden' ) LIMIT 1", $db->real_escape_string($question_uuid) );
+    $query = sprintf( "SELECT * FROM questions WHERE uuid='%s' AND ( status='active' OR status='hidden' ) LIMIT 1", $db->real_escape_string($questionUUID) );
     $result = $db->query($query);
 
     if ( 0 == $result->num_rows ) {
@@ -189,23 +189,23 @@ function printAnswerQuestionForm( $question_uuid ) {
     }
 
     $question = $result->fetch_assoc();
-    $question_id = $question['id'];
+    $questionId = $question['id'];
 
     // Mirem si la pregunta ha estat resposta per aquest usuari
     $query = sprintf( "SELECT * FROM members_questions WHERE id_member='%d' AND id_question='%d' LIMIT 1",
             $_SESSION['member']['id'],
-            $question_id
+            $questionId
             );
 
     $result = $db->query($query);
     if ( ($result->num_rows > 0) || ('inactive' == $question['status']) ) {
         // L'usuari ja ha respost la pregunta o aquest està tancada
-        viewQuestionByUUID($question_uuid);
+        viewQuestionByUUID($questionUUID);
         return;
     }
 
     // get question's choices, if none, return
-    $query = sprintf( "SELECT * FROM questions_choices WHERE question_id='%d'", $question_id);
+    $query = sprintf( "SELECT * FROM questions_choices WHERE question_id='%d'", $questionId);
     $result = $db->query($query);
 
     if ( 0 == $result->num_rows ) {
@@ -239,27 +239,27 @@ function printAnswerQuestionForm( $question_uuid ) {
                             // we must use checkboxes
                             $option = '<input type="checkbox" name="choices[]" value="%d">';
                         }
-                        $html_code = array();
+                        $htmlCode = array();
                         foreach ($question['choices'] as $choice) {
-                            $html_code[] = '<li class="list-group-item"><label>';
-                            $html_code[] = sprintf( $option, $choice['id'] );
-                            $html_code[] = $choice['choice'];
-                            $html_code[] = '</label></li>';
+                            $htmlCode[] = '<li class="list-group-item"><label>';
+                            $htmlCode[] = sprintf( $option, $choice['id'] );
+                            $htmlCode[] = $choice['choice'];
+                            $htmlCode[] = '</label></li>';
 
                         }
-                        echo implode(PHP_EOL, $html_code);
+                        echo implode(PHP_EOL, $htmlCode);
                     ?>
                 </ul>
                 <a href="//kbtic.upcnet.es/search?SearchableText=<?php echo $question['tip']; ?>" title="Buscar la resposta a la KBTic" class="btn btn-default" target="_blank"role="button"><span class="glyphicon glyphicon-new-window"></span> Ho buscaré a la KBTic</a>
                 <a href="//www.google.es/search?q=<?php echo $question['tip']; ?>" title="Buscar la resposta a Google" class="btn btn-default" target="_blank" role="button"><span class="glyphicon glyphicon-new-window"></span> Ho buscaré a Google</a>
-                <input type="hidden" name="item" value="<?php echo $question_uuid; ?>">
+                <input type="hidden" name="item" value="<?php echo $questionUUID; ?>">
                 <input type="hidden" name="a" value="answer">
                 <button type="submit" class="btn btn-success pull-right"><span class="glyphicon glyphicon-save"></span> Guardar resposta</button>
             </form>
         </div>
     </div>
     <?php
-} // END answer_qz()
+}
 
 function printQuestionHeader( $a = 'list' ) {
     ?>
@@ -271,7 +271,7 @@ function printQuestionHeader( $a = 'list' ) {
                 <li<?php echo ( 'question' == $a ) ? ' class="active"' : ' class="disabled"'; ?>><a href="#">Veure pregunta</a></li>
             </ul>
     <?php
-} // END print_quiz_header()
+}
 
 function printQuestionList() {
     global $db;
@@ -301,25 +301,25 @@ function printQuestionList() {
                 $message[] = array('type' => "info", 'msg' => "<strong>Enhorabona</strong>. No tens cap pregunta pendent. ¡Encara pots trobar com seguir participant!");
                 echo getHTMLMessages($message);
             } else {
-                $html_code = array();
+                $htmlCode = array();
 
-                $html_code[] = '<div class="list-group">';
+                $htmlCode[] = '<div class="list-group">';
                 while ( $row = $result->fetch_assoc() ) {
-                    $html_code[] = '<a href="'. $_SERVER['PHP_SELF'] .'?a=answerqz&item='. $row['uuid'] .'" class="list-group-item">';
+                    $htmlCode[] = '<a href="'. $_SERVER['PHP_SELF'] .'?a=answerqz&item='. $row['uuid'] .'" class="list-group-item">';
                     if ( empty($row['image']) ) {
-                        $html_code[] = '<img data-src="holder.js/120x120" class="img-rounded" alt="'. $row['name'] .'">';
+                        $htmlCode[] = '<img data-src="holder.js/120x120" class="img-rounded" alt="'. $row['name'] .'">';
                     } else {
-                        $html_code[] = '<img src="'. $row['image'] .'" width="120" class="img-rounded" alt="'. $row['name'] .'">';
+                        $htmlCode[] = '<img src="'. $row['image'] .'" width="120" class="img-rounded" alt="'. $row['name'] .'">';
                     }
-                    $html_code[] = '<span class="h3">'. $row['name'] .'</span>';
-                    $html_code[] = '</a>';
+                    $htmlCode[] = '<span class="h3">'. $row['name'] .'</span>';
+                    $htmlCode[] = '</a>';
                 }
-                $html_code[] = '</div>';
+                $htmlCode[] = '</div>';
 
-                echo implode(PHP_EOL, $html_code);
-                unset($html_code);
+                echo implode(PHP_EOL, $htmlCode);
+                unset($htmlCode);
             }
-} // END list_questions()
+}
 
 function printHistoricQuestionList() {
     global $db;
@@ -348,23 +348,23 @@ function printHistoricQuestionList() {
                 $message[] = array('type' => "info", 'msg' => "No hi ha cap pregunta a l'arxiu");
                 echo getHTMLMessages($message);
             } else {
-                $html_code = array();
+                $htmlCode = array();
 
-                $html_code[] = '<div class="list-group">';
+                $htmlCode[] = '<div class="list-group">';
                 while ( $row = $result->fetch_assoc() ) {
-                    $html_code[] = '<a href="'. $_SERVER['PHP_SELF'] .'?a=seeqz&item='. $row['uuid'] .'" class="list-group-item">';
+                    $htmlCode[] = '<a href="'. $_SERVER['PHP_SELF'] .'?a=seeqz&item='. $row['uuid'] .'" class="list-group-item">';
                     if ( empty($row['image']) ) {
-                        $html_code[] = '<img data-src="holder.js/120x120" class="img-rounded" alt="'. $row['name'] .'">';
+                        $htmlCode[] = '<img data-src="holder.js/120x120" class="img-rounded" alt="'. $row['name'] .'">';
                     } else {
-                        $html_code[] = '<img src="'. $row['image'] .'" width="120" class="img-rounded" alt="'. $row['name'] .'">';
+                        $htmlCode[] = '<img src="'. $row['image'] .'" width="120" class="img-rounded" alt="'. $row['name'] .'">';
                     }
-                    $html_code[] = '<span class="h3">'. $row['name'] .'</span>';
-                    $html_code[] = '</a>';
+                    $htmlCode[] = '<span class="h3">'. $row['name'] .'</span>';
+                    $htmlCode[] = '</a>';
                 }
-                $html_code[] = '</div>';
+                $htmlCode[] = '</div>';
 
-                echo implode(PHP_EOL, $html_code);
-                unset($html_code);
+                echo implode(PHP_EOL, $htmlCode);
+                unset($htmlCode);
             }
 }
 
@@ -431,23 +431,23 @@ function viewQuestionByUUID($question_uuid) {
             <h4><?php echo $question['question']; ?></h4>
                 <ul class="list-group">
                     <?php
-                        $html_code = array();
+                        $htmlCode = array();
                         foreach ($question['choices'] as $choice) {
-                            $html_code[] = '<li class="list-group-item">';
+                            $htmlCode[] = '<li class="list-group-item">';
                             if ( true === $answered ) {
                                 if ( 'yes' == $choice['correct'] ) {
-                                    $html_code[] = '<span class="glyphicon glyphicon-ok"></span>';
+                                    $htmlCode[] = '<span class="glyphicon glyphicon-ok"></span>';
                                 } else {
-                                    $html_code[] = '<span class="glyphicon glyphicon-remove"></span>';
+                                    $htmlCode[] = '<span class="glyphicon glyphicon-remove"></span>';
                                 }
                             } else {
-                                $html_code[] = '<span class="glyphicon glyphicon-question-sign"></span>';
+                                $htmlCode[] = '<span class="glyphicon glyphicon-question-sign"></span>';
                             }
-                            $html_code[] = $choice['choice'];
-                            $html_code[] = '</li>';
+                            $htmlCode[] = $choice['choice'];
+                            $htmlCode[] = '</li>';
 
                         }
-                        echo implode(PHP_EOL, $html_code);
+                        echo implode(PHP_EOL, $htmlCode);
                     ?>
                 </ul>
             <?php
@@ -463,5 +463,5 @@ function viewQuestionByUUID($question_uuid) {
         </div>
     </div>
     <?php
-} // END see_qz()
+}
 

@@ -9,11 +9,11 @@
 defined('IN_SCRIPT') or die('Invalid attempt');
 
 /*** FUNCTIONS ***/
-function doSilentAddExperience ( $user_id, $experience, $memo = '' ) {
+function doSilentAddExperience ( $userId, $experience, $memo = '' ) {
     global $db;
 
     // validate data
-    $data['id'] = intval($user_id);
+    $data['id'] = intval($userId);
     $data['experience'] = intval($experience);
     $data['memo'] = $memo;
 
@@ -36,7 +36,7 @@ function doSilentAddExperience ( $user_id, $experience, $memo = '' ) {
     $query = sprintf("SELECT level_id FROM vmembers WHERE id = '%d' LIMIT 1", $data['id']);
     $result = $db->query($query);
     $row = $result->fetch_assoc();
-    $old_level = $row['level_id'];
+    $oldLevel = $row['level_id'];
 
     // adds experience to user
     $query = sprintf("INSERT INTO points SET id_member='%d', points='%d', memo='%s'", $data['id'], $data['experience'], $db->real_escape_string($data['memo']));
@@ -59,7 +59,7 @@ function doSilentAddExperience ( $user_id, $experience, $memo = '' ) {
     $data['name'] = $row['name'];
     $data['image'] = $row['image'];
 
-    if ( $old_level != $data['level_id'] ) {
+    if ( $oldLevel != $data['level_id'] ) {
         $query = sprintf( "UPDATE members SET level_id='%d' WHERE id = '%d' LIMIT 1", $data['level_id'], $data['id'] );
         $result = $db->query($query);
         // Send a mail to user in order to tell him/her, his/her new level
@@ -67,17 +67,17 @@ function doSilentAddExperience ( $user_id, $experience, $memo = '' ) {
     }
 
     return true;
-} // END silent_add_experience()
+}
 
-function doSilentAction( $user_id, $action_id ) {
+function doSilentAction( $userId, $actionId ) {
     global $db;
 
     $missatges = array();
 
     // validate data
     $data = array();
-    $data['id_member'] = intval($user_id);
-    $data['id_badge'] = intval($action_id);
+    $data['id_member'] = intval($userId);
+    $data['id_badge'] = intval($actionId);
     $data['amount'] = 1;
 
     // Get user data from DB
@@ -120,7 +120,7 @@ function doSilentAction( $user_id, $action_id ) {
                           $data['id_member'], $data['id_badge'], $data['amount'], time(), $status );
 
         if ( $db->query($query) && ( 'completed' == $status ) ) {
-                doSilentAddExperience( $user_id, 5, 'desbloquejar la ins&iacute;gnia: '. $data['name'] );
+                doSilentAddExperience( $userId, 5, 'desbloquejar la ins&iacute;gnia: '. $data['name'] );
                 // send a mail to user in order to tell him/her, his/her new badge
                 notifyBadgeToUser($data);
                 return $data['id_badge'];
@@ -164,64 +164,64 @@ function doSilentAction( $user_id, $action_id ) {
     } else {
         return false;
     }
-} // silent_action()
+}
 
 
 function notifyBadgeToUser( $data = array() ) {
     global $CONFIG;
 
-    $badge_name = $data['name'];
-    $badge_image = sprintf("%s/images/badges/%s", $CONFIG['site']['base_url'], $data['image']);
-    $user_profile = sprintf("%s/member.php?a=viewuser&item=%s",
+    $badgeName = $data['name'];
+    $badgeImage = sprintf("%s/images/badges/%s", $CONFIG['site']['base_url'], $data['image']);
+    $userProfile = sprintf("%s/member.php?a=viewuser&item=%s",
                              $CONFIG['site']['base_url'], getUserUUID($data['id_member']));
 
     $subject = 'Has aconseguit una nova insígnia a GoW!';
     $mail_body = <<<BADGE_MAIL
 <div style="text-align:center;">
 <h2>Enhorabona, acabes d'aconseguir una nova insígnia</h2>
-<img src="$badge_image">
-<h3>Ins&iacute;gnia: $badge_name</h3>
-<p style="padding-bottom: 10px;">Pots veure el teu perfil <a href="$user_profile">aquí</a>.</p>
+<img src="$badgeImage">
+<h3>Ins&iacute;gnia: $badgeName</h3>
+<p style="padding-bottom: 10px;">Pots veure el teu perfil <a href="$userProfile">aquí</a>.</p>
 </div>
 BADGE_MAIL;
 
     // Send the message
     return sendMessage($subject, $mail_body, $data['email']);
-} // END notify_badge_2_user()
+}
 
 function notifyLevelToUser( $data = array() ) {
     global $CONFIG;
 
-    $level_name = $data['name'];
-    $level_image = sprintf("%s/images/levels/%s", $CONFIG['site']['base_url'], $data['image']);
-    $user_profile = sprintf("%s/member.php?a=viewuser&item=%s",
+    $levelName = $data['name'];
+    $levelImage = sprintf("%s/images/levels/%s", $CONFIG['site']['base_url'], $data['image']);
+    $userProfile = sprintf("%s/member.php?a=viewuser&item=%s",
                              $CONFIG['site']['base_url'], getUserUUID($data['id_member']));
 
     $subject = 'Has pujat de nivell a GoW!';
     $mail_body = <<<LEVEL_MAIL
 <div style="text-align:center;">
 <h2>Enhorabona, acabes de pujar de nivell.</h2>
-<img src="$level_image">
-<h3>Ets un $level_name</h3>
-<p style="padding-bottom: 10px;">Pots veure el teu perfil <a href="$user_profile">aquí</a>.</p>
+<img src="$levelImage">
+<h3>Ets un $levelName</h3>
+<p style="padding-bottom: 10px;">Pots veure el teu perfil <a href="$userProfile">aquí</a>.</p>
 </div>
 LEVEL_MAIL;
 
     // Send the message
     return sendMessage($subject, $mail_body, $data['email']);
-} // END notify_badge_2_user()
+}
 
-function getUserLevelById($user_id) {
+function getUserLevelById($userId) {
     global $db;
 
-    $query = sprintf( "SELECT level_id FROM vmembers WHERE id='%d' LIMIT 1", intval($user_id));
+    $query = sprintf( "SELECT level_id FROM vmembers WHERE id='%d' LIMIT 1", intval($userId));
     $result = $db->query($query);
     if (0 == $result->num_rows ) {
         return false;
     }
     $row = $result->fetch_assoc();
     return $row['level_id'];
-} // END get_user_level()
+}
 
 function getQuestionAverage( $questionUUID ) {
     global $db;
@@ -236,7 +236,7 @@ function getQuestionAverage( $questionUUID ) {
     }
     $row = $result->fetch_assoc();
     return $row['average'];
-} // END getQuestionStats()
+}
 
 function getQuestionResponses( $questionUUID ) {
     global $db;
@@ -251,7 +251,7 @@ function getQuestionResponses( $questionUUID ) {
     }
     $row = $result->fetch_assoc();
     return $row['responses'];
-} // END getQuestionStats()
+}
 
 function getUserUUID( $userId ) {
     global $db;
@@ -263,7 +263,7 @@ function getUserUUID( $userId ) {
     }
     $row = $result->fetch_assoc();
     return $row['uuid'];
-} // END getUserUUID()
+}
 
 function getUserId( $userUUID ) {
     global $db;
@@ -275,5 +275,5 @@ function getUserId( $userUUID ) {
     }
     $row = $result->fetch_assoc();
     return $row['id'];
-} // END getUserId()
+}
 
