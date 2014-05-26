@@ -6,6 +6,7 @@ Version 2.8
 * Update VIEW vmembers, include UUID, remove password
 * Remove VIEW vtop_week
 * Modify members profiles call to use UUID instead of Id
+* Add a new column to members_questions to keep answered choices
 
 Version 2.7
 -----------

@@ -125,10 +125,11 @@ function answerQuestion( $questionUUID, $answers ) {
     }
     // END ACTION
 
-    $query = sprintf( "INSERT INTO members_questions SET id_member='%d', id_question='%d', amount='%d'",
+    $query = sprintf( "INSERT INTO members_questions SET id_member='%d', id_question='%d', amount='%d', answers='%s'",
             intval($_SESSION['member']['id']),
             intval($questionId),
-            intval($points)
+            intval($points),
+            implode(',', $answers)
             );
 
     $db->query($query);
