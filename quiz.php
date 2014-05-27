@@ -69,7 +69,7 @@ function answerQuestion( $questionUUID, $answers ) {
     $questionId = $question['id'];
 
     if ( !empty($question['solution']) ) {
-        $htmlCode[] = sprintf("<p>La resposta correcta és:</p><pre>%s</pre>", $question['solution']);
+        $htmlCode[] = sprintf('<div class="alert alert-info"><p><strong>La resposta correcta és: </strong></p><p>%s</p></div>', $question['solution']);
     }
 
     // Mirem si la pregunta ha estat resposta per aquest usuari
