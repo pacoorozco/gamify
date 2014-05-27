@@ -293,11 +293,11 @@ function printAdminHeader( $a = 'users', $msg = array() ) {
 
             <ul class="nav nav-tabs">
                 <li<?php echo ( $a == 'actions' ) ? ' class="active"' : ''; ?>><a href="admin.php?a=actions"><span class="glyphicon glyphicon-dashboard"></span> Accions</a></li>
-                <li<?php echo ( $a == 'users' ) ? ' class="active"' : ''; ?>><a href="admin.php?a=users"><span class="glyphicon glyphicon-user"></span>  Gestió d'usuaris</a></li>
-                <li<?php echo ( $a == 'levels' ) ? ' class="active"' : ''; ?>><a href="admin.php?a=levels"><span class="glyphicon glyphicon-list-alt"></span> Gestió de nivells</a></li>
-                <li<?php echo ( $a == 'badges' ) ? ' class="active"' : ''; ?>><a href="admin.php?a=badges"><span class="glyphicon glyphicon-certificate"></span> Gestió d'insígnies</a></li>
-                <li<?php echo ( $a == 'quiz' ) ? ' class="active"' : ''; ?>><a href="admin.php?a=quiz"><span class="glyphicon glyphicon-comment"></span> Gestió de preguntes</a></li>
-                <li<?php echo ( $a == 'messages' ) ? ' class="active"' : ''; ?>><a href="admin.php?a=messages"><span class="glyphicon glyphicon-envelope"></span> Enviament missatges</a></li>
+                <li<?php echo ( $a == 'users' ) ? ' class="active"' : ''; ?>><a href="admin.php?a=users"><span class="glyphicon glyphicon-user"></span>  Usuaris</a></li>
+                <li<?php echo ( $a == 'levels' ) ? ' class="active"' : ''; ?>><a href="admin.php?a=levels"><span class="glyphicon glyphicon-list-alt"></span> Nivells</a></li>
+                <li<?php echo ( $a == 'badges' ) ? ' class="active"' : ''; ?>><a href="admin.php?a=badges"><span class="glyphicon glyphicon-certificate"></span> Insígnies</a></li>
+                <li<?php echo ( $a == 'quiz' ) ? ' class="active"' : ''; ?>><a href="admin.php?a=quiz"><span class="glyphicon glyphicon-comment"></span> Preguntes</a></li>
+                <li<?php echo ( $a == 'messages' ) ? ' class="active"' : ''; ?>><a href="admin.php?a=messages"><span class="glyphicon glyphicon-envelope"></span> Missatges</a></li>
 
             </ul>
     <?php
@@ -408,6 +408,8 @@ function printActions ( $msg = array() ) {
 
                 </div>
             </div>
+                </div>
+               </div>
     <?php
 }
 
