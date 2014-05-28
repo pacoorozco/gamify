@@ -7,6 +7,7 @@
 
 define('IN_SCRIPT', 1);
 require_once('inc/functions.inc.php');
+require_once('inc/gamify.inc.php');
 
 // Que hem de fer?
 $action = getREQUESTVar('a');
