@@ -121,7 +121,7 @@ if ( true === loginCheck() ) { ?>
                                 $usertext = 'usuari';
                                 $logintext = 'Accedir';
 
-                                if (isset($CONFIG['authentication']['LDAP'])) {
+                                if ('LDAP' == $CONFIG['authentication']['type']) {
                                     $usertext = 'usuari LDAP';
                                     $logintext = 'Accedir amb LDAP';
                                 }
@@ -175,11 +175,19 @@ if ( true === loginCheck() ) { ?>
                             <p>Error:</p>
                             <span></span>
                         </div>
+                        
+                                <?php
+                                $usertext = 'usuari';
+
+                                if ('LDAP' == $CONFIG['authentication']['type']) {
+                                    $usertext = 'usuari LDAP';
+                                }
+                                ?>                        
 
                         <div class="form-group">
                             <label for="username" class="col-md-3 control-label">Usuari</label>
                             <div class="col-md-9">
-                                <input type="text" name="username" class="form-control" placeholder="usuari" required>
+                                <input type="text" name="username" class="form-control" placeholder="<?= $usertext; ?>" required>
                             </div>
                         </div>
 
