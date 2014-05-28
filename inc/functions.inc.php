@@ -257,3 +257,13 @@ function getPendingQuizs( $user_id ) {
     return ( $row['pending'] > 0 ) ? $row['pending'] : '';
 }
 
+function getRowFromQuery($query) {
+    global $db;
+    
+    $result = $db->query($query);
+    if ( 0 == $result->num_rows ) {
+        return false;
+    }
+    return $result->fetch_assoc();
+}
+

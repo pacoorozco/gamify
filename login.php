@@ -293,11 +293,14 @@ function doRegister( $data = array() ) {
         printRegisterForm($missatges);
         return false;
     } else {
+        // ACTION: Benvinguda
+        doSilentAction($userId, 8);
+        
         $missatges[] = array('type' => "success", 'msg' => "L'usuari '<strong>". $data['username'] ."</strong>' creat correctament.");
         printLoginForm($data['username'], $missatges);
         return true;
     }
-} // END do_register()
+}
 
 function getLDAPAuth($username, $password) {
     global $CONFIG;

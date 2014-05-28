@@ -372,32 +372,25 @@ function printHistoricQuestionList() {
 function viewQuestionByUUID($questionUUID) {
     global $db;
 
-    $query = sprintf( "SELECT * FROM questions WHERE uuid='%s' AND status != 'draft' LIMIT 1", $db->real_escape_string($questionUUID) );
-    $result = $db->query($query);
-
-    if ( 0 == $result->num_rows ) {
+    $question = getRowFromQuery(sprintf(
+            "SELECT * FROM questions WHERE uuid='%s' AND status != 'draft' LIMIT 1",
+            $db->real_escape_string($questionUUID)
+            ));
+    if ( false === $question ) {
         // La pregunta que ens han passat no existeix, per tant tornem a mostrar la llista.
         printQuestionList();
-        return false;
+        return false;       
     }
-
-    $question = $result->fetch_assoc();
     $questionId = $question['id'];
 
     // Mirem si la pregunta ha estat resposta per aquest usuari
-    $query = sprintf( "SELECT * FROM members_questions WHERE id_member='%d' AND id_question='%d' LIMIT 1",
+    $answer = getRowFromQuery(sprintf(
+            "SELECT answers FROM members_questions WHERE id_member='%d' AND id_question='%d' LIMIT 1",
             $_SESSION['member']['id'],
-            $questionId
-            );
+            $question['id']
+            ));
 
-    $result = $db->query($query);
-    $answered = true;
-    if ( 0 == $result->num_rows ) {
-        // L'usuari no ha respost la pregunta
-        $answered = false;
-    }
-
-    if ( ( false === $answered ) && ('active' == $question['status']) ) {
+    if ( ( false === $answer ) && ('active' == $question['status']) ) {
         // L'usuari no ha respost la pregunta i està oberta
         printAnswerQuestionForm($questionUUID);
         return;
@@ -425,24 +418,27 @@ function viewQuestionByUUID($questionUUID) {
     ?>
     <div class="panel panel-default" width="70%">
         <div class="panel-heading">
-            <h2><?php echo $question['name']; ?></h2>
+            <h2><?= $question['name']; ?></h2>
         </div>
         <div class="panel-body">
-            <img src="<?php echo $question['image']; ?>" width="120" class="img-rounded">
-            <h4><?php echo $question['question']; ?></h4>
+            <img src="<?= $question['image']; ?>" width="120" class="img-rounded">
+            <h4><?= $question['question']; ?></h4>
                 <ul class="list-group">
                     <?php
                         $htmlCode = array();
                         foreach ($question['choices'] as $choice) {
                             $htmlCode[] = '<li class="list-group-item">';
-                            if ( true === $answered ) {
+                            if ( false === $answer ) {
+                                $htmlCode[] = '<span class="glyphicon glyphicon-question-sign"></span>';
+                            } else {
                                 if ( 'yes' == $choice['correct'] ) {
                                     $htmlCode[] = '<span class="glyphicon glyphicon-ok"></span>';
                                 } else {
                                     $htmlCode[] = '<span class="glyphicon glyphicon-remove"></span>';
                                 }
-                            } else {
-                                $htmlCode[] = '<span class="glyphicon glyphicon-question-sign"></span>';
+                            } 
+                            if (in_array($choice['id'], explode(',', $answer))) {
+                                $htmlCode[] = '<span class="badge">La teva resposta</span>';
                             }
                             $htmlCode[] = $choice['choice'];
                             $htmlCode[] = '</li>';
@@ -452,13 +448,13 @@ function viewQuestionByUUID($questionUUID) {
                     ?>
                 </ul>
             <?php
-            if ( true === $answered ) {
+            if ( false === $answer ) {
+                echo '<div class="alert alert-warning"><p>No veus la solució per què no vas respondre aquesta pregunta.</p></div>';
+            } else {
                 if ( !empty($question['solution']) ) {
                 // nomes mostrem la resposta si l'usuari ha respost la pregunta
-                echo '<div class="alert alert-info"><p><strong>La resposta correcta és: </strong></p><p>'. $question['solution'] .'</p></div>';
+                echo '<div class="alert alert-success"><p><strong>La resposta correcta és: </strong></p><p>'. $question['solution'] .'</p></div>';
                 }
-            } else {
-                echo '<div class="alert alert-warning"><p>No veus la solució per què no vas respondre aquesta pregunta.</p></div>';
             }
             ?>
         </div>
