@@ -495,11 +495,7 @@ function printLevelManagement( $msg = array() ) {
         $htmlCode[] = '<a href="admin.php?a=editlevel&item=' . $row['id'] . '">' . $row['name'] . '</a>';
         $htmlCode[] = '</td>';
         $htmlCode[] = '<td>' . $row['experience_needed'] . '</td>';
-        if ( empty($row['image']) ) {
-            $htmlCode[] = '<td><img data-src="holder.js/64x64" alt="..."></td>';
-        } else {
-            $htmlCode[] = '<td><img src="images/levels/'. $row['image'] .'" alt="'. $row['name'] .'" width="64"></td>';
-        }
+        $htmlCode[] = '<td><img src="' . getLevelImage($row['id'], false) . '" alt="'. $row['name'] .'" width="64"></td>';
         $htmlCode[] = '<td>' . getLevelAssignements($row['id']) . '</td>';
         $htmlCode[] = '<td>';
         $htmlCode[] = '<a href="admin.php?a=editlevel&item='. $row['id'] .'" class="btn btn-default" role="button"><span class="glyphicon glyphicon-edit"></span> Editar</a>';

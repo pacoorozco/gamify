@@ -84,7 +84,7 @@ function getSearchResults( $searchterm ) {
 function printProfile($userUUID) {
     global $db;
 
-    $query = sprintf("SELECT t1.id, t1.username, t1.total_points, t1.month_points, t1.last_access, t2.name AS level_name, t2.image AS level_image,t2.experience_needed FROM vmembers AS t1, levels AS t2 WHERE t1.level_id = t2.id AND t1.uuid='%s' LIMIT 1", $userUUID);
+    $query = sprintf("SELECT t1.id, t1.username, t1.total_points, t1.month_points, t1.last_access, t1.level_id, t2.name AS level_name, t2.image AS level_image,t2.experience_needed FROM vmembers AS t1, levels AS t2 WHERE t1.level_id = t2.id AND t1.uuid='%s' LIMIT 1", $userUUID);
     $result = $db->query($query);
     $row = $result->fetch_assoc();
     $userId = $row['id'];
@@ -176,7 +176,7 @@ function printProfile($userUUID) {
             <div class="col-md-offset-1 col-md-4">
                 <h3>Experiència</h3>
                 <div class="media">
-                    <img src="images/levels/<?php echo $row['level_image']; ?>" width="100" alt="<?php echo $row['level_name']; ?>" class="img-thumbnail media-object pull-left">
+                    <img src="<?= getLevelImage($row['level_id']); ?>" width="100" alt="<?php echo $row['level_name']; ?>" class="img-thumbnail media-object pull-left">
                     <div class="media-body">
                         <p class="lead media-heading"><?php echo $row['level_name']; ?></p>
                         <?php
