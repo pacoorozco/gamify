@@ -390,8 +390,9 @@ function viewQuestionByUUID($questionUUID) {
             $_SESSION['member']['id'],
             $question['id']
             ));
+    $answered = (is_null($responses)) ? false : true;
 
-    if ( (!$responses) && ('active' == $question['status']) ) {
+    if ( (!$answered) && ('active' == $question['status']) ) {
         // L'usuari no ha respost la pregunta i està oberta
         printAnswerQuestionForm($questionUUID);
         return;
@@ -417,7 +418,7 @@ function viewQuestionByUUID($questionUUID) {
             <img src="<?= $question['image']; ?>" width="120" class="img-rounded">
             <h4><?= $question['question']; ?></h4>
             <?php
-            if (!$responses) {
+            if (!$answered) {
                 echo '<div class="alert alert-warning"><p>No veus la solució per què no vas respondre aquesta pregunta.</p></div>';
             } else {
                 if ( !empty($question['solution']) ) {
@@ -426,10 +427,10 @@ function viewQuestionByUUID($questionUUID) {
             }
             ?>
                 <ul class="list-group">
-                    <?= getHTMLQuestionChoices($question['choices'], $responses['answers']); ?>
+                    <?= getHTMLQuestionChoices($question['choices'], $responses['answers'], $answered); ?>
                 </ul>
             <?php
-            if ($responses) {
+            if ($answered) {
                 echo '<div class="alert alert-info"><p>Vas respondre aquesta pregunta el ' . $responses['last_time'] . ' i vas obtindre <strong>' . $responses['amount'] .' punts</strong>.</p></div>';
                 }
             ?>
@@ -438,11 +439,11 @@ function viewQuestionByUUID($questionUUID) {
     <?php
 }
 
-function getHTMLQuestionChoices($choices, $answers) {
+function getHTMLQuestionChoices($choices, $answers, $answered) {
     $htmlCode = array();
     foreach ($choices as $choice) {
         $htmlCode[] = '<li class="list-group-item">';
-        if (is_null($answers)) {
+        if (!$answered) {
             $htmlCode[] = '<span class="glyphicon glyphicon-question-sign"></span>';
         } else {
             if ('yes' == $choice['correct']) {
