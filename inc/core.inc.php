@@ -24,7 +24,7 @@ require_once('inc/database.inc.php');
 /*** MAIN ***/
 
 // Connects to DB and set a descriptor, this will be used later
-$db = new DB( $CONFIG['mysql']['host'], $CONFIG['mysql']['user'],
+$db = new \Pakus\Database\DB( $CONFIG['mysql']['host'], $CONFIG['mysql']['user'],
             $CONFIG['mysql']['passwd'], $CONFIG['mysql']['database'] )
         or die( 'ERROR: No he pogut connectar amb la base de dades (' . mysqli_connect_errno() . ') ' . mysqli_connect_error() );
 

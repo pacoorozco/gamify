@@ -13,13 +13,16 @@
  * @license    http://creativecommons.org/licenses/by-sa/3.0/deed.en (CC BY-SA 3.0)
  * @version    1.0
  */
+namespace Pakus\Database;
 
-class DB extends mysqli {
+class DB extends \mysqli
+{
     
     /**
      * Returns the first row from database result and returns PHP array.
      */
-    public function getRow($query) {
+    public function getRow($query)
+    {
         $result = $this->query($query);
         
         if (!$result) {
@@ -32,11 +35,12 @@ class DB extends mysqli {
     /**
      * Returns the first field of the first row.
      */
-    public function getOne($query) {
+    public function getOne($query)
+    {
         $result = $this->query($query);
         
         if (!$result) {
-            return null; 
+            return null;
         }
 
         $row = $result->fetch_row();
@@ -49,7 +53,8 @@ class DB extends mysqli {
      * Note: do not use this on a large result sets as you may run out of memory. 
      * Use query() method instead and iterate through returned result.
      */
-    public function getAll($query) {
+    public function getAll($query)
+    {
         $result = $this->query($query);
         $ret = array();
  
@@ -70,13 +75,14 @@ class DB extends mysqli {
      * Note: do not use this on a large result sets as you may run out of memory.
      * Use query() method instead and iterate through returned result.
      */
-    public function getAssoc($query) {
+    public function getAssoc($query)
+    {
         $result = $this->query($query);
         $ret = array();
  
         if (!$result) {
             return null;
-        }    
+        }
  
         while ($row = $result->fetch_assoc()) {
             $values = array_values($row);
@@ -91,22 +97,24 @@ class DB extends mysqli {
      * Escapes and quotes and returns string to use in a query. 
      * If given an array, calls qstr() method.
      */
-    public function qstr($str) {
+    public function qstr($str)
+    {
         if (is_array($str)) {
             return $this->qstrArr($str);
         }
         
         if (is_string($str)) {
             $str = $this->real_escape_string($str);
-        }        
+        }
  
         return $str;
     }
     
     /**
      * Calls qstr() method for all values in given array and returns.
-     */ 
-    public function qstrArr($arr) {
+     */
+    public function qstrArr($arr)
+    {
         foreach ($arr as $key => $value) {
             $arr[$this->qstr($key)] = $this->qstr($value);
         }
@@ -122,7 +130,8 @@ class DB extends mysqli {
      * the value being the information to input.
      * Returns ID of the inserted record.
      */
-    public function insert($table, $arr = array()) {
+    public function insert($table, $arr = array())
+    {
         /**
          * Cleaning the key allows the developer to insert the entire
          * $_POST array should he wish to and still be safe from attacks.
@@ -135,7 +144,7 @@ class DB extends mysqli {
         $query = "INSERT INTO `" . $table . "` (" . $keys . ") VALUES (" . $values . ")";
         $this->query($query);
         return $this->insert_id;
-    }   
+    }
     
     /**
      * Updates data into database
@@ -143,12 +152,13 @@ class DB extends mysqli {
      * except it takes an additional parameter which is the WHERE clause of the
      * SQL query string.
      */
-    public function update($table, $arr = array(), $where = false) {
+    public function update($table, $arr = array(), $where = false)
+    {
         // Start the query string
         $query = "UPDATE `" . $table . "` SET ";
         
         // Build the SET part of the query string
-        foreach($arr as $key => $value){
+        foreach ($arr as $key => $value) {
             $query .= '`'.$this->qstr($key)."` = '".$this->qstr($value)."', ";
         }
         $query = rtrim($query, ', ');
@@ -158,7 +168,5 @@ class DB extends mysqli {
             $query .= " WHERE ". $where;
         }
         return $this->query($query);
-    } 
+    }
 }
-
-
