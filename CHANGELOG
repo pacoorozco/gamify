@@ -7,6 +7,8 @@ Version 2.8
 * Remove VIEW vtop_week
 * Modify members profiles call to use UUID instead of Id
 * Add a new column to members_questions to keep answered choices
+* Mode level images to upload dir
+* Solves some bugs
 
 Version 2.7
 -----------
