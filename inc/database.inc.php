@@ -23,7 +23,7 @@ class DB extends mysqli {
         $result = $this->query($query);
         
         if (!$result) {
-            return null;
+            return false;
         }
         
         return $result->fetch_assoc();
@@ -36,7 +36,7 @@ class DB extends mysqli {
         $result = $this->query($query);
         
         if (!$result) {
-            return null; 
+            return false; 
         }
         
         $row = $result->fetch_row();
@@ -54,7 +54,7 @@ class DB extends mysqli {
         $ret = array();
  
         if (!$result) {
-            return null;
+            return false;
         }
  
         while ($row = $result->fetch_assoc()) {
@@ -75,7 +75,7 @@ class DB extends mysqli {
         $ret = array();
  
         if (!$result) {
-            return null;
+            return false;
         }
  
         while ($row = $result->fetch_assoc()) {
@@ -91,7 +91,7 @@ class DB extends mysqli {
      * Escapes and quotes and returns string to use in a query. 
      * If given an array, calls qstr() method.
      */
-    public function qsrt($str) {
+    public function qstr($str) {
         if (is_array($str)) {
             return $this->qstrArr($str);
         }
@@ -120,29 +120,30 @@ class DB extends mysqli {
      * second is an associative array.
      * The key is a string defining the column of the table to input into and
      * the value being the information to input.
+     * Returns ID of the inserted record.
      */
     public function insert($table, $arr = array()) {
         /**
          * Cleaning the key allows the developer to insert the entire
          * $_POST array should he wish to and still be safe from attacks.
          */
-        $keys = '`' . implode("`, `", $this->clean(array_keys($arr))) . '`';
+        $keys = '`' . implode("`, `", $this->qstr(array_keys($arr))) . '`';
         // Values should always be cleaned
-        $values = "'" . implode("', '", $this->clean(array_values($arr))) . "'";
+        $values = "'" . implode("', '", $this->qstr(array_values($arr))) . "'";
         
         // Build the query string
         $query = "INSERT INTO `" . $table . "` (" . $keys . ") VALUES (" . $values . ")";
-        return $this->query($query);
+        $this->query($query);
+        return $this->insert_id;
     }   
     
     /**
      * Updates data into database
      * The update method works much in the same way as the insert method, 
-     * except it takes an additional perameter which is the WHERE clause of the
-     * SQL query string which can be a string or an array coupled with the $andor
-     * parameter.
+     * except it takes an additional parameter which is the WHERE clause of the
+     * SQL query string.
      */
-    public function update($table, $arr = array(), $where = false, $andor = 'AND') {
+    public function update($table, $arr = array(), $where = false) {
         // Start the query string
         $query = "UPDATE `" . $table . "` SET ";
         
@@ -153,14 +154,8 @@ class DB extends mysqli {
         $query = rtrim($query, ', ');
         
         // Add WHERE clause if given
-        if(is_array($where) && count($where) > 0) {
-            foreach($where as $key => $value){
-                $w_str .= '`'.$this->qstr($key)."` = '".$this->qstr($value)."' ".$andor." ";
-            }
-            $w_str = rtrim($w_str, $andor.' '); // Trim the last AND/OR off
-            $query .= " WHERE ".$w_str;
-        }elseif(is_string($where) && strlen($where) > 0){
-            $query .= " WHERE ".$where;
+        if (false !== $where) {
+            $query .= " WHERE ". $where;
         }
         return $this->query($query);
     } 

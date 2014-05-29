@@ -19,11 +19,12 @@ $CONFIG['site']['debug'] = isset($CONFIG['site']['debug']) ? true : false;
 
 // We need to send mails, we use Swift
 require_once('lib/swift_required.php');
+require_once('inc/database.inc.php');
 
 /*** MAIN ***/
 
 // Connects to DB and set a descriptor, this will be used later
-$db = mysqli_connect( $CONFIG['mysql']['host'], $CONFIG['mysql']['user'],
+$db = new DB( $CONFIG['mysql']['host'], $CONFIG['mysql']['user'],
             $CONFIG['mysql']['passwd'], $CONFIG['mysql']['database'] )
         or die( 'ERROR: No he pogut connectar amb la base de dades (' . mysqli_connect_errno() . ') ' . mysqli_connect_error() );
 
