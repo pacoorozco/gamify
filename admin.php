@@ -495,11 +495,7 @@ function printLevelManagement( $msg = array() ) {
         $htmlCode[] = '<a href="admin.php?a=editlevel&item=' . $row['id'] . '">' . $row['name'] . '</a>';
         $htmlCode[] = '</td>';
         $htmlCode[] = '<td>' . $row['experience_needed'] . '</td>';
-        if ( empty($row['image']) ) {
-            $htmlCode[] = '<td><img data-src="holder.js/64x64" alt="..."></td>';
-        } else {
-            $htmlCode[] = '<td><img src="images/levels/'. $row['image'] .'" alt="'. $row['name'] .'" width="64"></td>';
-        }
+        $htmlCode[] = '<td><img src="' . getLevelImage($row['id'], false) . '" alt="'. $row['name'] .'" width="64"></td>';
         $htmlCode[] = '<td>' . getLevelAssignements($row['id']) . '</td>';
         $htmlCode[] = '<td>';
         $htmlCode[] = '<a href="admin.php?a=editlevel&item='. $row['id'] .'" class="btn btn-default" role="button"><span class="glyphicon glyphicon-edit"></span> Editar</a>';
@@ -1314,7 +1310,7 @@ function addExperience ( $data = array() ) {
         $query = sprintf( "UPDATE members SET level_id='%d' WHERE id = '%d' LIMIT 1", $data['level_id'], $data['id'] );
         $result = $db->query($query);
         // Send a mail to user in order to tell him/her, his/her new level
-        notifyLevelToUser($data);
+        notifyLevelToUser($data['id'], $data['level_id']);
         $missatges[] = array('type' => "info", 'msg' => "L'usuari '<strong>". $data['username'] ."</strong>' ha aconseguit el nivell '<strong>". $data['name'] ."</strong>'.");
     }
 

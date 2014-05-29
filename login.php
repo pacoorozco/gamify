@@ -7,6 +7,7 @@
 
 define('IN_SCRIPT', 1);
 require_once('inc/functions.inc.php');
+require_once('inc/gamify.inc.php');
 
 // Que hem de fer?
 $action = getREQUESTVar('a');
@@ -98,7 +99,7 @@ function printLoginForm( $username = '', $missatges = array() ) {
                                 $usertext = 'usuari';
                                 $logintext = 'Accedir';
 
-                                if ($CONFIG['authentication']['LDAP']) {
+                                if ('LDAP' == $CONFIG['authentication']['type']) {
                                     $usertext = 'usuari LDAP';
                                     $logintext = 'Accedir amb LDAP';
                                 }
@@ -211,8 +212,15 @@ function printRegisterForm( $missatges = array() ) {
 
                         <div class="form-group">
                             <label for="username" class="col-md-3 control-label">Usuari</label>
+                                <?php
+                                $usertext = 'usuari';
+
+                                if ('LDAP' == $CONFIG['authentication']['type']) {
+                                    $usertext = 'usuari LDAP';
+                                }
+                                ?>                            
                             <div class="col-md-9">
-                                <input type="text" name="username" id="username" class="form-control" placeholder="usuari" required>
+                                <input type="text" name="username" id="username" class="form-control" placeholder="<?= $usertext; ?>" required>
                             </div>
                         </div>
 
