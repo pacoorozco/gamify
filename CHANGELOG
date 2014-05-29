@@ -1,6 +1,7 @@
 Version 2.9
 -----------
 * Remove level and badges from sources (cleaning up)
+* Adds a DAL Class in order to write less code messing with DB
 
 Version 2.8
 -----------
