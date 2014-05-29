@@ -421,7 +421,7 @@ function viewQuestionByUUID($questionUUID) {
                 echo '<div class="alert alert-warning"><p>No veus la solució per què no vas respondre aquesta pregunta.</p></div>';
             } else {
                 if ( !empty($question['solution']) ) {
-                echo '<div class="alert alert-success"><p><strong>La resposta correcta és: </strong></p><p>'. $question['solution'] .'</p></div>';
+                    echo '<div class="alert alert-success"><p><strong>La resposta correcta és: </strong></p><p>'. $question['solution'] .'</p></div>';
                 }
             }
             ?>
@@ -438,11 +438,11 @@ function viewQuestionByUUID($questionUUID) {
     <?php
 }
 
-function getHTMLQuestionChoices($choices, $answers = false) {
+function getHTMLQuestionChoices($choices, $answers) {
     $htmlCode = array();
     foreach ($choices as $choice) {
         $htmlCode[] = '<li class="list-group-item">';
-        if (!$answers) {
+        if (is_null($answers)) {
             $htmlCode[] = '<span class="glyphicon glyphicon-question-sign"></span>';
         } else {
             if ('yes' == $choice['correct']) {
