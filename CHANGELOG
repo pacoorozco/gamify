@@ -1,3 +1,7 @@
+Version 2.9
+-----------
+* Remove level and badges from sources (cleaning up)
+
 Version 2.8
 -----------
 * Add 'public link' column on quiz management
