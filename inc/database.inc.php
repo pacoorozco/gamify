@@ -23,7 +23,7 @@ class DB extends mysqli {
         $result = $this->query($query);
         
         if (!$result) {
-            return false;
+            return null;
         }
         
         return $result->fetch_assoc();
@@ -36,9 +36,9 @@ class DB extends mysqli {
         $result = $this->query($query);
         
         if (!$result) {
-            return false; 
+            return null; 
         }
-        
+
         $row = $result->fetch_row();
  
         return is_array($row) ? reset($row) : false;
@@ -54,7 +54,7 @@ class DB extends mysqli {
         $ret = array();
  
         if (!$result) {
-            return false;
+            return null;
         }
  
         while ($row = $result->fetch_assoc()) {
@@ -75,8 +75,8 @@ class DB extends mysqli {
         $ret = array();
  
         if (!$result) {
-            return false;
-        }
+            return null;
+        }    
  
         while ($row = $result->fetch_assoc()) {
             $values = array_values($row);
