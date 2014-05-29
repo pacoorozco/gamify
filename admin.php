@@ -673,23 +673,20 @@ function createUser( $data = array() ) {
     }
 
     // User data is correct, now we can insert it to DB
-    $query = sprintf( "INSERT INTO members SET uuid='%s', username='%s', password='%s', email='%s', role='%s'",
-            $db->real_escape_string(getNewUUID()),
-            $db->real_escape_string($data['username']),
-            $db->real_escape_string(md5($data['password'])),
-            $db->real_escape_string($data['email']),
-            $db->real_escape_string($data['role'])
-            );
-    $db->query($query);
+    $userId = $db->insert('members', 
+            array (
+                'uuid' => getNewUUID(),
+                'username' => $data['username'],
+                'password' => md5($data['password']),
+                'email' => $data['email'],
+                'role' => $data['role']
+            ));
 
-    // Get new user_id or 0 on error.
-    $userId = $db->insert_id;
-
-    if ( $userId == 0 ) {
+    if ( 0 == $userId ) {
         $missatges[] = array('type' => "error", 'msg' => "No s'ha pogut crear l'usuari.");
         printNewUserForm($data, $missatges);
     } else {
-        $missatges[] = array('type' => "success", 'msg' => "L'usuari '<strong>". getUserName($userId) ."</strong>' s'ha creat correctament.");
+        $missatges[] = array('type' => "success", 'msg' => "L'usuari '<strong>". $data['username'] ."</strong>' s'ha creat correctament.");
         printUserManagement($missatges);
     }
 }
@@ -904,14 +901,15 @@ function createLevel( $data = array() ) {
         printNewLevelForm($data, $missatges);
         return false;
     }
+    
+    $levelId = $db->insert('levels', 
+            array (
+                'name' => $data['name'],
+                'experience_needed' => $data['experience_needed'],
+                'image' => $data['image']
+            ));    
 
-    $query = sprintf("INSERT INTO levels SET name='%s', experience_needed='%d', image='%s'", $db->real_escape_string($data['name']), $data['experience_needed'], $db->real_escape_string($data['image']) );
-    $db->query($query);
-
-    // Get new level_id or 0 on error.
-    $levelId = $db->insert_id;
-
-    if ( $levelId == 0 ) {
+    if ( 0 == $levelId ) {
         $missatges[] = array('type' => "error", 'msg' => "No s'ha pogut crear el nivell.");
         printNewLevelForm($data, $missatges);
     } else {
@@ -1106,15 +1104,16 @@ function createBadge( $data = array() ) {
         printNewBadgeForm($data, $missatges);
         return false;
     }
+    
+    $badgeId = $db->insert('badges', 
+            array (
+                'name' => $data['name'],
+                'image' => $data['image'],
+                'description' => $data['description'],
+                'amount_needed' => $data['amount_needed']
+            ));
 
-    $query = sprintf("INSERT INTO badges SET name='%s', image='%s', description='%s', amount_needed='%d'",
-                      $db->real_escape_string($data['name']), $db->real_escape_string($data['image']), $db->real_escape_string($data['description']), $data['amount_needed'] );
-    $db->query($query);
-
-    // Get new achieve_id or 0 on error.
-    $badgeId = $db->insert_id;
-
-    if ( $badgeId == 0 ) {
+    if ( 0 == $badgeId ) {
         $missatges[] = array('type' => "error", 'msg' => "No s'ha pogut crear la insígnia.");
         printNewLevelForm($data, $missatges);
     } else {
@@ -1664,27 +1663,22 @@ function createQuestion( $data = array() ) {
 
     $missatges = array();
 
-    // TODO - Validate supplied data
+    // Validate supplied data
 
     // Question data is correct, now we can insert it to DB
-    $query = sprintf( "INSERT INTO questions SET uuid='%s', name='%s', image='%s', question='%s', tip='%s', solution='%s', type='%s', status='%s'",
-            $db->real_escape_string(getNewUUID()),
-            $db->real_escape_string($data['name']),
-            $db->real_escape_string($data['image']),
-            $db->real_escape_string($data['question']),
-            $db->real_escape_string($data['tip']),
-            $db->real_escape_string($data['solution']),
-            $db->real_escape_string($data['type']),
-            $db->real_escape_string($data['status'])
-            );
-
-    $db->query($query);
-
-    // Get new question_id or 0 on error.
-    $questionId = $db->insert_id;
+    $questionId = $db->insert('questions', 
+            array(
+                'uuid' => getNewUUID(),
+                'name' => $data['name'],
+                'image' => $data['image'],
+                'question' => $data['question'],
+                'tip' => $data['tip'],
+                'solution' => $data['solution'],
+                'type' => $data['type'],
+                'status' => $data['status']
+            ));
 
     if ( 0 == $questionId ) {
-            die($query);
             $missatges[] = array('type' => "error", 'msg' => "No s'ha pogut crear la pregunta.");
             printNewQuestionForm($data, $missatges);
             return false;
@@ -1694,7 +1688,9 @@ function createQuestion( $data = array() ) {
     foreach ( $data['choices'] as $key => $value ) {
 
         // validate supplied data
-        if ( empty($value) ) continue;
+        if ( empty($value) ) {
+            continue;
+        }
 
         $query = sprintf( "INSERT INTO questions_choices SET question_id='%d', choice='%s', correct='%s', points='%d'",
                 $questionId,
@@ -1710,7 +1706,9 @@ function createQuestion( $data = array() ) {
 
         // validate supplied data
         $value = intval($value);
-        if ( empty($value) ) continue;
+        if ( empty($value) ) {
+            continue;
+        }
 
         $query = sprintf( "INSERT INTO questions_badges SET question_id='%d', badge_id='%d', type='%s'",
                 $questionId,
