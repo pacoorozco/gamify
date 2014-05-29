@@ -24,29 +24,39 @@ require_once('inc/database.inc.php');
 /*** MAIN ***/
 
 // Connects to DB and set a descriptor, this will be used later
-$db = new \Pakus\Database\DB( $CONFIG['mysql']['host'], $CONFIG['mysql']['user'],
-            $CONFIG['mysql']['passwd'], $CONFIG['mysql']['database'] )
-        or die( 'ERROR: No he pogut connectar amb la base de dades (' . mysqli_connect_errno() . ') ' . mysqli_connect_error() );
+$db = new \Pakus\Database\DB(
+    $CONFIG['mysql']['host'],
+    $CONFIG['mysql']['user'],
+    $CONFIG['mysql']['passwd'],
+    $CONFIG['mysql']['database']
+) or die(
+    'ERROR: No he pogut connectar amb la base de dades ('
+    . mysqli_connect_errno() . ') ' . mysqli_connect_error()
+    );
 
 /*** FUNCTIONS ***/
-function getGETVar($in, $default = '') {
+function getGETVar($in, $default = '')
+{
         return isset($_GET[$in]) ? getSanitizedInput($_GET[$in]) : $default;
 }
 
-function getPOSTVar($in, $default = '') {
+function getPOSTVar($in, $default = '')
+{
         return isset($_POST[$in]) ? getSanitizedInput($_POST[$in]) : $default;
 }
 
-function getREQUESTVar($in, $default = false) {
+function getREQUESTVar($in, $default = false)
+{
         return isset($_POST[$in]) ? getPOSTVar($in) : ( isset($_GET[$in]) ? getGETVar($in) : $default );
 }
 
-function getSanitizedInput($in, $force_slashes=0, $maxLength=0) {
+function getSanitizedInput($in, $force_slashes = 0, $maxLength = 0)
+{
 
     // If $in is array we process every value
     if (is_array($in)) {
         foreach ($in as &$element) {
-            $element = getSanitizedInput($element, $force_slashes=0, $maxLength=0);
+            $element = getSanitizedInput($element, $force_slashes = 0, $maxLength = 0);
         }
         unset ($element);
     } else {
@@ -54,19 +64,26 @@ function getSanitizedInput($in, $force_slashes=0, $maxLength=0) {
         $in = preg_replace('/&amp;(\#[0-9]+;)/', '&$1', trim($in));
 
         // Is value length 0 chars?
-        if (strlen($in) == 0) return $in;
+        if (strlen($in) == 0) {
+            return $in;
+        }
 
         // Add slashes
-        if ($force_slashes) $in = addslashes($in);
+        if ($force_slashes) {
+            $in = addslashes($in);
+        }
 
         // Check length
-        if ($maxLength) $in = substr($in, 0, $maxLength);
+        if ($maxLength) {
+            $in = substr($in, 0, $maxLength);
+        }
     }
     // Return processed value
     return $in;
 }
 
- function getElapsedTimeString($datetime, $full = false) {
+ function getElapsedTimeString($datetime, $full = false)
+ {
     $now = new DateTime;
     $ago = new DateTime($datetime);
     $diff = $now->diff($ago);
@@ -91,7 +108,9 @@ function getSanitizedInput($in, $force_slashes=0, $maxLength=0) {
         }
     }
 
-    if (!$full) $string = array_slice($string, 0, 1);
+    if (!$full) {
+        $string = array_slice($string, 0, 1);
+    }
 
     return $string ? 'fa '. implode(', ', $string) : 'ara mateix';
 }

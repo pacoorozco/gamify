@@ -16,7 +16,8 @@ require_once('inc/core.inc.php');
 // Start the session (pretty important!)
 secureSessionStart();
 
-function secureSessionStart() {
+function secureSessionStart()
+{
     // set a custom session name
     $sessionName = 'gamify_GoW';
     // sets the session name to the one set above.
@@ -31,10 +32,11 @@ function secureSessionStart() {
 
     // Only use the first two blocks of the IP (loose IP check). Use a
     // netmask of 255.255.0.0 to get the first two blocks only.
-    $_SESSION['_USER_LOOSE_IP'] = long2ip( ip2long($_SERVER['REMOTE_ADDR']) & ip2long("255.255.0.0") );
+    $_SESSION['_USER_LOOSE_IP'] = long2ip(ip2long($_SERVER['REMOTE_ADDR']) & ip2long("255.255.0.0"));
 }
 
-function secureSessionDestroy() {
+function secureSessionDestroy()
+{
     // destroy all $_SESSION variables and regenerate session_id
     session_unset();
     session_destroy();
@@ -42,22 +44,26 @@ function secureSessionDestroy() {
     session_regenerate_id(true);
 }
 
- function loginCheck() {
+function loginCheck()
+{
     global $db;
 
     // Run a quick check to see if we are an authenticated user or not
     // First, we set a 'is the user logged in' flag to false by default.
     $isUserLoggedIn = false;
-    $query = sprintf("SELECT uuid, id, username, email, role, disabled, profile_image FROM members WHERE session_id='%s' LIMIT 1", $db->real_escape_string(session_id()));
+    $query = sprintf(
+        "SELECT uuid, id, username, email, role, disabled, profile_image FROM members WHERE session_id='%s' LIMIT 1",
+        $db->qstr(session_id())
+    );
     $result = $db->query($query);
-    if ( 1 === $result->num_rows ) {
+    if (1 === $result->num_rows) {
         $row = $result->fetch_assoc();
         $_SESSION['member'] = $row;
         // Si l'usuari esta deshabilitat no pot accedir
         $isUserLoggedIn = ($row['disabled'] == 1) ? false : true;
     }
     return $isUserLoggedIn;
- }
+}
 
 /**
  * uploadFile()
@@ -85,7 +91,8 @@ function secureSessionDestroy() {
  * On 'false' is an error message string
  * On 'true' is the generated filename.
  */
- function uploadFile($file_field, $destination, $allowedTypes = array()) {
+function uploadFile($file_field, $destination, $allowedTypes = array())
+{
 
     // Default allowed list of file to be uploaded
     if (empty($allowedTypes) || !is_array($allowedTypes)) {
@@ -98,7 +105,7 @@ function secureSessionDestroy() {
 
     // Undefined | Multiple Files | $_FILES Corruption Attack
     // If this request falls under any of them, treat it invalid.
-    if (!isset($_FILES[$file_field]['error']) || is_array($_FILES[$file_field]['error']) ) {
+    if (!isset($_FILES[$file_field]['error']) || is_array($_FILES[$file_field]['error'])) {
         // Invalid parameters
         return array(false , 'Invalid parameters');
     }
@@ -122,19 +129,21 @@ function secureSessionDestroy() {
     // Check MIME Type
     $finfo = new finfo(FILEINFO_MIME_TYPE);
     if (false === $ext = array_search(
-            $finfo->file($_FILES[$file_field]['tmp_name']),
-            $allowedTypes,
-            true
-            )) {
+        $finfo->file($_FILES[$file_field]['tmp_name']),
+        $allowedTypes,
+        true
+    )) {
         // Invalid file format
         return array(false, 'Invalid file format');
     }
 
     // Generate a new filename (unique)
-    $filename = sprintf('%s/%s.%s',
-                    $destination,
-                    getNewUUID(),
-                    $ext);
+    $filename = sprintf(
+        '%s/%s.%s',
+        $destination,
+        getNewUUID(),
+        $ext
+    );
 
     if (!move_uploaded_file($_FILES[$file_field]['tmp_name'], $filename)) {
         // Failed to move uploaded file
@@ -156,10 +165,11 @@ function secureSessionDestroy() {
   * Returns:
   *  $result:   True si és admin
   */
- function userHasPrivileges($userId, $privilege='administrator') {
+function userHasPrivileges($userId, $privilege = 'administrator')
+{
     global $db;
 
-    $query = sprintf( "SELECT username FROM members WHERE id='%d' AND role='%s' LIMIT 1", intval($userId), $privilege );
+    $query = sprintf("SELECT username FROM members WHERE id='%d' AND role='%s' LIMIT 1", intval($userId), $privilege);
     $result = $db->query($query);
 
     // Si no s'ha trobat res, retornem FALSE
@@ -167,7 +177,8 @@ function secureSessionDestroy() {
 }
 
 /*** HTML CODE FUNCTIONS ***/
-function printAccessDenied() {
+function printAccessDenied()
+{
     ?>
     <h1>Accés denegat</h1>
     <p class="lead">El teu usuari no te permissos per accedir a aquesta pàgina.</p>
@@ -179,7 +190,8 @@ function printAccessDenied() {
  *
  * @param array $messages (contains 'type' and 'msg')
  */
-function getHTMLMessages($messages) {
+function getHTMLMessages($messages)
+{
     $htmlCode = array();
 
     // defines which css classes we'll use to every message type
@@ -202,10 +214,11 @@ function getHTMLMessages($messages) {
     return implode(PHP_EOL, $htmlCode);
 }
 
-function getHTMLSelectOptions( $available_options, $selected_option = '' ) {
+function getHTMLSelectOptions($available_options, $selected_option = '')
+{
     $htmlCode = array();
-    foreach ( $available_options as $key => $value) {
-        if ( $key == $selected_option ) {
+    foreach ($available_options as $key => $value) {
+        if ($key == $selected_option) {
             $htmlCode[] = '<option value="' . $key . '" selected="selected">' . $value . '</option>';
         } else {
             $htmlCode[] = '<option value="' . $key . '">' . $value . '</option>';
@@ -214,7 +227,8 @@ function getHTMLSelectOptions( $available_options, $selected_option = '' ) {
     return implode($htmlCode, PHP_EOL);
 }
 
-function getHTMLDataTable($id) {
+function getHTMLDataTable($id)
+{
     $htmlCode = <<<END
         <script>
             head.ready(function() {
@@ -247,14 +261,18 @@ END;
     return $htmlCode;
 }
 
-function getPendingQuizs( $user_id ) {
+function getPendingQuizs($userId)
+{
     global $db;
+    
+    $pending = $db->getOne(
+        sprintf(
+            "SELECT count(*) AS pending FROM questions "
+            . "WHERE status='active' AND "
+            . "id NOT IN (SELECT id_question FROM members_questions WHERE id_member='%d')",
+            $userId
+        )
+    );
 
-    $query = sprintf( "SELECT count(*) as pending FROM questions AS q WHERE q.status='active' AND id NOT IN (SELECT id_question FROM members_questions WHERE id_member='%d')", intval($user_id) );
-    $result = $db->query($query);
-    $row = $result->fetch_assoc();
-
-    return ( $row['pending'] > 0 ) ? $row['pending'] : '';
+    return ( $pending > 0 ) ? $pending : '';
 }
-
-
