@@ -60,7 +60,7 @@ function doSilentAddExperience ( $userId, $experience, $memo = '' ) {
         $query = sprintf( "UPDATE members SET level_id='%d' WHERE id = '%d' LIMIT 1", $data['level_id'], $data['id'] );
         $result = $db->query($query);
         // Send a mail to user in order to tell him/her, his/her new level
-        notifyLevelToUser($data);
+        notifyLevelToUser($userId, $data['level_id']);
     }
 
     return true;
@@ -186,13 +186,28 @@ BADGE_MAIL;
     return sendMessage($subject, $mailBody, $data['email']);
 }
 
-function notifyLevelToUser( $data = array() ) {
-    global $CONFIG;
-
-    $levelName = $data['name'];
-    $levelImage = sprintf("%s/images/levels/%s", $CONFIG['site']['base_url'], $data['image']);
-    $userProfile = sprintf("%s/member.php?a=viewuser&item=%s",
-                             $CONFIG['site']['base_url'], getUserUUID($data['id_member']));
+function notifyLevelToUser($userId, $levelId) {
+    global $CONFIG, $db;
+    
+    $query = sprintf("SELECT email FROM vmembers WHERE id='%d' LIMIT 1", $userId);
+    $result = $db->query($query);
+    $row = $result->fetch_assoc();
+    $userEmail = $row['email'];
+     
+    $query = sprintf(
+            "SELECT name FROM levels WHERE id='%d' LIMIT 1",
+            $levelId
+            );
+    $result = $db->query($query);
+    $row = $result->fetch_assoc();
+    
+    $levelName = $row['name'];
+    $levelImage = getLevelImage($levelId, true);
+    $userProfile = sprintf(
+            "%s/member.php?a=viewuser&item=%s",
+            $CONFIG['site']['base_url'],
+            getUserUUID($userId)
+            );
 
     $subject = 'Has pujat de nivell a GoW!';
     $mailBody = <<<LEVEL_MAIL
@@ -205,7 +220,25 @@ function notifyLevelToUser( $data = array() ) {
 LEVEL_MAIL;
 
     // Send the message
-    return sendMessage($subject, $mailBody, $data['email']);
+    return sendMessage($subject, $mailBody, $userEmail);
+}
+
+function getLevelImage($levelId, $withURL = false) {
+    global $db, $CONFIG;
+    
+    $query = sprintf(
+            "SELECT image FROM levels WHERE id='%d' LIMIT 1",
+            $levelId
+            );
+    $result = $db->query($query);
+    $row = $result->fetch_assoc();
+    
+    $imagePath = sprintf("%s/%s", $CONFIG['site']['uploads'], $row['image']);
+    if (true === $withURL) {
+        // returns absolute path
+        return sprintf("%s/%s", $CONFIG['site']['base_url'], $imagePath);
+    }
+    return $imagePath;   
 }
 
 function getUserLevelById($userId) {

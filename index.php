@@ -20,6 +20,14 @@ if ( true === loginCheck() ) { ?>
         <div class="video-container">
         <iframe width="320" height="240" src="//www.youtube.com/embed/eH2A0k1um3A" frameborder="0" allowfullscreen></iframe>
         </div>
+        
+        <h1>Contacta'ns</h1>
+        <p class="lead">Tens alguna suggerència? Has trobat un error?</p>
+        <p>Escriu-nos a:</p>
+        <ul>
+            <li>Emilio Ampudia (emilio.ampudia@upcnet.es)</li>
+            <li>Paco Orozco (paco.orozco@upcnet.es)</li>
+        </ul>
 
     </div>
 

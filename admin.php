@@ -1314,7 +1314,7 @@ function addExperience ( $data = array() ) {
         $query = sprintf( "UPDATE members SET level_id='%d' WHERE id = '%d' LIMIT 1", $data['level_id'], $data['id'] );
         $result = $db->query($query);
         // Send a mail to user in order to tell him/her, his/her new level
-        notifyLevelToUser($data);
+        notifyLevelToUser($data['id'], $data['level_id']);
         $missatges[] = array('type' => "info", 'msg' => "L'usuari '<strong>". $data['username'] ."</strong>' ha aconseguit el nivell '<strong>". $data['name'] ."</strong>'.");
     }
 
