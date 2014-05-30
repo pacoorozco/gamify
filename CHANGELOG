@@ -5,6 +5,7 @@ Version 2.9
 * Put user's answers when view a answered question
 * Change the way an user view its answered question
 * Add how many achieves needs to gain a badge when viewing profile
+* [#251] Bug solved: 'Avoid to send empty answers!'
 
 Version 2.8
 -----------

@@ -89,6 +89,16 @@ function answerQuestion($questionUUID, $answers)
         return;
     }
 
+    // if user has not submitted any answer, shows the question again.
+    if (empty($answers)) {
+        $missatges[] = array(
+            'type' => 'warning',
+            'msg' => 'No has seleccionat cap resposta, torna-ho a provar.'
+        );
+        printAnswerQuestionForm($questionUUID, $missatges);
+        return false;
+    }
+
     // get question's choices, if none, return
     $choices = $db->getAll(
         sprintf(
@@ -199,7 +209,7 @@ function answerQuestion($questionUUID, $answers)
     viewQuestionByUUID($questionUUID, $missatges);
 }
 
-function printAnswerQuestionForm($questionUUID)
+function printAnswerQuestionForm($questionUUID, $msg = array())
 {
     global $db;
 
@@ -250,6 +260,7 @@ function printAnswerQuestionForm($questionUUID)
 
     printQuestionHeader('question');
     ?>
+    <p><?= getHTMLMessages($msg); ?></p>
     <div class="panel panel-default" width="70%">
         <div class="panel-heading">
             <h2><?= $question['name']; ?></h2>
