@@ -15,7 +15,7 @@
  */
 namespace Pakus\Database;
 
-class database.inc extends \mysqli
+class DB extends \mysqli
 {
 
     /**
