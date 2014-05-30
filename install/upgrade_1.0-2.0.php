@@ -5,16 +5,24 @@
  *
  */
 
-define('IN_SCRIPT',1);
+define('IN_SCRIPT', 1);
 
 // Llegim la configuracio de ssham i creem un array
-$CONFIG = parse_ini_file('../gamify.conf', TRUE);
+$CONFIG = parse_ini_file('../gamify.conf', true);
 
 // Connectem amb la base de dades, i deixem obert el descriptor
-$db = mysqli_connect( $CONFIG['mysql']['host'], $CONFIG['mysql']['user'],
-            $CONFIG['mysql']['passwd'], $CONFIG['mysql']['database'] );
-if ( !$db )
-    die( '[ERROR] No he pogut connectar amb la base de dades (' . mysqli_connect_errno() . ') ' . mysqli_connect_error() );
+$db = mysqli_connect(
+    $CONFIG['mysql']['host'],
+    $CONFIG['mysql']['user'],
+    $CONFIG['mysql']['passwd'],
+    $CONFIG['mysql']['database']
+);
+
+if (!$db) {
+    die(
+        '[ERROR] No he pogut connectar amb la base de dades ('
+        . mysqli_connect_errno() . ') ' . mysqli_connect_error());
+}
 
 // Definim totes les taules que cal crear en aquesta versio. 2.0
 $table = array();
@@ -65,12 +73,14 @@ printf("<h1>Migrant a la versio: 2.x</h1>\n");
 printf("<pre>\n");
 
 // El.liminem les taules si existeixen, primer les que tenen CONSTRAINTS
-printf( "Creant les taules de la versio: 2.0\n");
+printf("Creant les taules de la versio: 2.0\n");
 
 $query = "DROP TABLE IF EXISTS members_questions, questions_choices, questions_badges, questions;";
 $db->query($query)
-        or die('[ERROR] No he pogut el.liminar les taules:  members_questions, questions_choices, questions_badges, questions (' . $db->errno .
- ') ' . $db->error );
+    or die(
+    '[ERROR] No he pogut el.liminar les taules:  '
+    . 'members_questions, questions_choices, questions_badges, questions ('
+    . $db->errno . ') ' . $db->error );
 
 foreach ($table as $current_table => $create_query) {
     $query = "DROP TABLE IF EXISTS ". $current_table .";";
@@ -80,7 +90,7 @@ foreach ($table as $current_table => $create_query) {
     $db->query($create_query)
             or die('[ERROR] Creant la taula: '. $current_table .' (' . $db->errno . ') ' . $db->error );
 
-    printf( "   Taula '%s' creada.\n", $current_table);
+    printf("   Taula '%s' creada.\n", $current_table);
 }
 
 printf("   Afegint FOREIGN KEYS... ");
@@ -101,14 +111,14 @@ foreach ($foreign as $query) {
 
 printf("completed!\n");
 
-printf( "\nMigrant dades de les taules anteriors...\n");
+printf("\nMigrant dades de les taules anteriors...\n");
 
 // Primer cal migrar la taula [questions]
 $query = "SELECT * FROM members_quizs";
 $result = $db->query($query);
 $pre_migracio_q = $result->num_rows;
 
-printf( "   quizs -> questions: ");
+printf("   quizs -> questions: ");
 $query = "SELECT * FROM quizs";
 $result2 = $db->query($query);
 $pre_migracio = $result2->num_rows;
@@ -118,16 +128,17 @@ while ($data = $result2->fetch_assoc()) {
     $data['type'] = ( 1 === intval($data['multianswer']) ) ? 'multi' : 'single';
     $data['status'] = ( 1 === intval($data['open']) ) ? 'active' : 'inactive';
 
-    $query = sprintf("INSERT INTO questions SET uuid='%s', name='%s', image='%s', question='%s', tip='%s', solution='%s', type='%s', status='%s'",
-            $db->real_escape_string(getNewUUID()),
-            $db->real_escape_string($data['name']),
-            $db->real_escape_string($data['url_image']),
-            $db->real_escape_string($data['text']),
-            $db->real_escape_string($data['tip']),
-            $db->real_escape_string($data['correct_answer']),
-            $data['type'],
-            $data['status']
-            );
+    $query = sprintf(
+        "INSERT INTO questions SET uuid='%s', name='%s', image='%s', question='%s', tip='%s', solution='%s', type='%s', status='%s'",
+        $db->real_escape_string(getNewUUID()),
+        $db->real_escape_string($data['name']),
+        $db->real_escape_string($data['url_image']),
+        $db->real_escape_string($data['text']),
+        $db->real_escape_string($data['tip']),
+        $db->real_escape_string($data['correct_answer']),
+        $data['type'],
+        $data['status']
+    );
     $db->query($query);
     $questionId = $db->insert_id;
 
@@ -153,7 +164,9 @@ while ($data = $result2->fetch_assoc()) {
     foreach ($data['choices'] as $key => $value) {
 
         // validate supplied data
-        if ( empty($value) ) continue;
+        if (empty($value)) {
+            continue;
+        }
         $points = intval($data['points'][$key]);
 
         $correct = 'no';
@@ -161,12 +174,13 @@ while ($data = $result2->fetch_assoc()) {
             $correct = 'yes';
         }
 
-        $query = sprintf( "INSERT INTO questions_choices SET question_id='%d', choice='%s', correct='%s', points='%d'",
-                $questionId,
-                $db->real_escape_string($value),
-                $correct,
-                $points
-                );
+        $query = sprintf(
+            "INSERT INTO questions_choices SET question_id='%d', choice='%s', correct='%s', points='%d'",
+            $questionId,
+            $db->real_escape_string($value),
+            $correct,
+            $points
+        );
         $db->query($query);
     }
 
@@ -177,12 +191,15 @@ while ($data = $result2->fetch_assoc()) {
     // put actions into its table
     foreach ($data['actions'] as $value) {
         $value = intval($value);
-        if ( empty($value) ) continue;
+        if (empty($value)) {
+            continue;
+        }
 
-        $query = sprintf( "INSERT INTO questions_badges SET question_id='%d', badge_id='%d', type='always'",
-                $questionId,
-                $value
-                );
+        $query = sprintf(
+            "INSERT INTO questions_badges SET question_id='%d', badge_id='%d', type='always'",
+            $questionId,
+            $value
+        );
         $db->query($query);
     }
 
@@ -191,7 +208,8 @@ while ($data = $result2->fetch_assoc()) {
 
     $values = array();
     while ($row = $result->fetch_assoc()) {
-        $values[] = "('". $row['id_member'] ."', '". $questionId ."', '". $row['amount'] ."', FROM_UNIXTIME(". $row['last_time'] ."))";
+        $values[] = "('". $row['id_member'] ."', '". $questionId ."', '"
+            . $row['amount'] ."', FROM_UNIXTIME(". $row['last_time'] ."))";
     }
     $query = "INSERT INTO members_questions (id_member, id_question, amount, last_time) VALUES ". implode(',', $values);
     $db->query($query);
@@ -202,15 +220,15 @@ $query = "SELECT * FROM questions";
 $result = $db->query($query);
 $post_migracio = $result->num_rows;
 
-printf( "migrats %s registres de %s totals.\n", $post_migracio, $pre_migracio );
+printf("migrats %s registres de %s totals.\n", $post_migracio, $pre_migracio);
 
-printf( "   members_quizs -> members_questions: ");
+printf("   members_quizs -> members_questions: ");
 $query = "SELECT * FROM members_questions";
 $result = $db->query($query);
 $post_migracio_q = $result->num_rows;
-printf( "migrats %s registres de %s totals.\n", $post_migracio_q, $pre_migracio_q );
+printf("migrats %s registres de %s totals.\n", $post_migracio_q, $pre_migracio_q);
 
-printf( "   updating members: ");
+printf("   updating members: ");
 
 $query = "ALTER TABLE `members` ADD `uuid` CHAR( 36 ) NOT NULL AFTER `id`";
 $db->query($query);
@@ -219,10 +237,11 @@ $query = sprintf("SELECT id FROM members");
 $result2 = $db->query($query);
 
 while ($row = $result2->fetch_assoc()) {
-    $query = sprintf("UPDATE members SET uuid='%s' WHERE id='%d' LIMIT 1",
-            $db->real_escape_string(getNewUUID()),
-            $row['id']
-            );
+    $query = sprintf(
+        "UPDATE members SET uuid='%s' WHERE id='%d' LIMIT 1",
+        $db->real_escape_string(getNewUUID()),
+        $row['id']
+    );
     $db->query($query);
 }
 
@@ -240,24 +259,23 @@ exit();
 /*** FUNCTIONS ***/
 function getNewUUID()
 {
-    return sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
-
-      // 32 bits for "time_low"
-      mt_rand(0, 0xffff), mt_rand(0, 0xffff),
-
-      // 16 bits for "time_mid"
-      mt_rand(0, 0xffff),
-
-      // 16 bits for "time_hi_and_version",
-      // four most significant bits holds version number 4
-      mt_rand(0, 0x0fff) | 0x4000,
-
-      // 16 bits, 8 bits for "clk_seq_hi_res",
-      // 8 bits for "clk_seq_low",
-      // two most significant bits holds zero and one for variant DCE1.1
-      mt_rand(0, 0x3fff) | 0x8000,
-
-      // 48 bits for "node"
-      mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff)
+    return sprintf(
+        '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
+        // 32 bits for "time_low"
+        mt_rand(0, 0xffff),
+        mt_rand(0, 0xffff),
+        // 16 bits for "time_mid"
+        mt_rand(0, 0xffff),
+        // 16 bits for "time_hi_and_version",
+        // four most significant bits holds version number 4
+        mt_rand(0, 0x0fff) | 0x4000,
+        // 16 bits, 8 bits for "clk_seq_hi_res",
+        // 8 bits for "clk_seq_low",
+        // two most significant bits holds zero and one for variant DCE1.1
+        mt_rand(0, 0x3fff) | 0x8000,
+        // 48 bits for "node"
+        mt_rand(0, 0xffff),
+        mt_rand(0, 0xffff),
+        mt_rand(0, 0xffff)
     );
 }
