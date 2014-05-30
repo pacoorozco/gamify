@@ -93,7 +93,7 @@ function answerQuestion($questionUUID, $answers)
     if (empty($answers)) {
         $missatges[] = array(
             'type' => 'warning',
-            'msg' => 'No has seleccionat cap resposta, torna-ho a provar.'
+            'msg' => '<strong>Atenció</strong>: No has seleccionat cap resposta, torna-ho a provar.'
         );
         printAnswerQuestionForm($questionUUID, $missatges);
         return false;
