@@ -60,7 +60,7 @@ class DB extends \mysqli
 
         $row = $result->fetch_row();
 
-        return is_array($row) ? reset($row) : false;
+        return is_array($row) ? reset($row) : null;
     }
 
     /**

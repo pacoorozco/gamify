@@ -51,56 +51,45 @@ function answerQuestion($questionUUID, $answers)
 {
     global $db;
 
-    $htmlCode = array();
-
-    $query = sprintf("SELECT * FROM questions WHERE uuid='%s' LIMIT 1", $db->real_escape_string($questionUUID));
-    $result = $db->query($query);
-
-    if (0 == $result->num_rows) {
+    $missatges = array();
+    $question = $db->getRow(
+        sprintf(
+            "SELECT * FROM questions WHERE uuid='%s' LIMIT 1",
+            $db->qstr($questionUUID)
+        )
+    );
+    if (is_null($question)) {
         // La pregunta que ens han passat no existeix, per tant tornem a mostrar la llista.
         printQuestionList();
-
-        return false;
+        return false;        
     }
 
-    $question = $result->fetch_assoc();
-    $questionId = $question['id'];
-
-    if (!empty($question['solution'])) {
-        $htmlCode[] = sprintf(
-            '<div class="alert alert-info"><p><strong>La resposta correcta és: </strong></p><p>%s</p></div>',
-            $question['solution']
-        );
-    }
-
-    // Mirem si la pregunta ha estat resposta per aquest usuari
-    $query = sprintf(
-        "SELECT * FROM members_questions WHERE id_member='%d' AND id_question='%d' LIMIT 1",
-        $_SESSION['member']['id'],
-        $questionId
+    // Mirem si la pregunta ha estat resposta per aquest usuari  
+    $result = $db->getOne(
+        sprintf(
+            "SELECT id FROM members_questions WHERE id_member='%d' AND id_question='%d' LIMIT 1",
+            $_SESSION['member']['id'],
+            $question['id']
+        )
     );
-
-    $result = $db->query($query);
-    if ($result->num_rows > 0) {
-        // L'usuari ja ha respost la pregunta
+    
+    if (!is_null($result)) {
+        // L'usuari ja havia respost la pregunta
         viewQuestionByUUID($questionUUID);
-
         return;
     }
 
     // get question's choices, if none, return
-    $query = sprintf("SELECT * FROM questions_choices WHERE question_id='%d'", $questionId);
-    $result = $db->query($query);
-
-    if (0 == $result->num_rows) {
+    $choices = $db->getAll(
+        sprintf(
+            "SELECT * FROM questions_choices WHERE question_id='%d'",
+            $question['id']
+        )
+    );
+    
+    if (is_null($choices)) {
         printQuestionList();
-
         return false;
-    }
-
-    $choices = array();
-    while ($row = $result->fetch_assoc()) {
-        $choices[] = $row;
     }
 
     // calculate points and success
@@ -123,39 +112,49 @@ function answerQuestion($questionUUID, $answers)
     }
 
     // ACTION: Badge RAPIDO
-    $query = sprintf("SELECT id_member FROM members_questions WHERE id_question='%d'", intval($questionId));
-    $result = $db->query($query);
-    if ($result->num_rows === 0) {
+    $result = $db->getOne(
+        sprintf(
+            "SELECT id_member FROM members_questions WHERE id_question='%d'",
+            $question['id']
+        )
+    );
+    if (is_null($result)) {
         // Es el primero, hay que dar badge
         doSilentAction(intval($_SESSION['member']['id']), 1);
     }
-    // END ACTION
+    // ACTION: END
 
-    $query = sprintf(
-        "INSERT INTO members_questions SET id_member='%d', id_question='%d', amount='%d', answers='%s'",
-        intval($_SESSION['member']['id']),
-        intval($questionId),
-        intval($points),
-        implode(',', $answers)
+    $db->insert(
+        'members_questions',
+        array(
+            'id_member' => intval($_SESSION['member']['id']),
+            'id_question' => intval($question['id']),
+            'amount' => intval($points),
+            'answers' => $db->qstr(implode(',', $answers))
+        )
     );
-
-    $db->query($query);
 
     $oldLevel = getUserLevelById($_SESSION['member']['id']);
     doSilentAddExperience($_SESSION['member']['id'], $points, 'respondre la pregunta: '. $question['name']);
     $newLevel = getUserLevelById($_SESSION['member']['id']);
 
     if ($oldLevel != $newLevel) {
-        $query = sprintf("SELECT name FROM levels WHERE id='%d'", $newLevel);
-        $result = $db->query($query);
-        $row = $result->fetch_assoc();
-        $htmlCode[] = sprintf("<p><strong>Enhorabona!</strong> Acabes de pujar de nivell. Ara ets un <strong>'%s'</strong>.</p>", $row['name']);
+        $levelName = $db->getOne(
+            sprintf("SELECT name FROM levels WHERE id='%d'", $newLevel)
+        );
+        $missatges[] = array(
+            'type' => "success",
+            'msg' => sprintf(
+                "<strong>Enhorabona!</strong> Acabes de pujar de nivell. Ara ets un <strong>'%s'</strong>.",
+                $levelName
+            )
+        );
     }
 
-    // anem a veure si haig d'executar alguna accio
+    // anem a veure si haig d'executar alguna acció
     $query = sprintf(
         "SELECT * FROM questions_badges WHERE question_id='%d' AND ( type='always' OR type='%s' )",
-        $questionId,
+        $question['id'],
         $type
     );
     $result = $db->query($query);
@@ -163,76 +162,67 @@ function answerQuestion($questionUUID, $answers)
     if ($result->num_rows > 0) {
         // hi ha accions a realitzar
         while ($row = $result->fetch_assoc()) {
-            if (doSilentAction($_SESSION['member']['id'], $row['badge_id']) == $row['badge_id']) {
-                $query = sprintf("SELECT name FROM badges WHERE id='%d'", $row['badge_id']);
-                $result2 = $db->query($query);
-                $row2 = $result2->fetch_assoc();
-                $htmlCode[] = sprintf("<p><strong>Enhorabona!</strong> Acabes d'aconseguir la insíginia <strong>'%s'</strong>.</p>", $row2['name']);
+            if (doSilentAction($_SESSION['member']['id'], $row['badge_id']) == $row['badge_id']) {             
+                $badgeName = $db->getOne(
+                    sprintf("SELECT name FROM badges WHERE id='%d'", $row['badge_id'])
+                );
+                $missatges[] = array(
+                    'type' => "success",
+                    'msg' => sprintf(
+                        "<strong>Enhorabona!</strong> Acabes d'aconseguir la insíginia <strong>'%s'</strong>.",
+                        $badgeName
+                    )
+                );
             }
         }
     }
-
-    printQuestionHeader('question');
-    ?>
-
-    <div class="panel panel-default" width="70%">
-        <div class="panel-heading"><h2>Gràcies per la teva resposta</h2></div>
-        <div class="panel-body">
-            <p>La teva resposta ha obtingut una puntuació de <strong><?php echo $points; ?> punts</strong>.</p>
-            <?php echo implode(PHP_EOL, $htmlCode); ?>
-        </div>
-    </div>
-    <?php
+    
+    viewQuestionByUUID($questionUUID, $missatges);
 }
 
 function printAnswerQuestionForm($questionUUID)
 {
     global $db;
 
-    $query = sprintf(
-        "SELECT * FROM questions WHERE uuid='%s' AND ( status='active' OR status='hidden' ) LIMIT 1",
-        $db->real_escape_string($questionUUID)
+    $question = $db->getRow(
+        sprintf(
+            "SELECT * FROM questions WHERE uuid='%s' "
+            . "AND ( status='active' OR status='hidden' ) LIMIT 1",
+            $db->qstr($questionUUID)
+        )
     );
-    $result = $db->query($query);
-
-    if (0 == $result->num_rows) {
+    if (is_null($question)) {
         // La pregunta que ens han passat no existeix, per tant tornem a mostrar la llista.
         printQuestionList();
-
-        return false;
+        return false;        
     }
-
-    $question = $result->fetch_assoc();
-    $questionId = $question['id'];
-
-    // Mirem si la pregunta ha estat resposta per aquest usuari
-    $query = sprintf(
-        "SELECT * FROM members_questions WHERE id_member='%d' AND id_question='%d' LIMIT 1",
-        $_SESSION['member']['id'],
-        $questionId
+    
+    // Mirem si la pregunta ha estat resposta per aquest usuari  
+    $result = $db->getOne(
+        sprintf(
+            "SELECT id FROM members_questions WHERE id_member='%d' AND id_question='%d' LIMIT 1",
+            $_SESSION['member']['id'],
+            $question['id']
+        )
     );
-
-    $result = $db->query($query);
-    if (($result->num_rows > 0) || ('inactive' == $question['status'])) {
-        // L'usuari ja ha respost la pregunta o aquest està tancada
+    
+    if (!is_null($result) || ('inactive' == $question['status'])) {
+        // L'usuari ja havia respost la pregunta o aquest està tancada
         viewQuestionByUUID($questionUUID);
-
         return;
-    }
+    }    
 
     // get question's choices, if none, return
-    $query = sprintf("SELECT * FROM questions_choices WHERE question_id='%d'", $questionId);
-    $result = $db->query($query);
-
-    if (0 == $result->num_rows) {
+    $question['choices'] = $db->getAll(
+        sprintf(
+            "SELECT * FROM questions_choices WHERE question_id='%d'",
+            $question['id']
+        )
+    );
+    
+    if (is_null($question['choices'])) {
         printQuestionList();
-
         return false;
-    }
-
-    $question['choices'] = array();
-    while ($row = $result->fetch_assoc()) {
-        $question['choices'][] = $row;
     }
 
     if (empty($question['image'])) {
@@ -243,12 +233,12 @@ function printAnswerQuestionForm($questionUUID)
     ?>
     <div class="panel panel-default" width="70%">
         <div class="panel-heading">
-            <h2><?php echo $question['name']; ?></h2>
+            <h2><?= $question['name']; ?></h2>
         </div>
         <div class="panel-body">
-            <img src="<?php echo $question['image']; ?>" width="120" class="img-rounded">
+            <img src="<?= $question['image']; ?>" width="120" class="img-rounded">
             <h4><?php echo $question['question']; ?></h4>
-            <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post" role="form">
+            <form action="<?= $_SERVER['PHP_SELF']; ?>" method="post" role="form">
                 <ul class="list-group">
     <?php
     $option = '<input type="radio" name="choices[]" value="%d">';
@@ -266,9 +256,9 @@ function printAnswerQuestionForm($questionUUID)
     echo implode(PHP_EOL, $htmlCode);
     ?>
                 </ul>
-                <a href="//kbtic.upcnet.es/search?SearchableText=<?php echo $question['tip']; ?>" title="Buscar la resposta a la KBTic" class="btn btn-default" target="_blank"role="button"><span class="glyphicon glyphicon-new-window"></span> Ho buscaré a la KBTic</a>
-                <a href="//www.google.es/search?q=<?php echo $question['tip']; ?>" title="Buscar la resposta a Google" class="btn btn-default" target="_blank" role="button"><span class="glyphicon glyphicon-new-window"></span> Ho buscaré a Google</a>
-                <input type="hidden" name="item" value="<?php echo $questionUUID; ?>">
+                <a href="//kbtic.upcnet.es/search?SearchableText=<?= $question['tip']; ?>" title="Buscar la resposta a la KBTic" class="btn btn-default" target="_blank"role="button"><span class="glyphicon glyphicon-new-window"></span> Ho buscaré a la KBTic</a>
+                <a href="//www.google.es/search?q=<?= $question['tip']; ?>" title="Buscar la resposta a Google" class="btn btn-default" target="_blank" role="button"><span class="glyphicon glyphicon-new-window"></span> Ho buscaré a Google</a>
+                <input type="hidden" name="item" value="<?= $questionUUID; ?>">
                 <input type="hidden" name="a" value="answer">
                 <button type="submit" class="btn btn-success pull-right"><span class="glyphicon glyphicon-save"></span> Guardar resposta</button>
             </form>
@@ -386,7 +376,7 @@ function printHistoricQuestionList()
     }
 }
 
-function viewQuestionByUUID($questionUUID)
+function viewQuestionByUUID($questionUUID, $msg = array())
 {
     global $db;
 
@@ -436,6 +426,7 @@ function viewQuestionByUUID($questionUUID)
 
     printQuestionHeader('question');
     ?>
+    <p><?= getHTMLMessages($msg); ?></p>            
     <div class="panel panel-default" width="70%">
         <div class="panel-heading">
             <h2><?= $question['name']; ?></h2>
