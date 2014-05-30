@@ -1,8 +1,18 @@
 <?php
-/*
- * @author Paco Orozco, paco.orozco -at- upcnet.es
- * @version $Id$
+
+/**
+ * Module to implement Member Profile
  *
+ *
+ * This files implements member's profile in gamify!
+ *
+ * LICENSE: Creative Commons Attribution-ShareAlike 3.0 Unported (CC BY-SA 3.0)
+ *
+ * @category   Pakus
+ * @package    Member
+ * @author     Paco Orozco <paco@pacorozco.info>
+ * @license    http://creativecommons.org/licenses/by-sa/3.0/deed.en (CC BY-SA 3.0)
+ * @link       https://git.upcnet.es/bo/gamify
  */
 
 define('IN_SCRIPT', 1);
@@ -28,7 +38,6 @@ switch ($action) {
         echo getSearchResults($searchterm);
         exit();
         break;
-
     case 'upload':
         echo uploadProfilePicture();
         exit();
@@ -41,13 +50,8 @@ switch ($action) {
     case 'viewuser':
     default:
         $userUUID = getREQUESTVar('item');
-        if (is_int($userUUID)) {
-            // OLD behaviour, use UUID instead.
-            $userUUID = getUserUUID($userUUID);
-        }
         printProfile($userUUID);
 }
-
 
 require_once 'inc/footer.inc.php';
 exit();
@@ -204,12 +208,23 @@ function printProfile($userUUID)
                 $row = $result->fetch_assoc();
                 $badges = $row['completed'];
 
-                $query = sprintf("SELECT t1.image, t1.name, t1.description, t2.status FROM badges AS t1, members_badges AS t2 WHERE t2.id_member='%d' AND t1.id=t2.id_badges", $userId);
+                $query = sprintf("SELECT t1.image, t1.name, t1.description, t1.amount_needed, t2.amount, t2.status FROM badges AS t1, members_badges AS t2 WHERE t2.id_member='%d' AND t1.id=t2.id_badges", $userId);
                 $result = $db->query($query);
                 echo '<h3>Insígnies ('. $badges .')</h3>';
                 $htmlCode = array();
                 while ($row = $result->fetch_assoc()) {
-                    $title = sprintf("%s\n%s", $row['name'], $row['description']);
+                    $progress = '';
+                    $achievesToBadge = $row['amount_needed'] - $row['amount'];
+                    if (($row['amount_needed'] > 1) && ($achievesToBadge > 0)) {
+                        $progress = sprintf(
+                            "\nMuy bien! Tienes %d %s, sólo te %s %d más.",
+                            $row['amount'],
+                            ($row['amount'] > 1) ? 'logros' : 'logro',
+                            ($achievesToBadge > 1) ? 'faltan' : 'falta',
+                            $achievesToBadge
+                        );
+                    }
+                    $title = sprintf("%s\n%s%s", $row['name'], $row['description'], $progress);
                     $htmlCode[] = '<a href="#" title="' . $title . '">';
                     $image = ('completed' == $row['status']) ? 'images/badges/' . $row['image'] : 'images/default_badge_off.png';
                     $htmlCode[] = '<img src="' . $image .'" alt="'. $row['name'] . '" class="img-thumbnail" width="80">';

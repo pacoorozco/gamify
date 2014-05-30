@@ -4,6 +4,7 @@ Version 2.9
 * [#246] Adds a DAL Class in order to write less code messing with DB
 * Put user's answers when view a answered question
 * Change the way an user view its answered question
+* Add how many achieves needs to gain a badge when viewing profile
 
 Version 2.8
 -----------
