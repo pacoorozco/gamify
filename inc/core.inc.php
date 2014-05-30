@@ -18,8 +18,8 @@ $CONFIG['version'] = '2.8';
 $CONFIG['site']['debug'] = isset($CONFIG['site']['debug']) ? true : false;
 
 // We need to send mails, we use Swift
-require_once('lib/swift_required.php');
-require_once('inc/database.inc.php');
+require_once 'lib/swift_required.php';
+require_once 'inc/database.inc.php';
 
 /*** MAIN ***/
 
@@ -115,11 +115,12 @@ function getSanitizedInput($in, $force_slashes = 0, $maxLength = 0)
     return $string ? 'fa '. implode(', ', $string) : 'ara mateix';
 }
 
-function sendMessage( $subject, $missatge, $receiver = '' ) {
+function sendMessage($subject, $missatge, $receiver = '')
+{
     global $db, $CONFIG;
 
     // If DEBUG mode is on, only send messages to 'debug_receiver'
-    if ( $CONFIG['site']['debug'] ) {
+    if ($CONFIG['site']['debug']) {
         if ( ! isset( $CONFIG['site']['debug_receiver'] ) ) {
             return true;
         }
@@ -185,7 +186,8 @@ SEND_MAIL;
     return $mailer->send($message);
 }
 
-function getNewUUID() {
+function getNewUUID()
+{
     return sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
 
       // 32 bits for "time_low"
@@ -218,7 +220,8 @@ function getNewUUID() {
   * Returns:
   *  $result:   True si existeix, false en cas contrari
   */
- function getUserExists($user) {
+ function getUserExists($user)
+ {
     if (is_int($user)) {
         return (getUserNameById($user) === false ) ? false : true;
     } else {
@@ -226,7 +229,8 @@ function getNewUUID() {
     }
 }
 
-function getUserNameById ($userId) {
+function getUserNameById($userId)
+{
     global $db;
 
     $query = sprintf( "SELECT username FROM members WHERE id='%d' LIMIT 1", intval($userId) );
@@ -236,10 +240,12 @@ function getUserNameById ($userId) {
     if ($result->num_rows == 0 ) return false;
 
     $row = $result->fetch_assoc();
+
     return $row['username'];
 }
 
-function getUserIdByName ($username) {
+function getUserIdByName($username)
+{
     global $db;
 
     $query = sprintf( "SELECT id FROM members WHERE username='%s' LIMIT 1", $username );
@@ -249,5 +255,6 @@ function getUserIdByName ($username) {
     if ($result->num_rows == 0 ) return false;
 
     $row = $result->fetch_assoc();
+
     return $row['id'];
 }

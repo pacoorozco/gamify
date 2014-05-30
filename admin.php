@@ -6,8 +6,8 @@
  */
 
 define('IN_SCRIPT',1);
-require_once('inc/functions.inc.php');
-require_once('inc/gamify.inc.php');
+require_once 'inc/functions.inc.php';
+require_once 'inc/gamify.inc.php';
 
 // Page only for members
 if ( false === loginCheck() ) {
@@ -20,13 +20,13 @@ if ( false === loginCheck() ) {
 // Check if user has privileges
 if ( ! userHasPrivileges($_SESSION['member']['id'], 'administrator') ) {
     // User has no privileges
-    require_once('inc/header.inc.php');
+    require_once 'inc/header.inc.php';
     printAccessDenied();
-    require_once('inc/footer.inc.php');
+    require_once 'inc/footer.inc.php';
     exit();
 }
 
-require_once('inc/header.inc.php');
+require_once 'inc/header.inc.php';
 
 $missatges = array();
 
@@ -93,7 +93,7 @@ switch ($action) {
     case 'deleteuser':
         $userId = getREQUESTVar('item');
 
-        if(deleteUser($userId)) {
+        if (deleteUser($userId)) {
            $missatges[] = array('type' => "success", 'msg' => "L'usuari s'ha el&middot;liminat correctament.");
         } else {
            $missatges[] = array('type' => "error", 'msg' => "No s'ha pogut el&middot;liminar l'usuari.");
@@ -136,7 +136,7 @@ switch ($action) {
     case 'deletelevel':
         $levelId = getREQUESTVar('item');
 
-        if(deleteLevel($levelId)) {
+        if (deleteLevel($levelId)) {
            $missatges[] = array('type' => "success", 'msg' => "El n&iacute;vell s'ha el&middot;liminat correctament.");
         } else {
            $missatges[] = array('type' => "error", 'msg' => "No s'ha pogut el&middot;liminar el n&iacute;vell.");
@@ -181,7 +181,7 @@ switch ($action) {
     case 'deletebadge':
         $badgeId = getREQUESTVar('item');
 
-        if(deleteBadge($badgeId)) {
+        if (deleteBadge($badgeId)) {
            $missatges[] = array('type' => "success", 'msg' => "La insígnia s'ha el&middot;liminat correctament.");
         } else {
            $missatges[] = array('type' => "error", 'msg' => "No s'ha pogut el&middot;liminar la insígnia.");
@@ -264,7 +264,7 @@ switch ($action) {
     case 'deletequiz':
         $questionId = getREQUESTVar('item');
 
-        if(deleteQuestion($questionId)) {
+        if (deleteQuestion($questionId)) {
            $missatges[] = array('type' => "success", 'msg' => "La pregunta s'ha el&middot;liminat correctament.");
         } else {
            $missatges[] = array('type' => "error", 'msg' => "No s'ha pogut el&middot;liminar la pregunta.");
@@ -281,12 +281,13 @@ switch ($action) {
         printAdminDashboard();
 }
 
-require_once('inc/footer.inc.php');
+require_once 'inc/footer.inc.php';
 exit();
 
 /*** FUNCTIONS ***/
 
-function printAdminHeader( $a = 'users', $msg = array() ) {
+function printAdminHeader( $a = 'users', $msg = array() )
+{
     ?>
             <h1>Administració</h1>
             <p><?php echo getHTMLMessages($msg); ?></p>
@@ -303,11 +304,13 @@ function printAdminHeader( $a = 'users', $msg = array() ) {
     <?php
 }
 
-function printAdminDashboard() {
+function printAdminDashboard()
+{
     printQuestionManagement();
 }
 
-function printActions ( $msg = array() ) {
+function printActions ( $msg = array() )
+{
     global $db;
 
     printAdminHeader('actions');
@@ -405,7 +408,6 @@ function printActions ( $msg = array() ) {
                                 </div>
                             </div>
 
-
                 </div>
             </div>
                 </div>
@@ -413,7 +415,8 @@ function printActions ( $msg = array() ) {
     <?php
 }
 
-function printUserManagement ( $msg = array() ) {
+function printUserManagement ( $msg = array() )
+{
     global $db;
 
     printAdminHeader('users', $msg);
@@ -462,7 +465,8 @@ function printUserManagement ( $msg = array() ) {
     echo getHTMLDataTable('#users');
 }
 
-function printLevelManagement( $msg = array() ) {
+function printLevelManagement( $msg = array() )
+{
     global $db;
 
     printAdminHeader('levels', $msg);
@@ -514,7 +518,8 @@ function printLevelManagement( $msg = array() ) {
     echo getHTMLDataTable('#levels');
 }
 
-function printBadgeManagement( $msg = array() ) {
+function printBadgeManagement( $msg = array() )
+{
     global $db;
 
     printAdminHeader('badges', $msg);
@@ -545,7 +550,7 @@ function printBadgeManagement( $msg = array() ) {
         $htmlCode[] = '<tr>';
         $htmlCode[] = '<td>';
         $htmlCode[] = '<a href="admin.php?a=editbadge&item=' . $row['id'] . '">' . $row['name'] . '</a>';
-        if ( 'inactive' == $row['status'] ) {
+        if ('inactive' == $row['status']) {
             $htmlCode[] = '<span class="label label-danger">inactiva</span>';
         }
         $htmlCode[] = '</td>';
@@ -574,7 +579,8 @@ function printBadgeManagement( $msg = array() ) {
 }
 
 /*** USERS ***/
-function printNewUserForm( $data = array(), $msg = array() ) {
+function printNewUserForm( $data = array(), $msg = array() )
+{
     global $CONFIG;
     ?>
                         <h1>Nou usuari</h1>
@@ -632,7 +638,8 @@ function printNewUserForm( $data = array(), $msg = array() ) {
     <?php
 }
 
-function createUser( $data = array() ) {
+function createUser( $data = array() )
+{
     global $db, $CONFIG;
 
     $missatges = array();
@@ -655,7 +662,7 @@ function createUser( $data = array() ) {
             $missatges[] = array('type' => "error", 'msg' => "El camp contrasenya no pot estar buida.");
         }
 
-        if ( $data['password'] != $data['repeatpassword'] ) {
+        if ($data['password'] != $data['repeatpassword']) {
             $missatges[] = array('type' => "error", 'msg' => "La contrasenya i la verficaci&oacute; no coincideixen.");
         }
     } else {
@@ -669,11 +676,12 @@ function createUser( $data = array() ) {
 
     if ( ! empty($missatges) ) {
         printNewUserForm($data, $missatges);
+
         return false;
     }
 
     // User data is correct, now we can insert it to DB
-    $userId = $db->insert('members', 
+    $userId = $db->insert('members',
             array (
                 'uuid' => getNewUUID(),
                 'username' => $data['username'],
@@ -682,7 +690,7 @@ function createUser( $data = array() ) {
                 'role' => $data['role']
             ));
 
-    if ( 0 == $userId ) {
+    if (0 == $userId) {
         $missatges[] = array('type' => "error", 'msg' => "No s'ha pogut crear l'usuari.");
         printNewUserForm($data, $missatges);
     } else {
@@ -691,7 +699,8 @@ function createUser( $data = array() ) {
     }
 }
 
-function printEditUserForm($userId, $msg = array()) {
+function printEditUserForm($userId, $msg = array())
+{
     global $db, $CONFIG;
 
     $missatges = array();
@@ -707,6 +716,7 @@ function printEditUserForm($userId, $msg = array()) {
         // L'usuari que ens han passat no existeix, per tant tornem a mostrar la llista.
         $missatges[] = array('type' => "error", 'msg' => "No he trobat informaci&oacute; per aquest usuari.");
         printUserManagement($missatges);
+
         return false;
     }
     $row = $result->fetch_assoc();
@@ -751,7 +761,7 @@ function printEditUserForm($userId, $msg = array()) {
                             <?php
                             $availableRoles = array('member', 'administrator');
                             foreach ($availableRoles as $opt_key) {
-                                if ( $opt_key == $row['role'] ) {
+                                if ($opt_key == $row['role']) {
                                     echo '<option value="' . $opt_key . '" selected="selected">' . $opt_key . '</option>';
                                 } else {
                                     echo '<option value="' . $opt_key . '">' . $opt_key . '</option>';
@@ -775,7 +785,8 @@ function printEditUserForm($userId, $msg = array()) {
     <?php
 }
 
-function saveUserData( $data = array() ) {
+function saveUserData( $data = array() )
+{
     global $db, $CONFIG;
 
     $missatges = array();
@@ -785,6 +796,7 @@ function saveUserData( $data = array() ) {
     if ( ! getUserExists($data['id']) ) {
         $missatges[] = array('type' => "error", 'msg' => "<strong>ATENCI&Oacute;</strong>: L'usuari suministrat per actualitzar no existeix.");
         printUserManagement($missatges);
+
         return false;
     }
 
@@ -793,7 +805,7 @@ function saveUserData( $data = array() ) {
     }
 
     if ($CONFIG['authentication']['type'] == 'LOCAL') {
-        if ( $data['password'] != $data['repeatpassword'] ) {
+        if ($data['password'] != $data['repeatpassword']) {
             $missatges[] = array('type' => "error", 'msg' => "La contrasenya i la verficaci&oacute; no coincideixen.");
         }
     }
@@ -804,6 +816,7 @@ function saveUserData( $data = array() ) {
 
     if ( ! empty($missatges) ) {
         printEditUserForm($data['id'], $missatges);
+
         return false;
     }
 
@@ -824,7 +837,8 @@ function saveUserData( $data = array() ) {
     }
 }
 
-function deleteUser($userId) {
+function deleteUser($userId)
+{
     global $db;
 
     // user_id must be an integer
@@ -839,7 +853,8 @@ function deleteUser($userId) {
 
 /*** LEVELS ***/
 
-function printNewLevelForm( $data = array(), $msg = array() ) {
+function printNewLevelForm( $data = array(), $msg = array() )
+{
     ?>
                         <h1>Nou nivell</h1>
                         <p><?php echo getHTMLMessages($msg); ?></p>
@@ -874,7 +889,8 @@ function printNewLevelForm( $data = array(), $msg = array() ) {
     <?php
 }
 
-function createLevel( $data = array() ) {
+function createLevel( $data = array() )
+{
     global $db;
 
     $missatges = array();
@@ -899,17 +915,18 @@ function createLevel( $data = array() ) {
 
     if ( ! empty($missatges) ) {
         printNewLevelForm($data, $missatges);
+
         return false;
     }
-    
-    $levelId = $db->insert('levels', 
+
+    $levelId = $db->insert('levels',
             array (
                 'name' => $data['name'],
                 'experience_needed' => $data['experience_needed'],
                 'image' => $data['image']
-            ));    
+            ));
 
-    if ( 0 == $levelId ) {
+    if (0 == $levelId) {
         $missatges[] = array('type' => "error", 'msg' => "No s'ha pogut crear el nivell.");
         printNewLevelForm($data, $missatges);
     } else {
@@ -918,7 +935,8 @@ function createLevel( $data = array() ) {
     }
 }
 
-function printEditLevelForm($levelId, $msg = array()) {
+function printEditLevelForm($levelId, $msg = array())
+{
     global $db;
 
     $missatges = array();
@@ -934,6 +952,7 @@ function printEditLevelForm($levelId, $msg = array()) {
         // No existeix.
         $missatges[] = array('type' => "error", 'msg' => "No he trobat informaci&oacute; per aquest nivell.");
         printLevelManagement($missatges);
+
         return false;
     }
     $data = $result->fetch_assoc();
@@ -972,7 +991,8 @@ function printEditLevelForm($levelId, $msg = array()) {
     <?php
 }
 
-function saveLevelData( $data = array() ) {
+function saveLevelData( $data = array() )
+{
     global $db;
 
     $missatges = array();
@@ -987,6 +1007,7 @@ function saveLevelData( $data = array() ) {
         // A level doesn't exists .
         $missatges[] = array('type' => "error", 'msg' => "<strong>ATENCI&Oacute;</strong>: El nivell suministrat per actualitzar no existeix.");
         printLevelManagement($missatges);
+
         return false;
     }
 
@@ -1009,6 +1030,7 @@ function saveLevelData( $data = array() ) {
 
     if ( ! empty($missatges) ) {
         printEditLevelForm($data['id'], $missatges);
+
         return false;
     }
 
@@ -1025,7 +1047,8 @@ function saveLevelData( $data = array() ) {
     }
 }
 
-function deleteLevel($levelId) {
+function deleteLevel($levelId)
+{
     global $db;
 
     // level_id must be an integer
@@ -1039,12 +1062,14 @@ function deleteLevel($levelId) {
 
     $query = sprintf( "SELECT id FROM levels WHERE id = '%d'", $levelId );
     $result = $db->query($query);
+
     return ($result->num_rows == 0);
 }
 
 /*** BADGES ***/
 
-function printNewBadgeForm( $data = array(), $msg = array() ) {
+function printNewBadgeForm( $data = array(), $msg = array() )
+{
     ?>
                         <h1>Nova insígnia</h1>
                         <p><?php echo getHTMLMessages($msg); ?></p>
@@ -1085,7 +1110,8 @@ function printNewBadgeForm( $data = array(), $msg = array() ) {
     <?php
 }
 
-function createBadge( $data = array() ) {
+function createBadge( $data = array() )
+{
     global $db;
 
     $missatges = array();
@@ -1102,10 +1128,11 @@ function createBadge( $data = array() ) {
 
     if ( ! empty($missatges) ) {
         printNewBadgeForm($data, $missatges);
+
         return false;
     }
-    
-    $badgeId = $db->insert('badges', 
+
+    $badgeId = $db->insert('badges',
             array (
                 'name' => $data['name'],
                 'image' => $data['image'],
@@ -1113,7 +1140,7 @@ function createBadge( $data = array() ) {
                 'amount_needed' => $data['amount_needed']
             ));
 
-    if ( 0 == $badgeId ) {
+    if (0 == $badgeId) {
         $missatges[] = array('type' => "error", 'msg' => "No s'ha pogut crear la insígnia.");
         printNewLevelForm($data, $missatges);
     } else {
@@ -1122,7 +1149,8 @@ function createBadge( $data = array() ) {
     }
 }
 
-function printEditBadgeForm($badgeId, $msg = array()) {
+function printEditBadgeForm($badgeId, $msg = array())
+{
     global $db;
 
     $missatges = array();
@@ -1138,6 +1166,7 @@ function printEditBadgeForm($badgeId, $msg = array()) {
         // No existeix.
         $missatges[] = array('type' => "error", 'msg' => "No he trobat informaci&oacute; per aquesta insígnia.");
         printBadgeManagement($missatges);
+
         return false;
     }
     $data = $result->fetch_assoc();
@@ -1182,7 +1211,8 @@ function printEditBadgeForm($badgeId, $msg = array()) {
     <?php
 }
 
-function saveBadgeData( $data = array() ) {
+function saveBadgeData( $data = array() )
+{
     global $db;
 
     $missatges = array();
@@ -1197,6 +1227,7 @@ function saveBadgeData( $data = array() ) {
         // A badge doesn't exists .
         $missatges[] = array('type' => "error", 'msg' => "<strong>ATENCI&Oacute;</strong>: La insígnia suministrada per actualitzar no existeix.");
         printBadgeManagement($missatges);
+
         return false;
     }
 
@@ -1219,6 +1250,7 @@ function saveBadgeData( $data = array() ) {
 
     if ( ! empty($missatges) ) {
         printEditBadgeForm($data['badge_id'], $missatges);
+
         return false;
     }
 
@@ -1233,7 +1265,8 @@ function saveBadgeData( $data = array() ) {
     }
 }
 
-function deleteBadge($badgeId) {
+function deleteBadge($badgeId)
+{
     global $db;
 
     // badge_id must be an integer
@@ -1247,10 +1280,12 @@ function deleteBadge($badgeId) {
 
     $query = sprintf( "SELECT id FROM badges WHERE id = '%d'", $badgeId );
     $result = $db->query($query);
+
     return ($result->num_rows == 0);
 }
 
-function addExperience ( $data = array() ) {
+function addExperience ( $data = array() )
+{
     global $db;
 
     $missatges = array();
@@ -1274,6 +1309,7 @@ function addExperience ( $data = array() ) {
 
     if ( ! empty($missatges) ) {
         printActions($missatges);
+
         return false;
     }
 
@@ -1287,9 +1323,10 @@ function addExperience ( $data = array() ) {
     $query = sprintf("INSERT INTO points SET id_member='%d', points='%d', memo='%s'", $data['id'], $data['experience'], $db->real_escape_string($data['memo']));
     $result = $db->query($query);
 
-    if ( !$result ) {
+    if (!$result) {
         $missatges[] = array('type' => "error", 'msg' => "No s'ha pogut actualitzar les dades de l'usuari '<strong>". $data['username'] ."</strong>'.");
         printActions($data, $missatges);
+
         return false;
     }
 
@@ -1305,7 +1342,7 @@ function addExperience ( $data = array() ) {
     $data['name'] = $row['name'];
     $data['image'] = $row['image'];
 
-    if ( $old_level != $data['level_id'] ) {
+    if ($old_level != $data['level_id']) {
         $query = sprintf( "UPDATE members SET level_id='%d' WHERE id = '%d' LIMIT 1", $data['level_id'], $data['id'] );
         $result = $db->query($query);
         // Send a mail to user in order to tell him/her, his/her new level
@@ -1315,10 +1352,12 @@ function addExperience ( $data = array() ) {
 
     $missatges[] = array('type' => "success", 'msg' => "Dades de l'usuari '<strong>". $data['username'] ."</strong>' actualitzades.");
     printActions($missatges);
+
     return true;
 }
 
-function action( $data = array() ) {
+function action( $data = array() )
+{
     global $db;
 
     $missatges = array();
@@ -1336,6 +1375,7 @@ function action( $data = array() ) {
         // L'usuari que ens han passat no existeix.
         $missatges[] = array('type' => "error", 'msg' => "No he trobat informaci&oacute; per aquest usuari.");
         printActions($missatges);
+
         return false;
     } else {
         $row = $result->fetch_assoc();
@@ -1351,6 +1391,7 @@ function action( $data = array() ) {
         // La insígnia que ens han passat no existeix.
         $missatges[] = array('type' => "error", 'msg' => "No he trobat informaci&oacute; per aquesta insígnia.");
         printActions($missatges);
+
         return false;
     } else {
         $row = $result->fetch_assoc();
@@ -1365,6 +1406,7 @@ function action( $data = array() ) {
 
     if ( ! empty($missatges) ) {
         printActions($missatges);
+
         return false;
     }
 
@@ -1372,9 +1414,9 @@ function action( $data = array() ) {
     $query = sprintf("SELECT * FROM members_badges WHERE id_member = '%d' AND id_badges = '%d' LIMIT 1", $data['id_member'], $data['id_badge']);
     $result = $db->query($query);
 
-    if ( $result->num_rows == 0 ) {
+    if ($result->num_rows == 0) {
         // this action has not been initiated to this user
-        if ( $data['amount'] >= $data['amount_needed'] ) {
+        if ($data['amount'] >= $data['amount_needed']) {
             $status = 'completed';
         }
         $query = sprintf("INSERT INTO members_badges SET id_member='%d', id_badges='%d', amount='%d', last_time='%d', status='%s'",
@@ -1382,17 +1424,19 @@ function action( $data = array() ) {
 
         if ( $db->query($query) ) {
             $missatges[] = array('type' => "success", 'msg' => "Dades de l'usuari '<strong>". $data['username'] ."</strong>' actualitzades.");
-            if ( 'completed' == $status ) {
+            if ('completed' == $status) {
                 // send a mail to user in order to tell him/her, his/her new badge
                 doSilentAddExperience( $data['id_member'], 5, 'desbloquejar la ins&iacute;gnia: '. $data['name'] );
                 notifyBadgeToUser($data);
                 $missatges[] = array('type' => "info", 'msg' => "L'usuari '<strong>". $data['username'] ."</strong>' ha aconseguit la insíngia '<strong>". $data['name'] ."</strong>'.");
             }
             printActions($missatges);
+
             return true;
         } else {
             $missatges[] = array('type' => "error", 'msg' => "No s'ha pogut actualitzar les dades de l'usuari '<strong>". $data['username'] ."</strong>.");
             printActions($missatges);
+
             return false;
         }
     }
@@ -1401,14 +1445,14 @@ function action( $data = array() ) {
     $data['id'] = $row['id'];
 
     // checking if badge is not completed yet
-    if ( 'active' == $row['status'] ) {
+    if ('active' == $row['status']) {
         // update amount in order to complete this badge.
         $data['amount'] += $row['amount'];
 
         // TODO - check if needed period of time is passed
 
         // check if badge has completed
-        if ( $data['amount'] >= $data['amount_needed'] ) {
+        if ($data['amount'] >= $data['amount_needed']) {
             // complete badge
             $status = 'completed';
 
@@ -1421,10 +1465,12 @@ function action( $data = array() ) {
                 $missatges[] = array('type' => "success", 'msg' => "Dades de l'usuari '<strong>". $data['username'] ."</strong>' actualitzades.");
                 $missatges[] = array('type' => "info", 'msg' => "L'usuari '<strong>". $data['username'] ."</strong>' ha aconseguit la insíngia '<strong>". $data['name'] ."</strong>'.");
                 printActions($missatges);
+
                 return true;
             } else {
                 $missatges[] = array('type' => "error", 'msg' => "No s'ha pogut actualitzar les dades de l'usuari '<strong>". $data['username'] ."</strong>'.");
                 printActions($missatges);
+
                 return false;
             }
         } else {
@@ -1435,21 +1481,25 @@ function action( $data = array() ) {
             if ( $db->query($query) ) {
                 $missatges[] = array('type' => "success", 'msg' => "Dades de l'usuari '<strong>". $data['username'] ."</strong>' actualitzades.");
                 printActions($missatges);
+
                 return true;
             } else {
                 $missatges[] = array('type' => "error", 'msg' => "No s'ha pogut actualitzar les dades de l'usuari '<strong>". $data['username'] ."</strong>'.");
                 printActions($missatges);
+
                 return false;
             }
         }
     } else {
         $missatges[] = array('type' => "info", 'msg' => "L'usuari '<strong>". $data['username'] ."</strong>' ja tenia l'insígnia <strong>". $data['name'] ."</strong>.");
         printActions($missatges);
+
         return false;
     }
 }
 
-function printSendMessage( $msg = array() ) {
+function printSendMessage( $msg = array() )
+{
     global $db;
 
     printAdminHeader('messages');
@@ -1504,7 +1554,8 @@ function printSendMessage( $msg = array() ) {
     <?php
 }
 
-function printQuestionManagement( $msg = array() ) {
+function printQuestionManagement( $msg = array() )
+{
     global $db;
 
     printAdminHeader('quiz', $msg);
@@ -1519,7 +1570,7 @@ function printQuestionManagement( $msg = array() ) {
                     <tr>
                         <th>Pregunta</th>
                         <th>Estat</th>
-                        <th><span class="glyphicon glyphicon-tags"></span></th>                        
+                        <th><span class="glyphicon glyphicon-tags"></span></th>
                         <th><abbr title="Respostes"><span class="glyphicon glyphicon-signal"></span></abbr></th>
                         <th>Accions</th>
                     </tr>
@@ -1555,7 +1606,7 @@ function printQuestionManagement( $msg = array() ) {
         }
 
         $htmlCode[] = '</td>';
-        $htmlCode[] = '<td></td>';        
+        $htmlCode[] = '<td></td>';
         $htmlCode[] = '<td>' . getQuestionResponses($row['uuid']) . '</td>';
         $htmlCode[] = '<td>';
         $htmlCode[] = '<a href="'. $_SERVER['PHP_SELF'] .'?a=editquiz&item='. $row['id'] .'" class="btn btn-default" role="button"><span class="glyphicon glyphicon-edit"></span> Editar</a>';
@@ -1575,7 +1626,8 @@ function printQuestionManagement( $msg = array() ) {
     echo getHTMLDataTable('#questions');
 }
 
-function printEditQuestionForm( $questionId, $msg = array() ) {
+function printEditQuestionForm( $questionId, $msg = array() )
+{
     global $db;
 
     $missatges = array();
@@ -1591,6 +1643,7 @@ function printEditQuestionForm( $questionId, $msg = array() ) {
         // No existeix.
         $missatges[] = array('type' => "error", 'msg' => "No he trobat informaci&oacute; per aquesta pregunta.");
         printQuestionManagement($missatges);
+
         return false;
     }
     $data = $result->fetch_assoc();
@@ -1637,7 +1690,8 @@ function printEditQuestionForm( $questionId, $msg = array() ) {
     <?php
 }
 
-function printNewQuestionForm( $data = array(), $msg = array() ) {
+function printNewQuestionForm( $data = array(), $msg = array() )
+{
     global $db;
     ?>
                         <h1>Nova pregunta</h1>
@@ -1658,7 +1712,8 @@ function printNewQuestionForm( $data = array(), $msg = array() ) {
     <?php
 }
 
-function createQuestion( $data = array() ) {
+function createQuestion( $data = array() )
+{
     global $db;
 
     $missatges = array();
@@ -1666,7 +1721,7 @@ function createQuestion( $data = array() ) {
     // Validate supplied data
 
     // Question data is correct, now we can insert it to DB
-    $questionId = $db->insert('questions', 
+    $questionId = $db->insert('questions',
             array(
                 'uuid' => getNewUUID(),
                 'name' => $data['name'],
@@ -1678,14 +1733,15 @@ function createQuestion( $data = array() ) {
                 'status' => $data['status']
             ));
 
-    if ( 0 == $questionId ) {
+    if (0 == $questionId) {
             $missatges[] = array('type' => "error", 'msg' => "No s'ha pogut crear la pregunta.");
             printNewQuestionForm($data, $missatges);
+
             return false;
     }
 
     // put choices into its table
-    foreach ( $data['choices'] as $key => $value ) {
+    foreach ($data['choices'] as $key => $value) {
 
         // validate supplied data
         if ( empty($value) ) {
@@ -1702,7 +1758,7 @@ function createQuestion( $data = array() ) {
     }
 
     // put actions into its table
-    foreach ( $data['actions'] as $key => $value ) {
+    foreach ($data['actions'] as $key => $value) {
 
         // validate supplied data
         $value = intval($value);
@@ -1720,10 +1776,12 @@ function createQuestion( $data = array() ) {
 
     $missatges[] = array('type' => "success", 'msg' => "La pregunta s'ha creat correctament.");
     printQuestionManagement($missatges);
+
     return true;
 }
 
-function saveQuestionData( $data = array() ) {
+function saveQuestionData( $data = array() )
+{
     global $db;
 
     $missatges = array();
@@ -1736,7 +1794,7 @@ function saveQuestionData( $data = array() ) {
     $db->query($query);
 
     // put choices into its table
-    foreach ( $data['choices'] as $key => $value ) {
+    foreach ($data['choices'] as $key => $value) {
 
         // validate supplied data
         if ( empty($value) ) continue;
@@ -1755,7 +1813,7 @@ function saveQuestionData( $data = array() ) {
     $db->query($query);
 
     // put actions into its table
-    foreach ( $data['actions'] as $key => $value ) {
+    foreach ($data['actions'] as $key => $value) {
 
         // validate supplied data
         $value = intval($value);
@@ -1791,7 +1849,8 @@ function saveQuestionData( $data = array() ) {
     }
 }
 
-function deleteQuestion($questionId) {
+function deleteQuestion($questionId)
+{
     global $db;
 
     // question_id must be an integer
@@ -1806,10 +1865,12 @@ function deleteQuestion($questionId) {
     $db->query($query);
 
     $query = sprintf( "DELETE FROM questions WHERE id='%d' LIMIT 1", $questionId );
+
     return $db->query($query);
 }
 
-function printQuestionContentForm( $data ) {
+function printQuestionContentForm($data)
+{
     global $db;
 
     ?>
@@ -1876,7 +1937,7 @@ function printQuestionContentForm( $data ) {
 
                             <?php
 
-                            foreach ( $data['choices'] as $key => $value ) {
+                            foreach ($data['choices'] as $key => $value) {
                                     ?>
                             <div class="clonable">
                                 <div class="form-group">
@@ -1905,7 +1966,6 @@ function printQuestionContentForm( $data ) {
                                     <?php
                             }
                             ?>
-
 
                             <div class="clonable">
                                 <div class="form-group">
@@ -1950,7 +2010,7 @@ function printQuestionContentForm( $data ) {
                             $query = "SELECT id, name FROM badges WHERE status='active'";
                             $result = $db->query($query);
                             $availableActions = array();
-                            while( $row = $result->fetch_assoc() ) {
+                            while ( $row = $result->fetch_assoc() ) {
                                 $availableActions[$row['id']] = $row['name'];
                             }
                             ?>
@@ -2021,16 +2081,18 @@ function printQuestionContentForm( $data ) {
     <?php
 }
 
-function printPreviewQuestion($questionId) {
+function printPreviewQuestion($questionId)
+{
     global $db;
 
     $query = sprintf( "SELECT * FROM questions WHERE id='%s' LIMIT 1", $db->real_escape_string($questionId) );
     $result = $db->query($query);
 
-    if ( 0 == $result->num_rows ) {
+    if (0 == $result->num_rows) {
         // La pregunta que ens han passat no existeix, per tant tornem a mostrar la llista.
         $missatges[] = array('type' => "error", 'msg' => "No he trobat informaci&oacute; per aquesta pregunta.");
         printQuestionManagement();
+
         return false;
     }
 
@@ -2067,7 +2129,7 @@ function printPreviewQuestion($questionId) {
                         $htmlCode = array();
                         foreach ($question['choices'] as $choice) {
                             $htmlCode[] = '<li class="list-group-item">';
-                                if ( 'yes' == $choice['correct'] ) {
+                                if ('yes' == $choice['correct']) {
                                     $htmlCode[] = '<span class="glyphicon glyphicon-ok"></span>';
                                 } else {
                                     $htmlCode[] = '<span class="glyphicon glyphicon-remove"></span>';
@@ -2090,4 +2152,3 @@ function printPreviewQuestion($questionId) {
     </div>
     <?php
 }
-

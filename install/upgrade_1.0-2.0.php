@@ -108,7 +108,6 @@ $query = "SELECT * FROM members_quizs";
 $result = $db->query($query);
 $pre_migracio_q = $result->num_rows;
 
-
 printf( "   quizs -> questions: ");
 $query = "SELECT * FROM quizs";
 $result2 = $db->query($query);
@@ -151,14 +150,14 @@ while ($data = $result2->fetch_assoc()) {
     $data['points'][] = $data['answer5'];
 
     // put choices into its table
-    foreach ( $data['choices'] as $key => $value ) {
+    foreach ($data['choices'] as $key => $value) {
 
         // validate supplied data
         if ( empty($value) ) continue;
         $points = intval($data['points'][$key]);
 
         $correct = 'no';
-        if ( $points > 0 ) {
+        if ($points > 0) {
             $correct = 'yes';
         }
 
@@ -176,7 +175,7 @@ while ($data = $result2->fetch_assoc()) {
     $data['actions'][] = $data['id_badge2'];
 
     // put actions into its table
-    foreach ( $data['actions'] as $value ) {
+    foreach ($data['actions'] as $value) {
         $value = intval($value);
         if ( empty($value) ) continue;
 
@@ -196,7 +195,6 @@ while ($data = $result2->fetch_assoc()) {
     }
     $query = "INSERT INTO members_questions (id_member, id_question, amount, last_time) VALUES ". implode(',', $values);
     $db->query($query);
-
 
 }
 
@@ -240,7 +238,8 @@ printf("<h2>L'actualitzacio a la v2.x ha estat un exit</h2>\n");
 exit();
 
 /*** FUNCTIONS ***/
-function getNewUUID() {
+function getNewUUID()
+{
     return sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
 
       // 32 bits for "time_low"

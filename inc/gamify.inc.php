@@ -9,7 +9,7 @@
 defined('IN_SCRIPT') or die('Invalid attempt');
 
 /*** FUNCTIONS ***/
-function doSilentAddExperience ($userId, $experience, $memo = '')
+function doSilentAddExperience($userId, $experience, $memo = '')
 {
     global $db;
 
@@ -46,7 +46,7 @@ function doSilentAddExperience ($userId, $experience, $memo = '')
             'memo' => $data['memo']
         )
     );
-    
+
     if (!$result) {
         return false;
     }
@@ -148,8 +148,10 @@ function doSilentAction($userId, $actionId)
                 doSilentAddExperience($userId, 5, 'desbloquejar la ins&iacute;gnia: '. $data['name']);
                 // send a mail to user in order to tell him/her, his/her new badge
                 notifyBadgeToUser($data);
+
                 return $data['id_badge'];
         }
+
         return false;
     }
 
@@ -179,6 +181,7 @@ function doSilentAction($userId, $actionId)
             if ($db->query($query)) {
                 // send a mail to user in order to tell him/her, his/her new achievement
                 notifyBadgeToUser($data);
+
                 return $data['id_badge'];
             } else {
                 return false;
@@ -193,13 +196,13 @@ function doSilentAction($userId, $actionId)
             );
 
             $db->query($query);
+
             return false;
         }
     } else {
         return false;
     }
 }
-
 
 function notifyBadgeToUser($data = array())
 {
@@ -230,19 +233,19 @@ BADGE_MAIL;
 function notifyLevelToUser($userId, $levelId)
 {
     global $CONFIG, $db;
-    
+
     $query = sprintf("SELECT email FROM vmembers WHERE id='%d' LIMIT 1", $userId);
     $result = $db->query($query);
     $row = $result->fetch_assoc();
     $userEmail = $row['email'];
-     
+
     $query = sprintf(
         "SELECT name FROM levels WHERE id='%d' LIMIT 1",
         $levelId
     );
     $result = $db->query($query);
     $row = $result->fetch_assoc();
-    
+
     $levelName = $row['name'];
     $levelImage = getLevelImage($levelId, true);
     $userProfile = sprintf(
@@ -268,19 +271,20 @@ LEVEL_MAIL;
 function getLevelImage($levelId, $withURL = false)
 {
     global $db, $CONFIG;
-    
+
     $query = sprintf(
         "SELECT image FROM levels WHERE id='%d' LIMIT 1",
         $levelId
     );
     $result = $db->query($query);
     $row = $result->fetch_assoc();
-    
+
     $imagePath = sprintf("%s/%s", $CONFIG['site']['uploads'], $row['image']);
     if (true === $withURL) {
         // returns absolute path
         return sprintf("%s/%s", $CONFIG['site']['base_url'], $imagePath);
     }
+
     return $imagePath;
 }
 
@@ -294,6 +298,7 @@ function getUserLevelById($userId)
         return false;
     }
     $row = $result->fetch_assoc();
+
     return $row['level_id'];
 }
 
@@ -312,6 +317,7 @@ function getQuestionAverage($questionUUID)
         return false;
     }
     $row = $result->fetch_assoc();
+
     return $row['average'];
 }
 
@@ -350,7 +356,7 @@ function getUserId($userUUID)
 function getBadgeAssignements($badgeId)
 {
     global $db;
-  
+
     return $db->getOne(
         sprintf(
             "SELECT COUNT(id_member) AS assignements FROM members_badges "
@@ -363,7 +369,7 @@ function getBadgeAssignements($badgeId)
 function getLevelAssignements($levelId)
 {
     global $db;
-   
+
     return $db->getOne(
         sprintf(
             "SELECT COUNT(id) AS assignements FROM vmembers WHERE level_id='%d'",

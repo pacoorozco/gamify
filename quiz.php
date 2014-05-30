@@ -321,7 +321,7 @@ function printQuestionList()
         echo getHTMLMessages($message);
     } else {
         $htmlCode = array();
-        
+
         $htmlCode[] = '<div class="list-group">';
         while ($row = $result->fetch_assoc()) {
             $htmlCode[] = '<a href="'. $_SERVER['PHP_SELF'] .'?a=answerqz&item='. $row['uuid'] .'" class="list-group-item">';
@@ -334,7 +334,7 @@ function printQuestionList()
             $htmlCode[] = '</a>';
         }
         $htmlCode[] = '</div>';
-        
+
         echo implode(PHP_EOL, $htmlCode);
         unset($htmlCode);
     }

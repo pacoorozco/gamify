@@ -13,7 +13,6 @@ defined('IN_SCRIPT') or die('Invalid attempt');
         <div id="push"></div>
     </div><!--/wrap -->
 
-
       <footer id="footer">
           <div class="container">
               <p class="text-muted credit">GoW! v<?php echo $CONFIG['version']; ?> - Powered by <a href="https://git.upcnet.es/bo/gamify/blob/master/README.md" title="Gamify Project">gamify</a> - <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/deed.ca">Llicència Creative Commons Reconeixement-CompartirIgual</a></p>
@@ -34,7 +33,7 @@ defined('IN_SCRIPT') or die('Invalid attempt');
                 "js/jQuery-custom-input-file.js",
                 "js/jquery.upload.js",
                 "js/gamify.js",
-                function() {
+                function () {
                     gamify_helper.init();
                 }
                 );
@@ -42,7 +41,7 @@ defined('IN_SCRIPT') or die('Invalid attempt');
 
     <!-- Google Analytics -->
     <script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (function (i,s,o,g,r,a,m) {i['GoogleAnalyticsObject']=r;i[r]=i[r]||function () {
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
   m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
   })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
@@ -53,4 +52,3 @@ defined('IN_SCRIPT') or die('Invalid attempt');
 
   </body>
 </html>
-

@@ -23,7 +23,6 @@ defined('IN_SCRIPT') or die('Invalid attempt');
         <?php
         // Per incrementar la velocitat, guardem tot el codi en una variable i fem nomes un echo.
 
-
         $htmlCode = array();
         $position = 1;
          $top3 = 3;
@@ -38,12 +37,9 @@ defined('IN_SCRIPT') or die('Invalid attempt');
                 $currentuser = "";
             }
             $htmlCode[] = '<tr ' . $currentuser . '>';
-            if ($position<=$top3)
-            {
+            if ($position<=$top3) {
                  $htmlCode[] = '<td class="text-center" style=" vertical-align: middle;"><span class="badge alert-warning"><h'.($position+2).'>&nbsp;'.$position.'&nbsp;</h'.($position+2).'></span></td>';
-            }
-            else
-            {
+            } else {
             $htmlCode[] = '<td class="text-center"  style=" vertical-align: middle;">' . $position . '</td>';
             }
             $htmlCode[] = '<td style=" vertical-align: middle;">';
@@ -68,7 +64,6 @@ defined('IN_SCRIPT') or die('Invalid attempt');
                 echo $ranking[$i];
             }
 
-
             echo "<tr><td colspan=5><center><b>...</td></tr>";
             if ($currentranking + $toprest < $position) {
                 $init = $currentranking - 1;
@@ -81,7 +76,6 @@ defined('IN_SCRIPT') or die('Invalid attempt');
                 echo $ranking[$i];
             }
         }
-
 
         ?>
     </tbody>

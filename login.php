@@ -6,8 +6,8 @@
  */
 
 define('IN_SCRIPT', 1);
-require_once('inc/functions.inc.php');
-require_once('inc/gamify.inc.php');
+require_once 'inc/functions.inc.php';
+require_once 'inc/gamify.inc.php';
 
 // Que hem de fer?
 $action = getREQUESTVar('a');
@@ -43,7 +43,7 @@ switch ($action) {
 }
 
 // now rest of actions
-require_once('inc/header.inc.php');
+require_once 'inc/header.inc.php';
 
 switch ($action) {
     case 'login':
@@ -67,12 +67,13 @@ switch ($action) {
         printLoginForm();
 }
 
-require_once('inc/footer.inc.php');
+require_once 'inc/footer.inc.php';
 exit();
 
 /*** FUNCTIONS ***/
 
-function printLoginForm( $username = '', $missatges = array() ) {
+function printLoginForm( $username = '', $missatges = array() )
+{
     global $CONFIG;
 
     // get after login url if exists
@@ -138,7 +139,8 @@ function printLoginForm( $username = '', $missatges = array() ) {
 <?php
 } // END print_login_form()
 
-function doLogout() {
+function doLogout()
+{
     global $db;
 
     // updates members to put session_id to NULL
@@ -148,7 +150,8 @@ function doLogout() {
     secureSessionDestroy();
 } // END do_logout()
 
-function doLogin($username, $password) {
+function doLogin($username, $password)
+{
     global $CONFIG, $db;
 
     // Primer fixem a FALS la resposta d'aquesta funcio
@@ -169,7 +172,7 @@ function doLogin($username, $password) {
         return false;
 
     // we implement several auth types
-    switch ( $CONFIG['authentication']['type'] ) {
+    switch ($CONFIG['authentication']['type']) {
         case 'LDAP':
             // we will use LDAP authentication
             if ( getLDAPAuth( $usuari['username'], $password,
@@ -196,7 +199,8 @@ function doLogin($username, $password) {
     return $userIsMember;
 } // END do_login()
 
-function printRegisterForm( $missatges = array() ) {
+function printRegisterForm( $missatges = array() )
+{
 ?>
         <div id="signupbox" style="margin-top:50px;" class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
             <div class="panel panel-info">
@@ -218,7 +222,7 @@ function printRegisterForm( $missatges = array() ) {
                                 if ('LDAP' == $CONFIG['authentication']['type']) {
                                     $usertext = 'usuari LDAP';
                                 }
-                                ?>                            
+                                ?>
                             <div class="col-md-9">
                                 <input type="text" name="username" id="username" class="form-control" placeholder="<?= $usertext; ?>" required>
                             </div>
@@ -252,7 +256,8 @@ function printRegisterForm( $missatges = array() ) {
 <?php
 } // END print_register_form()
 
-function doRegister( $data = array() ) {
+function doRegister( $data = array() )
+{
     global $db, $CONFIG;
 
     $missatges = array();
@@ -267,6 +272,7 @@ function doRegister( $data = array() ) {
     if ( getUserExists($data['username']) ) {
         $missatges[] = array('type' => "info", 'msg' => "L'usuari '<strong>". $data['username'] ."</strong>' ja existeix al sistema.");
         printLoginForm($data['username'], $missatges);
+
         return false;
     }
 
@@ -277,6 +283,7 @@ function doRegister( $data = array() ) {
                 // User has not been validated.
                 $missatges[] = array('type' => "error", 'msg' => "No hem pogut comprovar les credencials al LDAP. Revisa-les si us plau");
                 printRegisterForm($missatges);
+
                 return false;
             }
             break;
@@ -296,21 +303,24 @@ function doRegister( $data = array() ) {
     // Get new user_id or 0 on error.
     $userId = $db->insert_id;
 
-    if ( 0 === $userId ) {
+    if (0 === $userId) {
         $missatges[] = array('type' => "error", 'msg' => "No s'ha pogut crear l'usuari.");
         printRegisterForm($missatges);
+
         return false;
     } else {
         // ACTION: Benvinguda
         doSilentAction($userId, 8);
-        
+
         $missatges[] = array('type' => "success", 'msg' => "L'usuari '<strong>". $data['username'] ."</strong>' creat correctament.");
         printLoginForm($data['username'], $missatges);
+
         return true;
     }
 }
 
-function getLDAPAuth($username, $password) {
+function getLDAPAuth($username, $password)
+{
     global $CONFIG;
 
     if ( empty($username) ) return false;
@@ -335,6 +345,6 @@ function getLDAPAuth($username, $password) {
 
     // fitth is 'attrsonly', sixth is how many results. See ldap_search on php.net
     $sr = ldap_search($connect, $CONFIG['LDAP']['basedn'], $filter, array('mail', 'sn'), 0, 1);
+
     return ( false === ldap_get_entries($connect, $sr) ) ? false : true;
 } // END LDAP_auth()
-

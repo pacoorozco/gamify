@@ -1,9 +1,8 @@
 <?php
 
-
 define('IN_SCRIPT',1);
 
-require_once('inc/core.inc.php');
+require_once 'inc/core.inc.php';
 
 $method = getGETVar('method');
 $format = getGETVar('format');
@@ -48,7 +47,8 @@ switch ($format) {
 
 /*** FUNCTIONS ***/
 
-function setQuestionStatus($item, $status) {
+function setQuestionStatus($item, $status)
+{
     global $db;
 
     $results = array();
@@ -62,7 +62,7 @@ function setQuestionStatus($item, $status) {
             );
     $result = $db->query($query);
 
-    if ( ! $result ) {
+    if (! $result) {
         // Something wrong happens
         $results = array(
             'head' => array(
@@ -72,6 +72,7 @@ function setQuestionStatus($item, $status) {
                 ),
             'body' => array()
             );
+
         return $results;
     }
 

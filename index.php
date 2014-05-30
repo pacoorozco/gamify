@@ -6,9 +6,9 @@
  */
 
 define('IN_SCRIPT',1);
-require_once('inc/functions.inc.php');
+require_once 'inc/functions.inc.php';
 
-require_once('inc/header.inc.php');
+require_once 'inc/header.inc.php';
 
 if ( true === loginCheck() ) { ?>
 
@@ -20,7 +20,7 @@ if ( true === loginCheck() ) { ?>
         <div class="video-container">
         <iframe width="320" height="240" src="//www.youtube.com/embed/eH2A0k1um3A" frameborder="0" allowfullscreen></iframe>
         </div>
-        
+
         <h1>Contacta'ns</h1>
         <p class="lead">Tens alguna suggerència? Has trobat un error?</p>
         <p>Escriu-nos a:</p>
@@ -71,7 +71,7 @@ if ( true === loginCheck() ) { ?>
             $query = "SELECT t1.uuid, t1.id, t1.username, t2.points, t1.level_id, (SELECT COUNT(id) FROM members_badges WHERE t1.id = members_badges.id_member AND members_badges.status = 'completed') AS badges FROM vmembers AS t1, vtop_month AS t2 WHERE t1.id = t2.id  ORDER BY points DESC, badges DESC, username ASC ";
             $result = $db->query($query);
 
-            require('inc/hall_of_fame.inc.php');
+            require 'inc/hall_of_fame.inc.php';
 
 
 
@@ -85,7 +85,7 @@ if ( true === loginCheck() ) { ?>
             $query = "SELECT t1.uuid, t1.id, t1.username, t2.points, t1.level_id, (SELECT COUNT(id) FROM members_badges WHERE t1.id = members_badges.id_member AND members_badges.status = 'completed') AS badges FROM vmembers AS t1, vtop AS t2 WHERE t1.id = t2.id  ORDER BY points DESC, badges DESC, username ASC ";
             $result = $db->query($query);
 
-            require('inc/hall_of_fame.inc.php');
+            require 'inc/hall_of_fame.inc.php';
             ?>
             </div>
 
@@ -183,14 +183,14 @@ if ( true === loginCheck() ) { ?>
                             <p>Error:</p>
                             <span></span>
                         </div>
-                        
+
                                 <?php
                                 $usertext = 'usuari';
 
                                 if ('LDAP' == $CONFIG['authentication']['type']) {
                                     $usertext = 'usuari LDAP';
                                 }
-                                ?>                        
+                                ?>
 
                         <div class="form-group">
                             <label for="username" class="col-md-3 control-label">Usuari</label>
@@ -230,5 +230,5 @@ if ( true === loginCheck() ) { ?>
 <?php
 }
 
-require_once('inc/footer.inc.php');
+require_once 'inc/footer.inc.php';
 ?>

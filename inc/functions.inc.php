@@ -9,7 +9,7 @@
 defined('IN_SCRIPT') or die('Invalid attempt');
 
 // Include core functions
-require_once('inc/core.inc.php');
+require_once 'inc/core.inc.php';
 
 /*** MAIN ***/
 
@@ -62,6 +62,7 @@ function loginCheck()
         // Si l'usuari esta deshabilitat no pot accedir
         $isUserLoggedIn = ($row['disabled'] == 1) ? false : true;
     }
+
     return $isUserLoggedIn;
 }
 
@@ -224,6 +225,7 @@ function getHTMLSelectOptions($available_options, $selected_option = '')
             $htmlCode[] = '<option value="' . $key . '">' . $value . '</option>';
         }
     }
+
     return implode($htmlCode, PHP_EOL);
 }
 
@@ -231,7 +233,7 @@ function getHTMLDataTable($id)
 {
     $htmlCode = <<<END
         <script>
-            head.ready(function() {
+            head.ready(function () {
                 $('$id').dataTable( {
                     "bSortClasses": false,
                     "aoColumnDefs": [
@@ -258,13 +260,14 @@ function getHTMLDataTable($id)
             } );
         </script>
 END;
+
     return $htmlCode;
 }
 
 function getPendingQuizs($userId)
 {
     global $db;
-    
+
     $pending = $db->getOne(
         sprintf(
             "SELECT count(*) AS pending FROM questions "

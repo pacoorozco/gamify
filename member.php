@@ -6,8 +6,8 @@
  */
 
 define('IN_SCRIPT', 1);
-require_once('inc/functions.inc.php');
-require_once('inc/gamify.inc.php');
+require_once 'inc/functions.inc.php';
+require_once 'inc/gamify.inc.php';
 
 // Page only for members
 if ( false === loginCheck() ) {
@@ -35,7 +35,7 @@ switch ($action) {
         break;
 }
 
-require_once('inc/header.inc.php');
+require_once 'inc/header.inc.php';
 
 switch ($action) {
     case 'viewuser':
@@ -49,11 +49,12 @@ switch ($action) {
 }
 
 
-require_once('inc/footer.inc.php');
+require_once 'inc/footer.inc.php';
 exit();
 
 /*** FUNCTIONS ***/
-function getSearchResults( $searchterm ) {
+function getSearchResults($searchterm)
+{
         global $db;
 
         $htmlCode = array();
@@ -66,7 +67,7 @@ function getSearchResults( $searchterm ) {
             $query = sprintf("SELECT uuid, username FROM vmembers WHERE username LIKE '%%%s%%'", $db->real_escape_string($searchterm));
             $result = $db->query($query);
 
-            if ( 0 == $result->num_rows  ) {
+            if (0 == $result->num_rows) {
                 // No s'ha trobat res
                 $htmlCode[] = '<li class="list-group-item list-group-item-danger">No he trobat cap resultat</li>';
 
@@ -78,10 +79,12 @@ function getSearchResults( $searchterm ) {
             }
         }
         $htmlCode[] = '</ul>';
-	return implode($htmlCode, PHP_EOL);
+
+    return implode($htmlCode, PHP_EOL);
 }
 
-function printProfile($userUUID) {
+function printProfile($userUUID)
+{
     global $db;
 
     $query = sprintf("SELECT t1.id, t1.username, t1.total_points, t1.month_points, t1.last_access, t1.level_id, t2.name AS level_name, t2.image AS level_image,t2.experience_needed FROM vmembers AS t1, levels AS t2 WHERE t1.level_id = t2.id AND t1.uuid='%s' LIMIT 1", $userUUID);
@@ -124,11 +127,11 @@ function printProfile($userUUID) {
                         <p id="messageBox"></p>
                         <script>
                             var uploadURL = "<?= $_SERVER['PHP_SELF']; ?>?a=upload";
-                            head(function() {
-                                $(document).ready(function() {
+                            head(function () {
+                                $(document).ready(function () {
                                     $('a#uploadFile').file();
-                                    $('input#uploadFile').file().choose(function(e, input) {
-                                        input.upload(uploadURL, function(res) {
+                                    $('input#uploadFile').file().choose(function (e, input) {
+                                        input.upload(uploadURL, function (res) {
                                             if (res=="ERROR") {
                                                 $('p#messageBox').attr("class","text-danger");
                                                 $('p#messageBox').html("Invalid extension !");
@@ -220,7 +223,8 @@ function printProfile($userUUID) {
     <?php
 }
 
-function uploadProfilePicture() {
+function uploadProfilePicture()
+{
     global $CONFIG, $_SESSION, $db;
 
     # upload the file to the filesystem uploads dir
