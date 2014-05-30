@@ -19,7 +19,7 @@ $CONFIG['site']['debug'] = isset($CONFIG['site']['debug']) ? true : false;
 
 // We need to send mails, we use Swift
 require_once 'lib/swift_required.php';
-require_once 'inc/database.inc.php';
+require_once 'inc/classes/DB.php';
 
 /*** MAIN ***/
 
@@ -82,8 +82,8 @@ function getSanitizedInput($in, $force_slashes = 0, $maxLength = 0)
     return $in;
 }
 
- function getElapsedTimeString($datetime, $full = false)
- {
+function getElapsedTimeString($datetime, $full = false)
+{
     $now = new DateTime;
     $ago = new DateTime($datetime);
     $diff = $now->diff($ago);
@@ -121,20 +121,20 @@ function sendMessage($subject, $missatge, $receiver = '')
 
     // If DEBUG mode is on, only send messages to 'debug_receiver'
     if ($CONFIG['site']['debug']) {
-        if ( ! isset( $CONFIG['site']['debug_receiver'] ) ) {
+        if (!isset($CONFIG['site']['debug_receiver'])) {
             return true;
         }
         $receiver = $CONFIG['site']['debug_receiver'];
     }
 
     // If not receiver is submitted, a message will be sent to everybody
-    if ( empty($receiver) ) {
+    if (empty($receiver)) {
         $query = "SELECT email FROM vmembers WHERE role = 'member'";
         $result = $db->query($query);
 
         $receiver = array();
         while ($row = $result->fetch_assoc()) {
-            if ( !empty($row['email']) ) {
+            if (!empty($row['email'])) {
                 $receiver[] = $row['email'];
             }
         }
@@ -172,11 +172,10 @@ SEND_MAIL;
     ->setFrom(array('noreply@upcnet.es' => 'GoW! - Game of Work'))
 
     // Give it a body
-    ->setBody($mailBody, 'text/html')
-    ;
+    ->setBody($mailBody, 'text/html');
 
     // If we send to a one user use To:, if they're multiple Bcc:
-    if ( is_array($receiver) ) {
+    if (is_array($receiver)) {
         $message->setBcc($receiver);
     } else {
         $message->setTo($receiver);
@@ -188,25 +187,24 @@ SEND_MAIL;
 
 function getNewUUID()
 {
-    return sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
-
-      // 32 bits for "time_low"
-      mt_rand(0, 0xffff), mt_rand(0, 0xffff),
-
-      // 16 bits for "time_mid"
-      mt_rand(0, 0xffff),
-
-      // 16 bits for "time_hi_and_version",
-      // four most significant bits holds version number 4
-      mt_rand(0, 0x0fff) | 0x4000,
-
-      // 16 bits, 8 bits for "clk_seq_hi_res",
-      // 8 bits for "clk_seq_low",
-      // two most significant bits holds zero and one for variant DCE1.1
-      mt_rand(0, 0x3fff) | 0x8000,
-
-      // 48 bits for "node"
-      mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff)
+    return sprintf(
+        '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
+        // 32 bits for "time_low"
+        mt_rand(0, 0xffff),
+        mt_rand(0, 0xffff),
+        // 16 bits for "time_mid"
+        mt_rand(0, 0xffff),
+        // 16 bits for "time_hi_and_version",
+        // four most significant bits holds version number 4
+        mt_rand(0, 0x0fff) | 0x4000,
+        // 16 bits, 8 bits for "clk_seq_hi_res",
+        // 8 bits for "clk_seq_low",
+        // two most significant bits holds zero and one for variant DCE1.1
+        mt_rand(0, 0x3fff) | 0x8000,
+        // 48 bits for "node"
+        mt_rand(0, 0xffff),
+        mt_rand(0, 0xffff),
+        mt_rand(0, 0xffff)
     );
 }
 /**
@@ -220,8 +218,8 @@ function getNewUUID()
   * Returns:
   *  $result:   True si existeix, false en cas contrari
   */
- function getUserExists($user)
- {
+function getUserExists($user)
+{
     if (is_int($user)) {
         return (getUserNameById($user) === false ) ? false : true;
     } else {
@@ -233,28 +231,16 @@ function getUserNameById($userId)
 {
     global $db;
 
-    $query = sprintf( "SELECT username FROM members WHERE id='%d' LIMIT 1", intval($userId) );
-    $result = $db->query($query);
-
-    // Si no s'ha trobat res, retornem FALSE
-    if ($result->num_rows == 0 ) return false;
-
-    $row = $result->fetch_assoc();
-
-    return $row['username'];
+    return $db->getOne(
+        sprintf("SELECT username FROM members WHERE id='%d' LIMIT 1", intval($userId))
+    );
 }
 
 function getUserIdByName($username)
 {
     global $db;
 
-    $query = sprintf( "SELECT id FROM members WHERE username='%s' LIMIT 1", $username );
-    $result = $db->query($query);
-
-    // Si no s'ha trobat res, retornem FALSE
-    if ($result->num_rows == 0 ) return false;
-
-    $row = $result->fetch_assoc();
-
-    return $row['id'];
+    return $db->getOne(
+        sprintf("SELECT id FROM members WHERE username='%s' LIMIT 1", $username)
+    );
 }

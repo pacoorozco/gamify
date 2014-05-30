@@ -3,18 +3,33 @@
 /**
  * Database Abstraction Layer Class
  *
+ *
  * This class implements a Database Abstraction Layer in order to manage SQL
  * queries in more efficient way.
  *
  * LICENSE: Creative Commons Attribution-ShareAlike 3.0 Unported (CC BY-SA 3.0)
  *
- * @category   Database
- * @author     Paco Orozco (paco@pacoorozco.info)
+ * @category   Pakus
+ * @package    Database
  * @license    http://creativecommons.org/licenses/by-sa/3.0/deed.en (CC BY-SA 3.0)
  * @version    1.0
+ * @link       https://git.upcnet.es/bo/gamify
  */
 namespace Pakus\Database;
 
+/**
+ * Database Abstraction Layer Class
+ *
+ * This class implements a Database Abstraction Layer in order to manage SQL
+ * queries in more efficient way.
+ *
+ * @category   Pakus
+ * @package    Database
+ * @author     Paco Orozco (paco@pacoorozco.info)
+ * @license    http://creativecommons.org/licenses/by-sa/3.0/deed.en (CC BY-SA 3.0)
+ * @version    1.0
+ * @link       https://git.upcnet.es/bo/gamify
+ */
 class DB extends \mysqli
 {
 
