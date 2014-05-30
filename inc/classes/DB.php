@@ -11,6 +11,7 @@
  *
  * @category   Pakus
  * @package    Database
+ * @author     Paco Orozco <paco@pacoorozco.info> 
  * @license    http://creativecommons.org/licenses/by-sa/3.0/deed.en (CC BY-SA 3.0)
  * @version    1.0
  * @link       https://git.upcnet.es/bo/gamify
@@ -25,7 +26,7 @@ namespace Pakus\Database;
  *
  * @category   Pakus
  * @package    Database
- * @author     Paco Orozco (paco@pacoorozco.info)
+ * @author     Paco Orozco <paco@pacoorozco.info>
  * @license    http://creativecommons.org/licenses/by-sa/3.0/deed.en (CC BY-SA 3.0)
  * @version    1.0
  * @link       https://git.upcnet.es/bo/gamify

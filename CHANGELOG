@@ -3,6 +3,7 @@ Version 2.9
 * Remove level and badges from sources (cleaning up)
 * [#246] Adds a DAL Class in order to write less code messing with DB
 * Put user's answers when view a answered question
+* Change the way an user view its answered question
 
 Version 2.8
 -----------

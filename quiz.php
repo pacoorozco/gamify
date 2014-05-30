@@ -1,8 +1,18 @@
 <?php
-/*
- * @author Emilio Ampudia, emilio.ampudia -at- upcnet.es
- * @version $Id: quiz.php 65 2014-04-21 18:09:54Z paco $
+
+/**
+ * Module to implement Quizs
  *
+ *
+ * This files implements Quizs on gamify!
+ *
+ * LICENSE: Creative Commons Attribution-ShareAlike 3.0 Unported (CC BY-SA 3.0)
+ *
+ * @category   Pakus
+ * @package    Quiz
+ * @author     Paco Orozco <paco@pacorozco.info>
+ * @license    http://creativecommons.org/licenses/by-sa/3.0/deed.en (CC BY-SA 3.0)
+ * @link       https://git.upcnet.es/bo/gamify
  */
 
 define('IN_SCRIPT', 1);
@@ -23,17 +33,17 @@ $action = getREQUESTVar('a');
 
 switch ($action) {
     case 'answerqz':
-        $quiz_id = getREQUESTVar('item');
-        printAnswerQuestionForm($quiz_id);
+        $quizUUID = getREQUESTVar('item');
+        printAnswerQuestionForm($quizUUID);
         break;
     case 'answer':
-        $quiz_id = getPOSTVar('item');
+        $quizUUID = getPOSTVar('item');
         $choices = getPOSTVar('choices');
-        answerQuestion($quiz_id, $choices);
+        answerQuestion($quizUUID, $choices);
         break;
     case 'seeqz':
-        $quiz_id = getREQUESTVar('item');
-        viewQuestionByUUID($quiz_id);
+        $quizUUID = getREQUESTVar('item');
+        viewQuestionByUUID($quizUUID);
         break;
     case 'historic':
         printHistoricQuestionList();
@@ -61,10 +71,10 @@ function answerQuestion($questionUUID, $answers)
     if (is_null($question)) {
         // La pregunta que ens han passat no existeix, per tant tornem a mostrar la llista.
         printQuestionList();
-        return false;        
+        return false;
     }
 
-    // Mirem si la pregunta ha estat resposta per aquest usuari  
+    // Mirem si la pregunta ha estat resposta per aquest usuari
     $result = $db->getOne(
         sprintf(
             "SELECT id FROM members_questions WHERE id_member='%d' AND id_question='%d' LIMIT 1",
@@ -133,6 +143,15 @@ function answerQuestion($questionUUID, $answers)
             'answers' => $db->qstr(implode(',', $answers))
         )
     );
+    
+    $missatges[] = array(
+        'type' => "info",
+        'msg' => sprintf(
+            "<strong>Gràcies per la teva resposta</strong>. "
+            . "La teva resposta ha obtingut una puntuació de <strong>%d punts</strong>.",
+            $points
+        )
+    );
 
     $oldLevel = getUserLevelById($_SESSION['member']['id']);
     doSilentAddExperience($_SESSION['member']['id'], $points, 'respondre la pregunta: '. $question['name']);
@@ -162,7 +181,7 @@ function answerQuestion($questionUUID, $answers)
     if ($result->num_rows > 0) {
         // hi ha accions a realitzar
         while ($row = $result->fetch_assoc()) {
-            if (doSilentAction($_SESSION['member']['id'], $row['badge_id']) == $row['badge_id']) {             
+            if (doSilentAction($_SESSION['member']['id'], $row['badge_id']) == $row['badge_id']) {
                 $badgeName = $db->getOne(
                     sprintf("SELECT name FROM badges WHERE id='%d'", $row['badge_id'])
                 );
@@ -194,10 +213,10 @@ function printAnswerQuestionForm($questionUUID)
     if (is_null($question)) {
         // La pregunta que ens han passat no existeix, per tant tornem a mostrar la llista.
         printQuestionList();
-        return false;        
+        return false;
     }
     
-    // Mirem si la pregunta ha estat resposta per aquest usuari  
+    // Mirem si la pregunta ha estat resposta per aquest usuari
     $result = $db->getOne(
         sprintf(
             "SELECT id FROM members_questions WHERE id_member='%d' AND id_question='%d' LIMIT 1",
@@ -210,7 +229,7 @@ function printAnswerQuestionForm($questionUUID)
         // L'usuari ja havia respost la pregunta o aquest està tancada
         viewQuestionByUUID($questionUUID);
         return;
-    }    
+    }
 
     // get question's choices, if none, return
     $question['choices'] = $db->getAll(
@@ -237,7 +256,7 @@ function printAnswerQuestionForm($questionUUID)
         </div>
         <div class="panel-body">
             <img src="<?= $question['image']; ?>" width="120" class="img-rounded">
-            <h4><?php echo $question['question']; ?></h4>
+            <h4><?= $question['question']; ?></h4>
             <form action="<?= $_SERVER['PHP_SELF']; ?>" method="post" role="form">
                 <ul class="list-group">
     <?php
@@ -273,9 +292,9 @@ function printQuestionHeader($a = 'list')
             <h1>Participa</h1>
 
             <ul class="nav nav-tabs">
-                <li<?= ('list' == $a) ? ' class="active"' : ''; ?>><a href="<?php echo $_SERVER['PHP_SELF']; ?>?a=list">Contestar pendents</a></li>
-                <li<?= ('historic' == $a) ? ' class="active"' : ''; ?>><a href="<?php echo $_SERVER['PHP_SELF']; ?>?a=historic">Revisar preguntes</a></li>
-                <li<?= ('question' == $a) ? ' class="active"' : ' class="disabled"'; ?>><a href="#">Veure pregunta</a></li>
+                <li<?= ('list' === $a) ? ' class="active"' : ''; ?>><a href="<?= $_SERVER['PHP_SELF']; ?>?a=list">Contestar pendents</a></li>
+                <li<?= ('historic' === $a) ? ' class="active"' : ''; ?>><a href="<?= $_SERVER['PHP_SELF']; ?>?a=historic">Revisar preguntes</a></li>
+                <li<?= ('question' === $a) ? ' class="active"' : ' class="disabled"'; ?>><a href="#">Veure pregunta</a></li>
             </ul>
     <?php
 }
@@ -299,7 +318,8 @@ function printQuestionList()
 
     <?php
     $query = sprintf(
-        "SELECT * FROM questions WHERE status='active' AND id NOT IN (SELECT id_question FROM members_questions WHERE id_member='%d')",
+        "SELECT * FROM questions WHERE status='active' AND id NOT IN "
+        . "(SELECT id_question FROM members_questions WHERE id_member='%d')",
         intval($_SESSION['member']['id'])
     );
 
@@ -307,7 +327,11 @@ function printQuestionList()
 
     if (0 === $result->num_rows) {
         // No hi ha cap pregunta pendent
-        $message[] = array('type' => "info", 'msg' => "<strong>Enhorabona</strong>. No tens cap pregunta pendent. ¡Encara pots trobar com seguir participant!");
+        $message[] = array(
+            'type' => "info",
+            'msg' => "<strong>Enhorabona</strong>. "
+            . "No tens cap pregunta pendent. ¡Encara pots trobar com seguir participant!"
+        );
         echo getHTMLMessages($message);
     } else {
         $htmlCode = array();
@@ -315,11 +339,7 @@ function printQuestionList()
         $htmlCode[] = '<div class="list-group">';
         while ($row = $result->fetch_assoc()) {
             $htmlCode[] = '<a href="'. $_SERVER['PHP_SELF'] .'?a=answerqz&item='. $row['uuid'] .'" class="list-group-item">';
-            if (empty($row['image'])) {
-                $htmlCode[] = '<img data-src="holder.js/120x120" class="img-rounded" alt="'. $row['name'] .'">';
-            } else {
-                $htmlCode[] = '<img src="'. $row['image'] .'" width="120" class="img-rounded" alt="'. $row['name'] .'">';
-            }
+            $htmlCode[] = '<img src="'. $row['image'] .'" width="120" class="img-rounded" alt="'. $row['name'] .'">';
             $htmlCode[] = '<span class="h3">'. $row['name'] .'</span>';
             $htmlCode[] = '</a>';
         }
@@ -328,6 +348,10 @@ function printQuestionList()
         echo implode(PHP_EOL, $htmlCode);
         unset($htmlCode);
     }
+    ?>
+        </div>
+    </div>
+    <?php
 }
 
 function printHistoricQuestionList()
@@ -347,7 +371,8 @@ function printHistoricQuestionList()
 
     <?php
     $query = sprintf(
-        "SELECT * FROM questions WHERE status='inactive' OR ( status='active' AND id IN (SELECT id_question FROM members_questions WHERE id_member='%d') )",
+        "SELECT * FROM questions WHERE status='inactive' OR ( status='active' "
+        . "AND id IN (SELECT id_question FROM members_questions WHERE id_member='%d') )",
         intval($_SESSION['member']['id'])
     );
 
@@ -355,18 +380,17 @@ function printHistoricQuestionList()
 
     if (0 === $result->num_rows) {
         // No hi ha cap pregunta pendent
-        $message[] = array('type' => "info", 'msg' => "No hi ha cap pregunta a l'arxiu");
+        $message[] = array(
+            'type' => "info",
+            'msg' => "No hi ha cap pregunta a l'arxiu"
+        );
         echo getHTMLMessages($message);
     } else {
         $htmlCode = array();
         $htmlCode[] = '<div class="list-group">';
         while ($row = $result->fetch_assoc()) {
             $htmlCode[] = '<a href="'. $_SERVER['PHP_SELF'] .'?a=seeqz&item='. $row['uuid'] .'" class="list-group-item">';
-            if (empty($row['image'])) {
-                $htmlCode[] = '<img data-src="holder.js/120x120" class="img-rounded" alt="'. $row['name'] .'">';
-            } else {
-                $htmlCode[] = '<img src="'. $row['image'] .'" width="120" class="img-rounded" alt="'. $row['name'] .'">';
-            }
+            $htmlCode[] = '<img src="'. $row['image'] .'" width="120" class="img-rounded" alt="'. $row['name'] .'">';
             $htmlCode[] = '<span class="h3">'. $row['name'] .'</span>';
             $htmlCode[] = '</a>';
         }
@@ -374,6 +398,10 @@ function printHistoricQuestionList()
         echo implode(PHP_EOL, $htmlCode);
         unset($htmlCode);
     }
+    ?>
+        </div>
+    </div>
+    <?php
 }
 
 function viewQuestionByUUID($questionUUID, $msg = array())
@@ -387,13 +415,11 @@ function viewQuestionByUUID($questionUUID, $msg = array())
         )
     );
 
-    if (!$question) {
+    if (is_null($question)) {
         // La pregunta que ens han passat no existeix, per tant tornem a mostrar la llista.
         printQuestionList();
-
         return false;
     }
-    $questionId = $question['id'];
 
     // Mirem si la pregunta ha estat resposta per aquest usuari
     $responses = $db->getRow(
@@ -408,7 +434,6 @@ function viewQuestionByUUID($questionUUID, $msg = array())
     if ((!$answered) && ('active' == $question['status'])) {
         // L'usuari no ha respost la pregunta i està oberta
         printAnswerQuestionForm($questionUUID);
-
         return;
     }
 
