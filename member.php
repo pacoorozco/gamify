@@ -214,15 +214,17 @@ function printProfile($userUUID)
                 $htmlCode = array();
                 while ($row = $result->fetch_assoc()) {
                     $progress = '';
-                    $achievesToBadge = $row['amount_needed'] - $row['amount'];
-                    if (($row['amount_needed'] > 1) && ($achievesToBadge > 0)) {
-                        $progress = sprintf(
-                            "\nMuy bien! Tienes %d %s, sólo te %s %d más.",
-                            $row['amount'],
-                            ($row['amount'] > 1) ? 'logros' : 'logro',
-                            ($achievesToBadge > 1) ? 'faltan' : 'falta',
-                            $achievesToBadge
-                        );
+                    if ($userId == $_SESSION['member']['id']) {
+                        $achievesToBadge = $row['amount_needed'] - $row['amount'];
+                        if (($row['amount_needed'] > 1) && ($achievesToBadge > 0)) {
+                            $progress = sprintf(
+                                "\nMuy bien! Tienes %d %s, sólo te %s %d más.",
+                                $row['amount'],
+                                ($row['amount'] > 1) ? 'logros' : 'logro',
+                                ($achievesToBadge > 1) ? 'faltan' : 'falta',
+                                $achievesToBadge
+                            );
+                        }
                     }
                     $title = sprintf("%s\n%s%s", $row['name'], $row['description'], $progress);
                     $htmlCode[] = '<a href="#" title="' . $title . '">';
