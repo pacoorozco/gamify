@@ -22,20 +22,26 @@ namespace Pakus\Database;
  * Database Abstraction Layer Class
  *
  * This class implements a Database Abstraction Layer in order to manage SQL
- * queries in more efficient way.
+ * queries in more efficient way
+ * 
+ * It uses a mysqli object, so you can use all mysqli functions calls with this
+ * class object
  *
  * @category   Pakus
  * @package    Database
  * @author     Paco Orozco <paco@pacoorozco.info>
  * @license    http://creativecommons.org/licenses/by-sa/3.0/deed.en (CC BY-SA 3.0)
- * @version    1.0
+ * @version    1.1
  * @link       https://git.upcnet.es/bo/gamify
  */
 class DB extends \mysqli
 {
 
     /**
-     * Returns the first row from database result and returns PHP array.
+     * Returns the first row from database result and returns a PHP array
+     * 
+     * @param string $query
+     * @return array|null Array with row values and row names as keys on success, null on failure
      */
     public function getRow($query)
     {
@@ -49,7 +55,10 @@ class DB extends \mysqli
     }
 
     /**
-     * Returns the first field of the first row.
+     * Returns the first field of the first row result
+     * 
+     * @param string $query
+     * @return string|null String with the first value on success, null on failure
      */
     public function getOne($query)
     {
@@ -65,9 +74,15 @@ class DB extends \mysqli
     }
 
     /**
-     * Returns an array populated with all the selected rows.
+     * Returns an array populated with all the selected rows
+     * 
      * Note: do not use this on a large result sets as you may run out of memory.
-     * Use query() method instead and iterate through returned result.
+     * Use query() method instead and iterate through returned result
+     * 
+     * 
+     * @param string $query
+     * @return array|null Array containing an array with row values and 
+     *                    row names as keys on success, null on failure
      */
     public function getAll($query)
     {
@@ -87,9 +102,14 @@ class DB extends \mysqli
 
     /**
      * Returns an array where all keys are the first fields of a row and values
-     * are the second ones.
+     * are the second ones
+     * 
      * Note: do not use this on a large result sets as you may run out of memory.
-     * Use query() method instead and iterate through returned result.
+     * Use query() method instead and iterate through returned result
+     * 
+     * @param string $query
+     * @return array|null Array where all keys are the first fields of a row 
+     *                    and values are the second ones on success, null on failure
      */
     public function getAssoc($query)
     {
@@ -110,8 +130,13 @@ class DB extends \mysqli
     }
 
     /**
-     * Escapes and quotes and returns string to use in a query.
-     * If given an array, calls qstr() method.
+     * Escapes and quotes and returns string to use in a query. Use instead
+     * mysqli::real_escape_string()
+     * 
+     * If given an array, calls qstr() method
+     * 
+     * @param string $str
+     * @return string Escaped string
      */
     public function qstr($str)
     {
@@ -127,7 +152,10 @@ class DB extends \mysqli
     }
 
     /**
-     * Calls qstr() method for all values in given array and returns.
+     * Calls qstr() method for all values in given array and returns
+     * 
+     * @param array $arr
+     * @return array Array of escaped strings
      */
     public function qstrArr($arr)
     {
@@ -139,12 +167,32 @@ class DB extends \mysqli
     }
 
     /**
-     * Inserts data into database.
+     * Inserts data into database
+     * 
      * The first perameter is the table you wish to insert data into and the
-     * second is an associative array.
+     * second is an associative array
+     * 
      * The key is a string defining the column of the table to input into and
-     * the value being the information to input.
-     * Returns ID of the inserted record.
+     * the value being the information to input
+     * 
+     * Returns ID of the inserted record
+     * 
+     * All values will be passed to qstr() to make it safe
+     * 
+     * In example:
+     * 
+     * $insertedRecordId = $db->insert(
+     *         'table_name',
+     *         array(
+     *             'column1' => 'value1',
+     *             'column2' => 'value2',
+     *             'column3' => 'value3
+     *         )
+     *     );
+     * 
+     * @param string $table
+     * @param array associative array 'column' => 'value'
+     * @return integer last inserted record on DB
      */
     public function insert($table, $arr = array())
     {
@@ -165,9 +213,29 @@ class DB extends \mysqli
 
     /**
      * Updates data into database
+     * 
      * The update method works much in the same way as the insert method,
      * except it takes an additional parameter which is the WHERE clause of the
-     * SQL query string.
+     * SQL query string
+     * 
+     * All values will be passed to qstr() to make it safe
+     * 
+     * In example:
+     * 
+     * $result = $db->update(
+     *         'table_name',
+     *         array(
+     *             'column1' => 'value1',
+     *             'column2' => 'value2',
+     *             'column3' => 'value3
+     *         ),
+     *         'id = 5 AND status = true'
+     *     );
+     * 
+     * @param string $table
+     * @param array associative array 'column' => 'value'
+     * @param string where clause, is left optional in case wants to update all
+     * @return bool true on success, false on failure
      */
     public function update($table, $arr = array(), $where = false)
     {
@@ -179,6 +247,39 @@ class DB extends \mysqli
             $query .= '`'.$this->qstr($key)."` = '".$this->qstr($value)."', ";
         }
         $query = rtrim($query, ', ');
+
+        // Add WHERE clause if given
+        if (false !== $where) {
+            $query .= " WHERE ". $where;
+        }
+
+        return $this->query($query);
+    }
+    
+    /**
+     * Deletes record from database
+     * 
+     * 
+     * In example:
+     * 
+     * $result = $db->update(
+     *         'table_name',
+     *         array(
+     *             'column1' => 'value1',
+     *             'column2' => 'value2',
+     *             'column3' => 'value3
+     *         ),
+     *         'id = 5 AND status = true'
+     *     );
+     * 
+     * @param string $table
+     * @param string Where clause, is left optional in case wants to delete all
+     * @return bool true on success, false on failure
+     */
+    public function delete($table, $where = false)
+    {
+        // Start the query string
+        $query = "DELETE FROM `" . $table . "` ";
 
         // Add WHERE clause if given
         if (false !== $where) {
