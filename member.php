@@ -50,6 +50,10 @@ switch ($action) {
     case 'viewuser':
     default:
         $userUUID = getREQUESTVar('item');
+        if (empty($userUUID)) {
+            // if not suply any user to show, show the own ones
+            $userUUID = getUserUUID($_SESSION['member']['id']);
+        }
         printProfile($userUUID);
 }
 
