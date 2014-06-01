@@ -1,18 +1,30 @@
 <?php
-
 /**
- * Module to implement Member Profile
+ * This file is part of gamify project.
+ * Copyright (C) 2014  Paco Orozco <paco_@_pacoorozco.info>
  *
- *
- * This files implements member's profile in gamify!
- *
- * LICENSE: Creative Commons Attribution-ShareAlike 3.0 Unported (CC BY-SA 3.0)
- *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ * 
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ * 
  * @category   Pakus
  * @package    Member
- * @author     Paco Orozco <paco@pacorozco.info>
- * @license    http://creativecommons.org/licenses/by-sa/3.0/deed.en (CC BY-SA 3.0)
- * @link       https://git.upcnet.es/bo/gamify
+ * @author     Paco Orozco <paco_@_pacoorozco.info> 
+ * @license    http://www.gnu.org/licenses/gpl-2.0.html (GPL v2)
+ * @link       https://github.com/pacoorozco/gamify
  */
 
 define('IN_SCRIPT', 1);
