@@ -26,10 +26,6 @@
  * @license    http://www.gnu.org/licenses/gpl-2.0.html (GPL v2)
  * @link       https://github.com/pacoorozco/gamify
  */
-
-/* Check if this is a valid include */
-defined('IN_SCRIPT') or die('Invalid attempt');
-
 ?>
     </div><!--/.container -->
         <div id="push"></div>

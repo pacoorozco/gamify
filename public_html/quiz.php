@@ -27,9 +27,7 @@
  * @link       https://github.com/pacoorozco/gamify
  */
 
-define('IN_SCRIPT', 1);
-require_once 'inc/functions.inc.php';
-require_once 'inc/gamify.inc.php';
+require_once realpath(dirname(__FILE__) . '/../resources/lib/bootstrap.php');
 
 // Page only for members
 if (false === loginCheck()) {
@@ -39,7 +37,8 @@ if (false === loginCheck()) {
     exit;
 }
 
-require_once 'inc/header.inc.php';
+require_once TEMPLATES_PATH . '/header.php';
+
 // Que hem de fer?
 $action = getREQUESTVar('a');
 
@@ -65,7 +64,7 @@ switch ($action) {
         printQuestionList();
 }
 
-require_once 'inc/footer.inc.php';
+require_once TEMPLATES_PATH . '/footer.php';
 exit();
 
 /*** FUNCTIONS ***/
@@ -267,7 +266,7 @@ function printAnswerQuestionForm($questionUUID, $msg = array())
     }
 
     if (empty($question['image'])) {
-        $question['image'] = 'images/question_default.png';
+        $question['image'] = 'images/default_question.png';
     }
 
     printQuestionHeader('question');
@@ -469,7 +468,7 @@ function viewQuestionByUUID($questionUUID, $msg = array())
     );
 
     if (empty($question['image'])) {
-        $question['image'] = 'images/question_default.jpg';
+        $question['image'] = 'images/default_question.jpg';
     }
 
     printQuestionHeader('question');

@@ -27,10 +27,6 @@
  * @link       https://github.com/pacoorozco/gamify
  */
 
-// Check if this is a valid include
-defined('IN_SCRIPT') or die('Invalid attempt');
-
-/*** FUNCTIONS ***/
 function doSilentAddExperience($userId, $experience, $memo = '')
 {
     global $db;

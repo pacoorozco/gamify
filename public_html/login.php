@@ -27,9 +27,7 @@
  * @link       https://github.com/pacoorozco/gamify
  */
 
-define('IN_SCRIPT', 1);
-require_once 'inc/functions.inc.php';
-require_once 'inc/gamify.inc.php';
+require_once realpath(dirname(__FILE__) . '/../resources/lib/bootstrap.php');
 
 // Que hem de fer?
 $action = getREQUESTVar('a');
@@ -63,7 +61,7 @@ switch ($action) {
 }
 
 // now rest of actions
-require_once 'inc/header.inc.php';
+require_once TEMPLATES_PATH . '/header.php';
 
 switch ($action) {
     case 'login':
@@ -84,7 +82,7 @@ switch ($action) {
         printLoginForm();
 }
 
-require_once 'inc/footer.inc.php';
+require_once TEMPLATES_PATH . '/footer.php';
 exit();
 
 /*** FUNCTIONS ***/
@@ -250,7 +248,7 @@ function printRegisterForm($missatges = array())
         $usertext = 'usuari LDAP';
     }
     ?>
-                        <div style="margin-bottom: 25px" class="form-group">
+                        <div style="margin-bottom: 25px" class="input-group">
                             <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
                             <input type="text" name="username" class="form-control" placeholder="<?= $usertext; ?>" required>
                         </div>

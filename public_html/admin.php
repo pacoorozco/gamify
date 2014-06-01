@@ -27,9 +27,7 @@
  * @link       https://github.com/pacoorozco/gamify
  */
 
-define('IN_SCRIPT',1);
-require_once 'inc/functions.inc.php';
-require_once 'inc/gamify.inc.php';
+require_once realpath(dirname(__FILE__) . '/../resources/lib/bootstrap.php');
 
 // Page only for members
 if ( false === loginCheck() ) {
@@ -42,13 +40,13 @@ if ( false === loginCheck() ) {
 // Check if user has privileges
 if ( ! userHasPrivileges($_SESSION['member']['id'], 'administrator') ) {
     // User has no privileges
-    require_once 'inc/header.inc.php';
+    require_once TEMPLATES_PATH . '/header.php';
     printAccessDenied();
-    require_once 'inc/footer.inc.php';
+    require_once TEMPLATES_PATH . '/footer.php';
     exit();
 }
 
-require_once 'inc/header.inc.php';
+require_once TEMPLATES_PATH . '/header.php';
 
 $missatges = array();
 
@@ -303,12 +301,12 @@ switch ($action) {
         printAdminDashboard();
 }
 
-require_once 'inc/footer.inc.php';
+require_once TEMPLATES_PATH . '/footer.php';
 exit();
 
 /*** FUNCTIONS ***/
 
-function printAdminHeader( $a = 'users', $msg = array() )
+function printAdminHeader($a = 'users', $msg = array())
 {
     ?>
             <h1>Administració</h1>
@@ -579,7 +577,7 @@ function printBadgeManagement( $msg = array() )
         if ( empty($row['image']) ) {
             $htmlCode[] = '<td><img src="images/default_badge_off.png" alt="'. $row['name'] .'" class="img-thumbnail" width="64"></td>';
         } else {
-            $htmlCode[] = '<td><img src="images/badges/'. $row['image'] .'" alt="'. $row['name'] .'" class="img-thumbnail" width="64"></td>';
+            $htmlCode[] = '<td><img src="'. $row['image'] .'" alt="'. $row['name'] .'" class="img-thumbnail" width="64"></td>';
         }
         $htmlCode[] = '<td>'. $row['amount_needed'] .'</td>';
         $htmlCode[] = '<td>' . getBadgeAssignements($row['id']) . '</td>';

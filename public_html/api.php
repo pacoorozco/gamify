@@ -29,7 +29,7 @@
 
 define('IN_SCRIPT',1);
 
-require_once 'inc/core.inc.php';
+require_once realpath(dirname(__FILE__) . '/../resources/lib/bootstrap.php');
 
 $method = getGETVar('method');
 $format = getGETVar('format');
@@ -118,4 +118,4 @@ function setQuestionStatus($item, $status)
         );
 
     return $results;
-} // END question_set_status()
+}

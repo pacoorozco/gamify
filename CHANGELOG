@@ -8,6 +8,7 @@ Version 2.9
 * [#251] Bug solved: 'Avoid to send empty answers!'
 * Move source code from GitLab to GitHub: https://github.com/pacoorozco/gamify
 * Change LICENSE from CC to GPL v2
+* Reorder project directories
 
 Version 2.8
 -----------

@@ -27,9 +27,7 @@
  * @link       https://github.com/pacoorozco/gamify
  */
 
-define('IN_SCRIPT', 1);
-require_once 'inc/functions.inc.php';
-require_once 'inc/gamify.inc.php';
+require_once realpath(dirname(__FILE__) . '/../resources/lib/bootstrap.php');
 
 // Page only for members
 if ( false === loginCheck() ) {
@@ -56,7 +54,7 @@ switch ($action) {
         break;
 }
 
-require_once 'inc/header.inc.php';
+require_once TEMPLATES_PATH . '/header.php';
 
 switch ($action) {
     case 'viewuser':
@@ -69,7 +67,7 @@ switch ($action) {
         printProfile($userUUID);
 }
 
-require_once 'inc/footer.inc.php';
+require_once TEMPLATES_PATH . '/footer.php';
 exit();
 
 /*** FUNCTIONS ***/
@@ -135,7 +133,7 @@ function printProfile($userUUID)
                     <div class="col-md-4">
                         <?php
                         if (empty($row['profile_image'])) {
-                            $row['profile_image'] = 'images/profile_default.png';
+                            $row['profile_image'] = 'images/default_profile_pic.png';
                         }
                         ?>
                         <img src="<?= $row['profile_image']; ?>" class="img-thumbnail" id="profileImage">
@@ -244,7 +242,7 @@ function printProfile($userUUID)
                     }
                     $title = sprintf("%s\n%s%s", $row['name'], $row['description'], $progress);
                     $htmlCode[] = '<a href="#" title="' . $title . '">';
-                    $image = ('completed' == $row['status']) ? 'images/badges/' . $row['image'] : 'images/default_badge_off.png';
+                    $image = ('completed' == $row['status']) ? $row['image'] : 'images/default_badge_off.png';
                     $htmlCode[] = '<img src="' . $image .'" alt="'. $row['name'] . '" class="img-thumbnail" width="80">';
                     $htmlCode[] = '</a>';
                 }
