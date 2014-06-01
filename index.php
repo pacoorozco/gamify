@@ -27,14 +27,15 @@
  * @link       https://github.com/pacoorozco/gamify
  */
 
-define('IN_SCRIPT',1);
+define('IN_SCRIPT', 1);
 require_once 'inc/functions.inc.php';
 
 require_once 'inc/header.inc.php';
 
-if ( true === loginCheck() ) { ?>
+if (true === loginCheck()) {
+    ?>
 
-<div class="row">
+    <div class="row">
 
     <div class="col-md-6">
         <h1>Juguem?</h1>
@@ -52,16 +53,6 @@ if ( true === loginCheck() ) { ?>
         </ul>
 
     </div>
-
-        <?php
-        // Get all levels from table and create an array
-        $query = "SELECT id, name FROM levels";
-        $result = $db->query($query);
-        $levels = array();
-        while ($row = $result->fetch_assoc()) {
-            $levels[$row['id']] = $row['name'];
-        }
-        ?>
 
     <div class="col-md-6">
 
@@ -89,51 +80,53 @@ if ( true === loginCheck() ) { ?>
             <!-- month top -->
             <div class="table-responsive tab-pane fade in active" id="month_top">
             <?php
-
-            $query = "SELECT t1.uuid, t1.id, t1.username, t2.points, t1.level_id, (SELECT COUNT(id) FROM members_badges WHERE t1.id = members_badges.id_member AND members_badges.status = 'completed') AS badges FROM vmembers AS t1, vtop_month AS t2 WHERE t1.id = t2.id  ORDER BY points DESC, badges DESC, username ASC ";
-            $result = $db->query($query);
-
-            require 'inc/hall_of_fame.inc.php';
-
-
-
+            printHTMLRankingTable(
+                $db->getAll(
+                    "SELECT t1.uuid, t1.id, t1.username, t2.points, t1.level_id, "
+                    . "(SELECT COUNT(id) FROM members_badges AS t3 "
+                    . "WHERE t1.id = t3.id_member AND t3.status = 'completed') AS badges "
+                    . "FROM vmembers AS t1, vtop_month AS t2 "
+                    . "WHERE t1.id = t2.id AND t1.role = 'member' "
+                    . "ORDER BY points DESC, badges DESC, username ASC"
+                )
+            );
             ?>
             </div>
 
             <!-- top -->
             <div class="table-responsive tab-pane fade active" id="top">
             <?php
-
-            $query = "SELECT t1.uuid, t1.id, t1.username, t2.points, t1.level_id, (SELECT COUNT(id) FROM members_badges WHERE t1.id = members_badges.id_member AND members_badges.status = 'completed') AS badges FROM vmembers AS t1, vtop AS t2 WHERE t1.id = t2.id  ORDER BY points DESC, badges DESC, username ASC ";
-            $result = $db->query($query);
-
-            require 'inc/hall_of_fame.inc.php';
+            printHTMLRankingTable(
+                $db->getAll(
+                    "SELECT t1.uuid, t1.id, t1.username, t2.points, t1.level_id, "
+                    . "(SELECT COUNT(id) FROM members_badges AS t3 "
+                    . "WHERE t1.id = t3.id_member AND t3.status = 'completed') AS badges "
+                    . "FROM vmembers AS t1, vtop AS t2 "
+                    . "WHERE t1.id = t2.id AND t1.role = 'member' "
+                    . "ORDER BY points DESC, badges DESC, username ASC"
+                )
+            );
             ?>
             </div>
-
         </div>
-
-
     </div>
-</div>
-
-<?php } else { ?>
-
-<div class="row">
-
+    </div>
+    <?php
+} else {
+    ?>
+    <div class="row">
     <div class="col-md-6">
         <h1>Benvinguts!</h1>
-<p class="text-justify">Una de les tendències actuals és la <a href="http://es.wikipedia.org/wiki/Ludificaci%C3%B3n" target="_blank">gamificació</a>, l'ús de mecàniques de joc en entorns i aplicacions no lúdiques amb la finalitat de potenciar la motivació, la concentració, l'esforç, la fidelització i altres valors positius comuns entre els jocs.</p>
+        <p class="text-justify">Una de les tendències actuals és la <a href="http://es.wikipedia.org/wiki/Ludificaci%C3%B3n" target="_blank">gamificació</a>, l'ús de mecàniques de joc en entorns i aplicacions no lúdiques amb la finalitat de potenciar la motivació, la concentració, l'esforç, la fidelització i altres valors positius comuns entre els jocs.</p>
 
-<blockquote>
-  <p>El trabajo es todo lo que se está obligado a hacer; el juego es lo que se hace sin estar obligado a ello.</p>
-  <footer>Mark Twain</footer>
-</blockquote>
+        <blockquote>
+        <p>El trabajo es todo lo que se está obligado a hacer; el juego es lo que se hace sin estar obligado a ello.</p>
+        <footer>Mark Twain</footer>
+        </blockquote>
 
-<p class="text-justify">Per aquest motiu hem creat <strong><abbr title="Game of Work">GoW!</abbr></strong>, una plataforma de gamificació a UPCnet amb la que us volem convidar a jugar tot aprenent i descobrint els desafiaments proposats.<p>
+        <p class="text-justify">Per aquest motiu hem creat <strong><abbr title="Game of Work">GoW!</abbr></strong>, una plataforma de gamificació a UPCnet amb la que us volem convidar a jugar tot aprenent i descobrint els desafiaments proposats.<p>
 
-<p class="lead text-jusfity">El primer que et proposem és <a href="#" onClick="$('#loginbox').hide(); $('#signupbox').show()">registrar-te</a>. Així que no perdis més temps, comença a jugar amb nosaltres.<p>
-
+        <p class="lead text-jusfity">El primer que et proposem és <a href="#" onClick="$('#loginbox').hide(); $('#signupbox').show()">registrar-te</a>. Així que no perdis més temps, comença a jugar amb nosaltres.<p>
     </div>
 
     <div class="col-md-6">
@@ -147,15 +140,15 @@ if ( true === loginCheck() ) { ?>
 
                     <div style="padding-top:30px" class="panel-body" >
 
-                                <?php
-                                $usertext = 'usuari';
-                                $logintext = 'Accedir';
+    <?php
+    $usertext = 'usuari';
+    $logintext = 'Accedir';
 
-                                if ('LDAP' == $CONFIG['authentication']['type']) {
-                                    $usertext = 'usuari LDAP';
-                                    $logintext = 'Accedir amb LDAP';
-                                }
-                                ?>
+    if ('LDAP' == $CONFIG['authentication']['type']) {
+        $usertext = 'usuari LDAP';
+        $logintext = 'Accedir amb LDAP';
+    }
+    ?>
 
                         <form action="login.php" method="post" class="form-horizontal" role="form">
 
@@ -206,34 +199,25 @@ if ( true === loginCheck() ) { ?>
                             <span></span>
                         </div>
 
-                                <?php
-                                $usertext = 'usuari';
+    <?php
+    $usertext = 'usuari';
 
-                                if ('LDAP' == $CONFIG['authentication']['type']) {
-                                    $usertext = 'usuari LDAP';
-                                }
-                                ?>
-
-                        <div class="form-group">
-                            <label for="username" class="col-md-3 control-label">Usuari</label>
-                            <div class="col-md-9">
-                                <input type="text" name="username" class="form-control" placeholder="<?= $usertext; ?>" required>
-                            </div>
+    if ('LDAP' == $CONFIG['authentication']['type']) {
+        $usertext = 'usuari LDAP';
+    }
+    ?>                        
+                        <div style="margin-bottom: 25px" class="form-group">
+                            <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+                            <input type="text" name="username" class="form-control" placeholder="<?= $usertext; ?>" required>
                         </div>
-
-                        <div class="form-group">
-                            <label for="password" class="col-md-3 control-label">Contrasenya</label>
-                            <div class="col-md-9">
-                                <input type="password" class="form-control" name="password" placeholder="contrasenya" required>
-                            </div>
+                        <div style="margin-bottom: 25px" class="input-group">
+                            <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+                            <input type="password" name="password" class="form-control" placeholder="contrasenya" required>
                         </div>
-
-                        <div class="form-group">
-                            <label for="email" class="col-md-3 control-label">Adreça</label>
-                            <div class="col-md-9">
-                                <input type="text" name="email" id="email" class="form-control" placeholder="adreça electrónica" required>
-                            </div>
-                        </div>
+                        <div style="margin-bottom: 25px" class="input-group">
+                            <span class="input-group-addon"><i class="glyphicon glyphicon-envelope"></i></span>
+                            <input type="text" name="email" id="email" class="form-control" placeholder="adreça correu electrònic" required>
+                        </div>                        
 
                         <div class="form-group">
                             <div class="col-md-offset-3 col-md-9">
@@ -248,9 +232,101 @@ if ( true === loginCheck() ) { ?>
          </div>
         </div>
     </div>
-
-<?php
+    <?php
 }
 
 require_once 'inc/footer.inc.php';
-?>
+exit();
+
+/*** FUNCTIONS ***/
+function printHTMLRankingTable($users = array())
+{
+    global $db;
+    
+    $htmlCode = array();
+    $top3 = 3;
+    $top10 = 10;
+    
+    // Get all levels from table and create an array
+    $levels = $db->getAssoc(
+        "SELECT id, name FROM levels"
+    );
+    ?>
+    <table class="table table-hover" >
+    <thead>
+        <tr>
+            <th class="text-center">Posició</th>
+            <th>Usuari</th>
+            <th>Experiència</th>
+            <th>Nivell</th>
+            <th class="text-center">Insígnies</th>
+        </tr>
+    </thead>
+    <tbody>
+    <?php
+    $position = 1;
+    $toprest = $top10 - $top3;
+        
+    foreach ($users as $row) {
+        if ($row['username'] == $_SESSION['member']['username']) {
+            $currentuser = "class='info'";
+            $currentranking = $position;
+        } else {
+            $currentuser = "";
+        }
+        $htmlCode[] = '<tr ' . $currentuser . '>';
+        if ($position <= $top3) {
+            $htmlCode[] = '<td class="text-center" style=" vertical-align: middle;">';
+            $htmlCode[] = '<span class="badge alert-warning">';
+            $htmlCode[] = sprintf(
+                '<h%d>&nbsp; %d &nbsp;</h%d>',
+                ($position + 2),
+                $position,
+                ($position + 2)
+            );
+            $htmlCode[] = '</span>';
+            $htmlCode[] = '</td>';
+        } else {
+            $htmlCode[] = '<td class="text-center"  style=" vertical-align: middle;">' . $position . '</td>';
+        }
+        $htmlCode[] = '<td style=" vertical-align: middle;">';
+        $htmlCode[] = '<a href="member.php?a=viewuser&item=' . $row['uuid'] . '">' . $row['username'] . '</a>';
+        $htmlCode[] = '</td>';
+        $htmlCode[] = '<td style=" vertical-align: middle;">' . $row['points'] . '</td>';
+        $htmlCode[] = '<td style=" vertical-align: middle;">' . $levels[$row['level_id']] . '</td>';
+        $badges = ($row['badges'] > 0) ? '<span class="badge">' . $row['badges'] . '</span>' : '';
+        $htmlCode[] = '<td style=" vertical-align: middle;" class="text-center">' . $badges . '</td>';
+        $htmlCode[] = '</tr>';
+            
+        $ranking[$position] = implode(PHP_EOL, $htmlCode);
+        unset($htmlCode);
+        $position++;
+    }
+
+    if ($currentranking <= $top3) {
+        for ($i = 1; $i <= $top10; $i++) {
+            echo $ranking[$i];
+        }
+    } else {
+        for ($i = 1; $i <= $top3; $i++) {
+            echo $ranking[$i];
+        }
+
+        echo '<tr><td colspan="5" class="text-center">...</td></tr>';
+        
+        if ($currentranking + $toprest < $position) {
+            $init = $currentranking - 1;
+            $end = $currentranking+$toprest-2;
+        } else {
+            $init = $position-$toprest;
+            $end = $position;
+        }
+        for ($i = $init; $i <= $end; $i++) {
+            echo $ranking[$i];
+        }
+    }
+    ?>
+        </tbody>
+    </table>
+    <?php
+}

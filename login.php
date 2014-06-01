@@ -39,13 +39,12 @@ switch ($action) {
     case 'logout':
         doLogout();
         break;
-
     case 'login':
         $username = getPOSTVar('username');
         $password = getPOSTVar('password');
         $errors = array();
 
-        if ( true === doLogin($username, $password) ) {
+        if (true === doLogin($username, $password)) {
             // go to previous referrer, if exists
             $nav = getPOSTVar('nav');
             $nav = (!empty($nav)) ? $nav : 'index.php';
@@ -55,7 +54,6 @@ switch ($action) {
             $errors[] = array('type' => "error", 'msg' => "Usuari o contrasenya incorrectes.");
         }
         break;
-
     default:
         if (true === loginCheck()) {
             // ja esta autenticat
@@ -71,11 +69,9 @@ switch ($action) {
     case 'login':
         printLoginForm($username, $errors);
         break;
-
     case 'register':
         printRegisterForm();
         break;
-
     case 'do_register':
         $data = array();
         $data['username'] = getPOSTVar('username');
@@ -83,7 +79,6 @@ switch ($action) {
         $data['email'] = getPOSTVar('email');
         doRegister($data);
         break;
-
     case 'logout':
     default:
         printLoginForm();
@@ -94,7 +89,7 @@ exit();
 
 /*** FUNCTIONS ***/
 
-function printLoginForm( $username = '', $missatges = array() )
+function printLoginForm($username = '', $missatges = array())
 {
     global $CONFIG;
 
@@ -102,7 +97,7 @@ function printLoginForm( $username = '', $missatges = array() )
     $nav = getPOSTVar('nav');
     $nav = (!empty($nav)) ? $nav : $_SESSION['nav'];
     unset($_SESSION['nav']);
-?>
+    ?>
         <div id="loginbox" style="margin-top:50px;" class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
             <div class="panel panel-info">
                     <div class="panel-heading">
@@ -114,20 +109,19 @@ function printLoginForm( $username = '', $missatges = array() )
 
                         <p><?php echo getHTMLMessages($missatges); ?></p>
 
-                        <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post" class="form-horizontal" role="form">
+                        <form action="<?= $_SERVER['PHP_SELF']; ?>" method="post" class="form-horizontal" role="form">
+    <?php
+    $usertext = 'usuari';
+    $logintext = 'Accedir';
 
+    if ('LDAP' == $CONFIG['authentication']['type']) {
+        $usertext = 'usuari LDAP';
+        $logintext = 'Accedir amb LDAP';
+    }
+    ?>
                             <div style="margin-bottom: 25px" class="input-group">
                                 <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
-                                <?php
-                                $usertext = 'usuari';
-                                $logintext = 'Accedir';
-
-                                if ('LDAP' == $CONFIG['authentication']['type']) {
-                                    $usertext = 'usuari LDAP';
-                                    $logintext = 'Accedir amb LDAP';
-                                }
-                                ?>
-                                <input type="text" name="username" class="form-control" value="<?php echo $username; ?>" placeholder="<?= $usertext; ?>" required>
+                                <input type="text" name="username" class="form-control" value="<?= $username; ?>" placeholder="<?= $usertext; ?>" required>
                             </div>
 
                             <div style="margin-bottom: 25px" class="input-group">
@@ -157,17 +151,19 @@ function printLoginForm( $username = '', $missatges = array() )
                     </div>
             </div>
         </div>
-
-<?php
-} // END print_login_form()
+    <?php
+}
 
 function doLogout()
 {
     global $db;
 
     // updates members to put session_id to NULL
-    $query = sprintf( "UPDATE members SET session_id=NULL WHERE id='%d' LIMIT 1", intval($_SESSION['member']['id']) );
-    $db->query($query);
+    $db->update(
+        'members',
+        array('session_id' => null),
+        sprintf("id='%d' LIMIT 1", $_SESSION['member']['id'])
+    );
 
     secureSessionDestroy();
 } // END do_logout()
@@ -180,28 +176,35 @@ function doLogin($username, $password)
     $userIsMember = false;
 
     // Comprovem que l'usuari consti com a membre
-    $query = sprintf("SELECT id, username, password, disabled FROM members WHERE username='%s' LIMIT 1", $db->real_escape_string($username));
-    $result = $db->query($query);
+    $usuari = $db->getRow(
+        sprintf(
+            "SELECT id, username, password, disabled FROM members "
+            . "WHERE username='%s' LIMIT 1",
+            $db->qstr($username)
+        )
+    );
 
-    if ( 1 != $result->num_rows )
+    if (is_null($usuari)) {
         return false;
-
+    }
     // L'usuari es correcte ara cal verificar la contrasenya
-    $usuari = $result->fetch_assoc();
 
     // Si esta deshabilitat tampoc poc accedir
-    if ( 1 == $usuari['disabled'] )
+    if (1 == $usuari['disabled']) {
         return false;
+    }
 
     // we implement several auth types
     switch ($CONFIG['authentication']['type']) {
         case 'LDAP':
             // we will use LDAP authentication
-            if ( getLDAPAuth( $usuari['username'], $password,
-                    $CONFIG['LDAP']['host'], $CONFIG['LDAP']['basedn'], $CONFIG['LDAP']['filter'] ) ) {
-                // Usuari validat i es member
-                $userIsMember = true;
-            }
+            $userIsMember = getLDAPAuth(
+                $usuari['username'],
+                $password,
+                $CONFIG['LDAP']['host'],
+                $CONFIG['LDAP']['basedn'],
+                $CONFIG['LDAP']['filter']
+            );
             break;
         default:
             // we will use LOCAL authentication
@@ -213,17 +216,22 @@ function doLogin($username, $password)
 
     if ($userIsMember) {
         // Usuari validat, actualitzem session_id
-        $query = sprintf("UPDATE members SET session_id='%s', last_access='%s' WHERE id='%d' LIMIT 1",
-                          $db->real_escape_string(session_id()), $db->real_escape_string(time()), intval($usuari['id']));
-        $db->query($query);
+        $db->update(
+            'members',
+            array(
+                'session_id' => session_id(),
+                'last_access' => time()
+            ),
+            sprintf("id='%d' LIMIT 1", $usuari['id'])
+        );
     }
 
     return $userIsMember;
 } // END do_login()
 
-function printRegisterForm( $missatges = array() )
+function printRegisterForm($missatges = array())
 {
-?>
+    ?>
         <div id="signupbox" style="margin-top:50px;" class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
             <div class="panel panel-info">
                 <div class="panel-heading">
@@ -233,36 +241,27 @@ function printRegisterForm( $missatges = array() )
                     </div>
                 </div>
                 <div class="panel-body">
-                    <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post" class="form-horizontal" role="form">
-                            <p><?php echo getHTMLMessages($missatges); ?></p>
+                    <form action="<?= $_SERVER['PHP_SELF']; ?>" method="post" class="form-horizontal" role="form">
+                            <p><?= getHTMLMessages($missatges); ?></p>
+    <?php
+    $usertext = 'usuari';
 
-                        <div class="form-group">
-                            <label for="username" class="col-md-3 control-label">Usuari</label>
-                                <?php
-                                $usertext = 'usuari';
-
-                                if ('LDAP' == $CONFIG['authentication']['type']) {
-                                    $usertext = 'usuari LDAP';
-                                }
-                                ?>
-                            <div class="col-md-9">
-                                <input type="text" name="username" id="username" class="form-control" placeholder="<?= $usertext; ?>" required>
-                            </div>
+    if ('LDAP' == $CONFIG['authentication']['type']) {
+        $usertext = 'usuari LDAP';
+    }
+    ?>
+                        <div style="margin-bottom: 25px" class="form-group">
+                            <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+                            <input type="text" name="username" class="form-control" placeholder="<?= $usertext; ?>" required>
                         </div>
-
-                        <div class="form-group">
-                            <label for="password" class="col-md-3 control-label">Contrasenya</label>
-                            <div class="col-md-9">
-                                <input type="password" id="password" class="form-control" name="password" placeholder="contrasenya" required>
-                            </div>
+                        <div style="margin-bottom: 25px" class="input-group">
+                            <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+                            <input type="password" name="password" class="form-control" placeholder="contrasenya" required>
                         </div>
-
-                        <div class="form-group">
-                            <label for="email" class="col-md-3 control-label">Adreça</label>
-                            <div class="col-md-9">
-                                <input type="text" name="email" id="email" class="form-control" placeholder="adreça electrónica" required>
-                            </div>
-                        </div>
+                        <div style="margin-bottom: 25px" class="input-group">
+                            <span class="input-group-addon"><i class="glyphicon glyphicon-envelope"></i></span>
+                            <input type="text" name="email" id="email" class="form-control" placeholder="adreça correu electrònic" required>
+                        </div>  
 
                         <div class="form-group">
                             <div class="col-md-offset-3 col-md-9">
@@ -275,24 +274,27 @@ function printRegisterForm( $missatges = array() )
                 </div>
             </div>
          </div>
-<?php
-} // END print_register_form()
+    <?php
+}
 
-function doRegister( $data = array() )
+function doRegister($data = array())
 {
     global $db, $CONFIG;
 
     $missatges = array();
 
     // check supplied data
-    if ( ! filter_var($data['email'], FILTER_VALIDATE_EMAIL) ) {
+    if (!filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
         $missatges[] = array('type' => "error", 'msg' => "L'adreça electrònica no és correcta.");
         printRegisterForm($missatges);
     }
 
     // check if user exists
-    if ( getUserExists($data['username']) ) {
-        $missatges[] = array('type' => "info", 'msg' => "L'usuari '<strong>". $data['username'] ."</strong>' ja existeix al sistema.");
+    if (getUserExists($data['username'])) {
+        $missatges[] = array(
+            'type' => "info",
+            'msg' => "L'usuari '<strong>". $data['username'] ."</strong>' ja existeix al sistema."
+        );
         printLoginForm($data['username'], $missatges);
 
         return false;
@@ -301,29 +303,31 @@ function doRegister( $data = array() )
     // check autoregistration
     switch ($CONFIG['authentication']['type']) {
         case 'LDAP':
-            if ( false === getLDAPAuth( $data['username'], $data['password'] ) ) {
+            if (false === getLDAPAuth($data['username'], $data['password'])) {
                 // User has not been validated.
-                $missatges[] = array('type' => "error", 'msg' => "No hem pogut comprovar les credencials al LDAP. Revisa-les si us plau");
+                $missatges[] = array(
+                    'type' => "error",
+                    'msg' => "No hem pogut comprovar les credencials al LDAP. Revisa-les si us plau"
+                );
                 printRegisterForm($missatges);
 
                 return false;
             }
             break;
-
         default:
             die("TODO: Registration for non LDAP users not implemented, yet!");
     }
 
     // User successfully validated.
-    $query = sprintf("INSERT INTO members SET uuid='%s', username='%s', email='%s'",
-            $db->real_escape_string(getNewUUID()),
-            $db->real_escape_string($data['username']),
-            $db->real_escape_string($data['email'])
-            );
-    $db->query($query);
-
-    // Get new user_id or 0 on error.
-    $userId = $db->insert_id;
+    $userId = $db->insert(
+        'members',
+        array(
+            'uuid' => getNewUUID(),
+            'username' => $data['username'],
+            'email' => $data['email']
+        )
+    );
+  
 
     if (0 === $userId) {
         $missatges[] = array('type' => "error", 'msg' => "No s'ha pogut crear l'usuari.");
@@ -334,7 +338,10 @@ function doRegister( $data = array() )
         // ACTION: Benvinguda
         doSilentAction($userId, 8);
 
-        $missatges[] = array('type' => "success", 'msg' => "L'usuari '<strong>". $data['username'] ."</strong>' creat correctament.");
+        $missatges[] = array(
+            'type' => "success",
+            'msg' => "L'usuari '<strong>". $data['username'] ."</strong>' creat correctament."
+        );
         printLoginForm($data['username'], $missatges);
 
         return true;
@@ -345,7 +352,9 @@ function getLDAPAuth($username, $password)
 {
     global $CONFIG;
 
-    if ( empty($username) ) return false;
+    if (empty($username)) {
+        return false;
+    }
 
     // creates filter and DN
     $filter = sprintf("(&(cn=%s)%s)", $username, $CONFIG['LDAP']['filter']);
@@ -363,10 +372,12 @@ function getLDAPAuth($username, $password)
     // binding to ldap server with username and password supplied
     $bind = @ldap_bind($connect, $dn, $password);
 
-    if (false === $bind) return false;
+    if (false === $bind) {
+        return false;
+    }
 
     // fitth is 'attrsonly', sixth is how many results. See ldap_search on php.net
     $sr = ldap_search($connect, $CONFIG['LDAP']['basedn'], $filter, array('mail', 'sn'), 0, 1);
 
     return ( false === ldap_get_entries($connect, $sr) ) ? false : true;
-} // END LDAP_auth()
+}
