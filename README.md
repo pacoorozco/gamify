@@ -44,7 +44,7 @@ Please remember to provide as much information as you can.
 
 ## License
 
-**gamify** is shared under [Creative Commons Attribution-ShareAlike 3.0 (CC BY-SA)](http://creativecommons.org/licenses/by-sa/3.0/deed.en)
+**gamify** is released as free software under [GPLv2](http://www.gnu.org/licenses/gpl-2.0.html)
 
 ## Authors
 
