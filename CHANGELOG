@@ -1,3 +1,7 @@
+Version X.XX (developement version)
+------------
+* Improve gamify.conf.sample documentation and help
+
 Version 2.9
 -----------
 * Remove level and badges from sources (cleaning up)

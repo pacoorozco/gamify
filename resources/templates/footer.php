@@ -33,7 +33,7 @@
 
       <footer id="footer">
           <div class="container">
-              <p class="text-muted credit">Powered by <a href="https://github.com/pacoorozco/gamify" title="gamify on GitHub">gamify v<?= $CONFIG['version']; ?></a> copyright &copy; <?= date("Y"); ?> by Paco Orozco - Released as free software under <a rel="license" href="http://www.gnu.org/licenses/gpl-2.0.html">GPL v2</a>.</p>
+              <p class="text-muted credit">Powered by <a href="https://github.com/pacoorozco/gamify" title="gamify on GitHub">gamify v<?= VERSION; ?></a> copyright &copy; <?= date("Y"); ?> by Paco Orozco - Released as free software under <a rel="license" href="http://www.gnu.org/licenses/gpl-2.0.html">GPL v2</a>.</p>
           </div>
       </footer>
 

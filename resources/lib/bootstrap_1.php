@@ -27,13 +27,11 @@
  * @link       https://github.com/pacoorozco/gamify
  */
 
-/**
- * The current system version.
- */
-define('VERSION', '2.10-dev');
-
 // Reads configuration file, creates an array with values
 $CONFIG = parse_ini_file(realpath(dirname(__FILE__) . '/../gamify.conf'), true, INI_SCANNER_RAW);
+
+// Put APP version
+$CONFIG['version'] = '2.9';
 
 // Sets DEBUG mode based on parsed configuration
 $CONFIG['site']['debug'] = isset($CONFIG['site']['debug']) ? true : false;

@@ -1,19 +1,32 @@
-; <?php exit(); __halt_compiler(); ?>
 ;
-; Maintain above line in order to avoid sending sensitive data
-; if someone request this file.
+; Gamify specific configuration file.
 ;
-; You can improve this security meassure using this code in
-; your .htaccess:
-;
-; <Files gamify.conf>
-;    Order Allow,Deny
-;    Deny from All
-; </Files>
+; IMPORTANT NOTE:
+; This file may have been set to read-only by the gamify installation program.
+; If you make changes to this file, be sure to protect it again after making
+; your modifications. Failure to remove write permissions to this file is a
+; security risk.
 ;
 
 [site]
-base_url = https://localhost
+;
+; Base URL.
+;
+; Fill in the absolute URL to your installation.
+;
+; You might also want to force users to use a given domain.
+; See the .htaccess file for more information.
+;
+; Examples:
+; base_url = 'http://www.example.com'
+; base_url = 'http://www.example.com:8888'
+; base_url = 'http://www.example.com/gamify'
+; base_url = 'https://www.example.com:8888/gamify'
+;
+; It is not allowed to have a trailing slash; Drupal will add it
+; for you.
+;
+base_url = 'http://www.example.com'
 
 ; Where to put uploaded files, must be a relative path
 uploads = uploads
@@ -27,13 +40,19 @@ uploads = uploads
 
 [datasource]
 ;
-; NOT IMPLEMENTED YET!
+; Database settings:
 ;
-; Only works for mysql
+; This section specifies the database connection that gamify may use.
 ;
-; The datasource to use, here you must select the driver
-; see the corresponding configuration section, in order
-; to put required parameters.
+; The "driver" property indicates what gamify database driver the
+; connection should use. This is usually the same as the name of the
+; database type, such as mysql or sqlite, but not always. The other
+; properties will vary depending on the driver. For SQLite, you must
+; specify a database file name in a directory that is writable by the
+; webserver. For most other drivers, you must specify a
+; username, password, host, and database name.
+;
+; Only works for mysql. NOT IMPLEMENTED ANY OTHER DRIVER!
 ;
 ; db_driver:
 ;       mysql   for MySQL database, see [mysql]
@@ -47,7 +66,6 @@ db_driver = mysql
 ;
 ; If you use localhost you must not to use this
 ; host = server.domain.com
-
 host = localhost
 
 ; Credentials to make DB connection
