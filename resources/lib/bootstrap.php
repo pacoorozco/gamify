@@ -30,7 +30,7 @@
 /**
  * The current system version.
  */
-define('VERSION', '2.10-dev');
+define('VERSION', '2.11-dev');
 
 // Reads configuration file, creates an array with values
 $CONFIG = parse_ini_file(realpath(dirname(__FILE__) . '/../gamify.conf'), true, INI_SCANNER_RAW);

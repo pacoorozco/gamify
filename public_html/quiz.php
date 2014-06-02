@@ -240,13 +240,13 @@ function printAnswerQuestionForm($questionUUID, $msg = array())
     // Mirem si la pregunta ha estat resposta per aquest usuari
     $result = $db->getOne(
         sprintf(
-            "SELECT id FROM members_questions WHERE id_member='%d' AND id_question='%d' LIMIT 1",
+            "SELECT amount FROM members_questions WHERE id_member='%d' AND id_question='%d' LIMIT 1",
             $_SESSION['member']['id'],
             $question['id']
         )
     );
     
-    if (!is_null($result) || ('inactive' == $question['status'])) {
+    if (!is_null($result)) {
         // L'usuari ja havia respost la pregunta o aquest està tancada
         viewQuestionByUUID($questionUUID);
         return;
