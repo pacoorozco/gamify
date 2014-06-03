@@ -5,29 +5,30 @@
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
- * 
+ *
  * @category   Pakus
  * @package    Login
- * @author     Paco Orozco <paco_@_pacoorozco.info> 
+ * @author     Paco Orozco <paco_@_pacoorozco.info>
  * @license    http://www.gnu.org/licenses/gpl-2.0.html (GPL v2)
  * @link       https://github.com/pacoorozco/gamify
  */
 
-require_once realpath(dirname(__FILE__) . '/../resources/lib/bootstrap.php');
+require_once realpath(dirname(__FILE__) . '/../resources/lib/Bootstrap.class.inc');
+\Pakus\Application\Bootstrap::init(APP_BOOTSTRAP_FULL);
 
 // Que hem de fer?
 $action = getREQUESTVar('a');
@@ -42,22 +43,26 @@ switch ($action) {
         $password = getPOSTVar('password');
         $errors = array();
 
-        if (true === doLogin($username, $password)) {
+        if (doLogin($username, $password)) {
             // go to previous referrer, if exists
-            $nav = getPOSTVar('nav');
-            $nav = (!empty($nav)) ? $nav : 'index.php';
-            header('Location: ' . urldecode($nav));
-            exit();
-        } else {
-            $errors[] = array('type' => "error", 'msg' => "Usuari o contrasenya incorrectes.");
-        }
-        break;
-    default:
-        if (true === loginCheck()) {
-            // ja esta autenticat
+            //$nav = getPOSTVar('nav');
+            //$nav = (!empty($nav)) ? $nav : 'index.php';
+            //header('Location: ' . urldecode($nav));
             header('Location: index.php');
             exit();
+        } else {
+            $errors[] = array(
+                'type' => "error",
+                'msg' => "Usuari o contrasenya incorrectes."
+            );
         }
+        break;
+//    default:
+//        if (true === loginCheck()) {
+            // ja esta autenticat
+//            header('Location: index.php');
+//            exit();
+//        }
 }
 
 // now rest of actions
@@ -93,8 +98,6 @@ function printLoginForm($username = '', $missatges = array())
 
     // get after login url if exists
     $nav = getPOSTVar('nav');
-    $nav = (!empty($nav)) ? $nav : $_SESSION['nav'];
-    unset($_SESSION['nav']);
     ?>
         <div id="loginbox" style="margin-top:50px;" class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
             <div class="panel panel-info">
@@ -130,7 +133,7 @@ function printLoginForm($username = '', $missatges = array())
                             <div style="margin-top:10px" class="form-group">
                                 <div class="col-md-12">
                                     <input type="hidden" id="a" name="a" value="login">
-                                    <input type="hidden" name="nav" value="<?php echo $nav; ?>">
+                                    <input type="hidden" name="nav" value="<?= $nav; ?>">
                                     <button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-log-in"></span> <?= $logintext; ?></button>
                                 </div>
                             </div>
@@ -163,40 +166,34 @@ function doLogout()
         sprintf("id='%d' LIMIT 1", $_SESSION['member']['id'])
     );
 
-    secureSessionDestroy();
-} // END do_logout()
+    \Pakus\Application\Session::regenerateSession();
+}
 
 function doLogin($username, $password)
 {
     global $CONFIG, $db;
 
-    // Primer fixem a FALS la resposta d'aquesta funcio
-    $userIsMember = false;
+    $userLogged = false;
 
     // Comprovem que l'usuari consti com a membre
     $usuari = $db->getRow(
         sprintf(
-            "SELECT id, username, password, disabled FROM members "
-            . "WHERE username='%s' LIMIT 1",
+            "SELECT uuid, id, username, password FROM members "
+            . "WHERE username='%s' AND disabled='0' LIMIT 1",
             $db->qstr($username)
         )
     );
 
     if (is_null($usuari)) {
+        // L'usuari no existeix, o està deshabilitat.
         return false;
     }
     // L'usuari es correcte ara cal verificar la contrasenya
-
-    // Si esta deshabilitat tampoc poc accedir
-    if (1 == $usuari['disabled']) {
-        return false;
-    }
-
-    // we implement several auth types
+    // Implementem diversos sistemes d'autenticació
     switch ($CONFIG['authentication']['type']) {
         case 'LDAP':
             // we will use LDAP authentication
-            $userIsMember = getLDAPAuth(
+            $userLogged = getLDAPAuth(
                 $usuari['username'],
                 $password,
                 $CONFIG['LDAP']['host'],
@@ -207,25 +204,33 @@ function doLogin($username, $password)
         default:
             // we will use LOCAL authentication
             if (md5($password) == $usuari['password']) {
-                // Usuari validat i es membre
-                $userIsMember = true;
+                // Usuari validat
+                $userLogged = true;
             }
     }
+    
+    if ($userLogged) {
+        // Get the user-agent string of the user.
+        $userBrowser = $_SERVER['HTTP_USER_AGENT'];
 
-    if ($userIsMember) {
-        // Usuari validat, actualitzem session_id
+        $_SESSION['member'] = $usuari;
+        $_SESSION['member']['login_string'] = hash(
+            'sha512',
+            md5($password) . $userBrowser
+        );
+
+        // Actualitzem el camp last_access
         $db->update(
             'members',
             array(
-                'session_id' => session_id(),
                 'last_access' => time()
             ),
-            sprintf("id='%d' LIMIT 1", $usuari['id'])
+            sprintf("uuid='%d' LIMIT 1", $usuari['uuid'])
         );
     }
 
-    return $userIsMember;
-} // END do_login()
+    return $userLogged;
+}
 
 function printRegisterForm($missatges = array())
 {
@@ -259,7 +264,7 @@ function printRegisterForm($missatges = array())
                         <div style="margin-bottom: 25px" class="input-group">
                             <span class="input-group-addon"><i class="glyphicon glyphicon-envelope"></i></span>
                             <input type="text" name="email" id="email" class="form-control" placeholder="adreça correu electrònic" required>
-                        </div>  
+                        </div>
 
                         <div class="form-group">
                             <div class="col-md-offset-3 col-md-9">
@@ -325,7 +330,6 @@ function doRegister($data = array())
             'email' => $data['email']
         )
     );
-  
 
     if (0 === $userId) {
         $missatges[] = array('type' => "error", 'msg' => "No s'ha pogut crear l'usuari.");

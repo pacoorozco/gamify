@@ -27,7 +27,8 @@
  * @link       https://github.com/pacoorozco/gamify
  */
 
-require_once realpath(dirname(__FILE__) . '/../resources/lib/bootstrap.php');
+require_once realpath(dirname(__FILE__) . '/../resources/lib/Bootstrap.class.inc');
+\Pakus\Application\Bootstrap::init(APP_BOOTSTRAP_FULL);
 
 // Page only for members
 if (false === loginCheck()) {

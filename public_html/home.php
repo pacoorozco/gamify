@@ -27,11 +27,12 @@
  * @link       https://github.com/pacoorozco/gamify
  */
 
-require_once realpath(dirname(__FILE__) . '/../resources/lib/bootstrap.php');
+require_once realpath(dirname(__FILE__) . '/../resources/lib/Bootstrap.class.inc');
+\Pakus\Application\Bootstrap::init(APP_BOOTSTRAP_FULL);
 
 require_once TEMPLATES_PATH . '/header.php';
 
-if (true === loginCheck()) {
+if (loginCheck()) {
     ?>
 
     <div class="row">
