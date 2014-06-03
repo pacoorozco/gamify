@@ -5,76 +5,65 @@
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
- * 
+ *
  * @category   Pakus
  * @package    Functions
- * @author     Paco Orozco <paco_@_pacoorozco.info> 
+ * @author     Paco Orozco <paco_@_pacoorozco.info>
  * @license    http://www.gnu.org/licenses/gpl-2.0.html (GPL v2)
  * @link       https://github.com/pacoorozco/gamify
  */
 
-function secureSessionStart()
-{
-    // set a custom session name
-    $sessionName = 'gamify_GoW';
-    // sets the session name to the one set above.
-    session_name($sessionName);
-    // start the PHP session
-    session_start();
-
-    // store these values into the session so I can check on subsequent requests.
-    $_SESSION['_USER_AGENT']            = $_SERVER['HTTP_USER_AGENT'];
-    $_SESSION['_USER_ACCEPT']           = $_SERVER['HTTP_ACCEPT'];
-    $_SESSION['_USER_ACCEPT_ENCODING']  = $_SERVER['HTTP_ACCEPT_ENCODING'];
-
-    // Only use the first two blocks of the IP (loose IP check). Use a
-    // netmask of 255.255.0.0 to get the first two blocks only.
-    $_SESSION['_USER_LOOSE_IP'] = long2ip(ip2long($_SERVER['REMOTE_ADDR']) & ip2long("255.255.0.0"));
-}
-
-function secureSessionDestroy()
-{
-    // destroy all $_SESSION variables and regenerate session_id
-    session_unset();
-    session_destroy();
-    session_start();
-    session_regenerate_id(true);
-}
-
+/**
+ * Checks if a user is logged in based on its $_SESSION.
+ *
+ * @return boolean Returns TRUE if users is logged, FALSE otherways.
+ */
 function loginCheck()
 {
     global $db;
 
-    // Run a quick check to see if we are an authenticated user or not
-    // First, we set a 'is the user logged in' flag to false by default.
-    $isUserLoggedIn = false;
-    $query = sprintf(
-        "SELECT uuid, id, username, email, role, disabled, profile_image FROM members WHERE session_id='%s' LIMIT 1",
-        $db->qstr(session_id())
-    );
-    $result = $db->query($query);
-    if (1 === $result->num_rows) {
-        $row = $result->fetch_assoc();
-        $_SESSION['member'] = $row;
-        // Si l'usuari esta deshabilitat no pot accedir
-        $isUserLoggedIn = ($row['disabled'] == 1) ? false : true;
-    }
+    // Check if all session variables are set
+    if (isset(
+        $_SESSION['member']['uuid'],
+        $_SESSION['member']['username'],
+        $_SESSION['member']['login_string']
+    )) {
+        // Get the user's password from database, only for enabled users
+        $userPassword = $db->getOne(
+            sprintf(
+                "SELECT `password` FROM `members` "
+                . "WHERE `uuid`='%s' AND `disabled`='0' LIMIT 1",
+                $db->qstr($_SESSION['member']['uuid'])
+            )
+        );
 
-    return $isUserLoggedIn;
+        if (empty($userPassword)) {
+            // User's doesn't exists or is disabled, so not logged
+            return false;
+        }
+
+        $loginCheck = hash('sha512', $userPassword . $_SERVER['HTTP_USER_AGENT']);
+        if ($loginCheck == $_SESSION['member']['login_string']) {
+            // User is logged in!
+            return true;
+        }
+    }
+    // User is not logged in
+    return false;
 }
 
 /**
@@ -191,10 +180,10 @@ function userHasPrivileges($userId, $privilege = 'administrator')
 /*** HTML CODE FUNCTIONS ***/
 function printAccessDenied()
 {
-    ?>
-    <h1>Accés denegat</h1>
-    <p class="lead">El teu usuari no te permissos per accedir a aquesta pàgina.</p>
-    <?php
+    $htmlCode = array();
+    $htmlCode[] = '<h1>Accés denegat</h1>';
+    $htmlCode[] = '<p class="lead">El teu usuari no te permissos per accedir a aquesta pàgina.</p>';
+    echo implode(PHP_EOL, $htmlCode);
 }
 
 /**
