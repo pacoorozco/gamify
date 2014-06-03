@@ -30,9 +30,9 @@
 require_once realpath(dirname(__FILE__) . '/../resources/lib/Bootstrap.class.inc');
 \Pakus\Application\Bootstrap::init(APP_BOOTSTRAP_FULL);
 
-require_once TEMPLATES_PATH . '/header.php';
+require_once TEMPLATES_PATH . '/tpl_header.inc';
 
-if (loginCheck()) {
+if (checkLoggedIn()) {
     ?>
 
     <div class="row">
@@ -235,7 +235,7 @@ if (loginCheck()) {
     <?php
 }
 
-require_once TEMPLATES_PATH . '/footer.php';
+require_once TEMPLATES_PATH . '/tpl_footer.inc';
 exit();
 
 /*** FUNCTIONS ***/

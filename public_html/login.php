@@ -45,11 +45,10 @@ switch ($action) {
 
         if (doLogin($username, $password)) {
             // go to previous referrer, if exists
-            //$nav = getPOSTVar('nav');
-            //$nav = (!empty($nav)) ? $nav : 'index.php';
-            //header('Location: ' . urldecode($nav));
-            header('Location: index.php');
-            exit();
+            $nav = getPOSTVar('nav');
+            // $nav is always urlencode()
+            $nav = (!empty($nav)) ? urldecode($nav) : 'index.php';
+            redirect($nav);
         } else {
             $errors[] = array(
                 'type' => "error",
@@ -57,16 +56,15 @@ switch ($action) {
             );
         }
         break;
-//    default:
-//        if (true === loginCheck()) {
-            // ja esta autenticat
-//            header('Location: index.php');
-//            exit();
-//        }
+    default:
+        if (checkLoggedIn()) {
+            // User is logged, so redirect to index.php
+            redirect('index.php');
+        }
 }
 
 // now rest of actions
-require_once TEMPLATES_PATH . '/header.php';
+require_once TEMPLATES_PATH . '/tpl_header.inc';
 
 switch ($action) {
     case 'login':
@@ -87,7 +85,7 @@ switch ($action) {
         printLoginForm();
 }
 
-require_once TEMPLATES_PATH . '/footer.php';
+require_once TEMPLATES_PATH . '/tpl_footer.inc';
 exit();
 
 /*** FUNCTIONS ***/
@@ -96,8 +94,13 @@ function printLoginForm($username = '', $missatges = array())
 {
     global $CONFIG;
 
-    // get after login url if exists
-    $nav = getPOSTVar('nav');
+    // get url to redirect after login
+    if (isset($_SESSION['nav'])) {
+        $nav = $_SESSION['nav'];
+        unset($_SESSION['nav']);
+    } else {
+        $nav = getPOSTVar('nav');
+    }
     ?>
         <div id="loginbox" style="margin-top:50px;" class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
             <div class="panel panel-info">
@@ -142,7 +145,7 @@ function printLoginForm($username = '', $missatges = array())
                                 <div class="col-md-12 control">
                                     <div style="border-top: 1px solid#888; padding-top:15px;">
                                         No has accedit mai?
-                                        <a href="<?php echo $_SERVER['PHP_SELF']; ?>?a=register">
+                                        <a href="<?= $_SERVER['PHP_SELF']; ?>?a=register">
                                             Registra't ara!
                                         </a>
                                     </div>
@@ -157,15 +160,7 @@ function printLoginForm($username = '', $missatges = array())
 
 function doLogout()
 {
-    global $db;
-
-    // updates members to put session_id to NULL
-    $db->update(
-        'members',
-        array('session_id' => null),
-        sprintf("id='%d' LIMIT 1", $_SESSION['member']['id'])
-    );
-
+    // destroy $_SESSION in order to logot
     \Pakus\Application\Session::regenerateSession();
 }
 
@@ -178,7 +173,7 @@ function doLogin($username, $password)
     // Comprovem que l'usuari consti com a membre
     $usuari = $db->getRow(
         sprintf(
-            "SELECT uuid, id, username, password FROM members "
+            "SELECT uuid, id, username, email, password FROM members "
             . "WHERE username='%s' AND disabled='0' LIMIT 1",
             $db->qstr($username)
         )

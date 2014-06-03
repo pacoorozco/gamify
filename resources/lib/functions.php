@@ -32,7 +32,7 @@
  *
  * @return boolean Returns TRUE if users is logged, FALSE otherways.
  */
-function loginCheck()
+function checkLoggedIn()
 {
     global $db;
 
@@ -64,6 +64,15 @@ function loginCheck()
     }
     // User is not logged in
     return false;
+}
+
+function redirect($url, $includeCurrentURL = false) {
+    if($includeCurrentURL) {
+            // save referrer to $_SESSION['nav'] for redirect later
+            $_SESSION['nav'] = urlencode($_SERVER['SCRIPT_NAME'] . '?' . $_SERVER['QUERY_STRING']);
+	}
+	header('Location: ' . $url);
+	exit();
 }
 
 /**

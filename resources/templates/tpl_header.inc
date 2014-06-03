@@ -79,7 +79,7 @@
             <ul class="nav navbar-nav">
                 <li><a href="index.php" title="Inici"><span class="glyphicon glyphicon-home"></span> Inici</a></li>
                 <?php
-                if ( true === loginCheck() ) {
+                if ( true === checkLoggedIn() ) {
                 ?>
                 <li><a href="quiz.php" title="Participa amb nosaltres"><span class="glyphicon glyphicon-question-sign"></span> Participa <span class="badge"><?= getPendingQuizs($_SESSION['member']['id']); ?></span></a></li>
                 <?php
@@ -90,7 +90,7 @@
                 ?>
             </ul>
             <?php
-            if ( true === loginCheck() ) {
+            if ( true === checkLoggedIn() ) {
                 ?>
         <ul class="nav navbar-nav navbar-right">
         <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-user"></span> <?php echo $_SESSION['member']['username']; ?>

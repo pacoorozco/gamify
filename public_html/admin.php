@@ -5,24 +5,24 @@
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
- * 
+ *
  * @category   Pakus
  * @package    Admin
- * @author     Paco Orozco <paco_@_pacoorozco.info> 
+ * @author     Paco Orozco <paco_@_pacoorozco.info>
  * @license    http://www.gnu.org/licenses/gpl-2.0.html (GPL v2)
  * @link       https://github.com/pacoorozco/gamify
  */
@@ -31,23 +31,21 @@ require_once realpath(dirname(__FILE__) . '/../resources/lib/Bootstrap.class.inc
 \Pakus\Application\Bootstrap::init(APP_BOOTSTRAP_FULL);
 
 // Page only for members
-if ( false === loginCheck() ) {
-    // save referrer to $_SESSION['nav'] for after login redirect
-    $_SESSION['nav'] = urlencode($_SERVER['SCRIPT_NAME'] . '?' . $_SERVER['QUERY_STRING']);
-    header('Location: login.php');
-    exit;
+if (!checkLoggedIn()) {
+    // save referrer to $_SESSION['nav'] for redirect after login
+    redirect('login.php', $includePreviousURL = true);
 }
 
 // Check if user has privileges
-if ( ! userHasPrivileges($_SESSION['member']['id'], 'administrator') ) {
+if (! userHasPrivileges($_SESSION['member']['id'], 'administrator')) {
     // User has no privileges
-    require_once TEMPLATES_PATH . '/header.php';
+    require_once TEMPLATES_PATH . '/tpl_header.inc';
     printAccessDenied();
-    require_once TEMPLATES_PATH . '/footer.php';
+    require_once TEMPLATES_PATH . '/tpl_footer.inc';
     exit();
 }
 
-require_once TEMPLATES_PATH . '/header.php';
+require_once TEMPLATES_PATH . '/tpl_header.inc';
 
 $missatges = array();
 
@@ -302,7 +300,7 @@ switch ($action) {
         printAdminDashboard();
 }
 
-require_once TEMPLATES_PATH . '/footer.php';
+require_once TEMPLATES_PATH . '/tpl_footer.inc';
 exit();
 
 /*** FUNCTIONS ***/

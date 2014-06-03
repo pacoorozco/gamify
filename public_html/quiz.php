@@ -31,14 +31,12 @@ require_once realpath(dirname(__FILE__) . '/../resources/lib/Bootstrap.class.inc
 \Pakus\Application\Bootstrap::init(APP_BOOTSTRAP_FULL);
 
 // Page only for members
-if (false === loginCheck()) {
-    // save referrer to $_SESSION['nav'] for after login redirect
-    $_SESSION['nav'] = urlencode($_SERVER['SCRIPT_NAME'] . '?' . $_SERVER['QUERY_STRING']);
-    header('Location: login.php');
-    exit;
+if (!checkLoggedIn()) {
+    // save referrer to $_SESSION['nav'] for redirect after login
+    redirect('login.php', $includePreviousURL = true);
 }
 
-require_once TEMPLATES_PATH . '/header.php';
+require_once TEMPLATES_PATH . '/tpl_header.inc';
 
 // Que hem de fer?
 $action = getREQUESTVar('a');
@@ -65,7 +63,7 @@ switch ($action) {
         printQuestionList();
 }
 
-require_once TEMPLATES_PATH . '/footer.php';
+require_once TEMPLATES_PATH . '/tpl_footer.inc';
 exit();
 
 /*** FUNCTIONS ***/
