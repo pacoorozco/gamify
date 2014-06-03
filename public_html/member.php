@@ -31,7 +31,7 @@ require_once realpath(dirname(__FILE__) . '/../resources/lib/Bootstrap.class.inc
 \Pakus\Application\Bootstrap::init(APP_BOOTSTRAP_FULL);
 
 // Page only for members
-if (!checkLoggedIn()) {
+if (!userIsLoggedIn()) {
     // save referrer to $_SESSION['nav'] for redirect after login
     redirect('login.php', $includePreviousURL = true);
 }

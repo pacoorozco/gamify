@@ -57,7 +57,7 @@ switch ($action) {
         }
         break;
     default:
-        if (checkLoggedIn()) {
+        if (userIsLoggedIn()) {
             // User is logged, so redirect to index.php
             redirect('index.php');
         }

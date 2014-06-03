@@ -32,7 +32,7 @@ require_once realpath(dirname(__FILE__) . '/../resources/lib/Bootstrap.class.inc
 
 require_once TEMPLATES_PATH . '/tpl_header.inc';
 
-if (checkLoggedIn()) {
+if (userIsLoggedIn()) {
     ?>
 
     <div class="row">

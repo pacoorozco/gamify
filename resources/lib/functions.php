@@ -30,9 +30,9 @@
 /**
  * Checks if a user is logged in based on its $_SESSION.
  *
- * @return boolean Returns TRUE if users is logged, FALSE otherways.
+ * @return boolean Returns TRUE if users is logged, FALSE otherwise
  */
-function checkLoggedIn()
+function userIsLoggedIn()
 {
     global $db;
 
