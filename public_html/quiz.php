@@ -467,7 +467,7 @@ function viewQuestionByUUID($questionUUID, $msg = array())
     );
 
     if (empty($question['image'])) {
-        $question['image'] = 'images/default_question.jpg';
+        $question['image'] = 'images/default_question.png';
     }
 
     printQuestionHeader('question');

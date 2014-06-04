@@ -271,15 +271,15 @@ function printAdminHeader($a = 'users', $msg = array())
 {
     ?>
             <h1>Administració</h1>
-            <p><?php echo getHTMLMessages($msg); ?></p>
+            <p><?= getHTMLMessages($msg); ?></p>
 
             <ul class="nav nav-tabs">
-                <li<?php echo ( $a == 'actions' ) ? ' class="active"' : ''; ?>><a href="admin.php?a=actions"><span class="glyphicon glyphicon-dashboard"></span> Accions</a></li>
-                <li<?php echo ( $a == 'users' ) ? ' class="active"' : ''; ?>><a href="admin.php?a=users"><span class="glyphicon glyphicon-user"></span>  Usuaris</a></li>
-                <li<?php echo ( $a == 'levels' ) ? ' class="active"' : ''; ?>><a href="admin.php?a=levels"><span class="glyphicon glyphicon-list-alt"></span> Nivells</a></li>
-                <li<?php echo ( $a == 'badges' ) ? ' class="active"' : ''; ?>><a href="admin.php?a=badges"><span class="glyphicon glyphicon-certificate"></span> Insígnies</a></li>
-                <li<?php echo ( $a == 'quiz' ) ? ' class="active"' : ''; ?>><a href="admin.php?a=quiz"><span class="glyphicon glyphicon-comment"></span> Preguntes</a></li>
-                <li<?php echo ( $a == 'messages' ) ? ' class="active"' : ''; ?>><a href="admin.php?a=messages"><span class="glyphicon glyphicon-envelope"></span> Missatges</a></li>
+                <li<?= ( $a == 'actions' ) ? ' class="active"' : ''; ?>><a href="admin.php?a=actions"><span class="glyphicon glyphicon-dashboard"></span> Accions</a></li>
+                <li<?= ( $a == 'users' ) ? ' class="active"' : ''; ?>><a href="admin.php?a=users"><span class="glyphicon glyphicon-user"></span>  Usuaris</a></li>
+                <li<?= ( $a == 'levels' ) ? ' class="active"' : ''; ?>><a href="admin.php?a=levels"><span class="glyphicon glyphicon-list-alt"></span> Nivells</a></li>
+                <li<?= ( $a == 'badges' ) ? ' class="active"' : ''; ?>><a href="admin.php?a=badges"><span class="glyphicon glyphicon-certificate"></span> Insígnies</a></li>
+                <li<?= ( $a == 'quiz' ) ? ' class="active"' : ''; ?>><a href="admin.php?a=quiz"><span class="glyphicon glyphicon-comment"></span> Preguntes</a></li>
+                <li<?= ( $a == 'messages' ) ? ' class="active"' : ''; ?>><a href="admin.php?a=messages"><span class="glyphicon glyphicon-envelope"></span> Missatges</a></li>
 
             </ul>
     <?php
@@ -301,7 +301,7 @@ function printActions ($msg = array())
                     <div class="row">
                         <div class="col-md-6">
                     <h2>Donar experiència</h2>
-                    <p><?php echo getHTMLMessages($msg); ?></p>
+                    <p><?= getHTMLMessages($msg); ?></p>
                     <form action="admin.php" method="post" class="form-horizontal" role="form">
                         <div class="form-group">
                             <label for="username" class="col-sm-2 control-label">Usuari</label>
@@ -357,7 +357,7 @@ function printActions ($msg = array())
                             <div class="col-sm-10">
                                 <select data-placeholder="escull un usuari..." name="item" id="username" class="form-control chosen-select">
                                     <option value=""></option>
-                                    <?php echo implode(PHP_EOL, $htmlCode); ?>
+                                    <?= implode(PHP_EOL, $htmlCode); ?>
                                 </select>
                             </div>
                         </div>
@@ -565,7 +565,7 @@ function printNewUserForm($data = array(), $msg = array())
     global $CONFIG;
     ?>
                         <h1>Nou usuari</h1>
-                        <p><?php echo getHTMLMessages($msg); ?></p>
+                        <p><?= getHTMLMessages($msg); ?></p>
                         <form action="admin.php" method="post" class="form-horizontal" role="form">
                             <div class="form-group">
                                 <label for="username" class="col-sm-2 control-label">Usuari</label>
@@ -704,12 +704,12 @@ function printEditUserForm($userId, $msg = array())
     $row = $result->fetch_assoc();
     ?>
                         <h1>Editar usuari</h1>
-                        <p><?php echo getHTMLMessages($msg); ?></p>
+                        <p><?= getHTMLMessages($msg); ?></p>
                         <form action="admin.php" method="post" class="form-horizontal" role="form">
                             <div class="form-group">
                                 <label for="username" class="col-sm-2 control-label">Usuari</label>
                                 <div class="col-sm-10">
-                                    <p class="form-control-static"><?php echo $row['username']; ?></p>
+                                    <p class="form-control-static"><?= $row['username']; ?></p>
                                 </div>
                             </div>
                             <?php
@@ -733,7 +733,7 @@ function printEditUserForm($userId, $msg = array())
                             <div class="form-group">
                                 <label for="email" class="col-sm-2 control-label">Adreça de correu</label>
                                 <div class="col-sm-10">
-                                    <input type="email" name="email" id="email" class="form-control" placeholder="nom.cognom@domini.cat" value="<?php echo $row['email']; ?>" required>
+                                    <input type="email" name="email" id="email" class="form-control" placeholder="nom.cognom@domini.cat" value="<?= $row['email']; ?>" required>
                                 </div>
                             </div>
                             <div class="form-group">
@@ -756,10 +756,10 @@ function printEditUserForm($userId, $msg = array())
 
                             <div class="form-group">
                                 <div class="col-sm-offset-2 col-sm-10">
-                                    <input type="hidden" id="item" name="item" value="<?php echo $userId; ?>">
+                                    <input type="hidden" id="item" name="item" value="<?= $userId; ?>">
                                     <input type="hidden" id="a" name="a" value="saveuser">
                                     <button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-save"></span> Actualitzar dades</button>
-                                    <a href="<?php echo $_SERVER['PHP_SELF']; ?>?a=users" class="btn btn-danger" role="button"><span class="glyphicon glyphicon-retweet"></span> Tornar</a>
+                                    <a href="<?= $_SERVER['PHP_SELF']; ?>?a=users" class="btn btn-danger" role="button"><span class="glyphicon glyphicon-retweet"></span> Tornar</a>
                                 </div>
                             </div>
                         </form>
@@ -839,12 +839,12 @@ function printNewLevelForm( $data = array(), $msg = array() )
 {
     ?>
                         <h1>Nou nivell</h1>
-                        <p><?php echo getHTMLMessages($msg); ?></p>
+                        <p><?= getHTMLMessages($msg); ?></p>
                         <form action="admin.php" method="post" class="form-horizontal" role="form">
                             <div class="form-group">
                                 <label for="levelname" class="col-sm-2 control-label">Nom</label>
                                 <div class="col-sm-10">
-                                    <input type="text" name="name" id="levelname" class="form-control" placeholder="Nom del nivell" value="<?php echo $data['name']; ?>" required>
+                                    <input type="text" name="name" id="levelname" class="form-control" placeholder="Nom del nivell" value="<?= $data['name']; ?>" required>
                                 </div>
                             </div>
                             <div class="form-group">
@@ -856,7 +856,7 @@ function printNewLevelForm( $data = array(), $msg = array() )
                             <div class="form-group">
                                 <label for="experience" class="col-sm-2 control-label">Experiència necessària</label>
                                 <div class="col-sm-10">
-                                    <input type="text" name="experience_needed" id="experience" class="form-control" placeholder="Experiència necessària per aconseguir-ho" value="<?php echo $data['experience_needed']; ?>" required>
+                                    <input type="text" name="experience_needed" id="experience" class="form-control" placeholder="Experiència necessària per aconseguir-ho" value="<?= $data['experience_needed']; ?>" required>
                                 </div>
                             </div>
                             <div class="form-group">
@@ -940,29 +940,29 @@ function printEditLevelForm($levelId, $msg = array())
     $data = $result->fetch_assoc();
     ?>
                         <h1>Editar nivell</h1>
-                        <p><?php echo getHTMLMessages($msg); ?></p>
+                        <p><?= getHTMLMessages($msg); ?></p>
                         <form action="admin.php" method="post" class="form-horizontal" role="form">
                            <div class="form-group">
                                 <label for="levelname" class="col-sm-2 control-label">Nom</label>
                                 <div class="col-sm-10">
-                                    <input type="text" name="name" id="levelname" class="form-control" placeholder="Nom del nivell" value="<?php echo $data['name']; ?>" required>
+                                    <input type="text" name="name" id="levelname" class="form-control" placeholder="Nom del nivell" value="<?= $data['name']; ?>" required>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label for="levelsrc" class="col-sm-2 control-label">Imatge</label>
                                 <div class="col-sm-10">
-                                    <input type="text" name="image" id="levelsrc" class="form-control" placeholder="Imatge del nivell" value="<?php echo $data['image']; ?>">
+                                    <input type="text" name="image" id="levelsrc" class="form-control" placeholder="Imatge del nivell" value="<?= $data['image']; ?>">
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label for="experience" class="col-sm-2 control-label">Experiència necessària</label>
                                 <div class="col-sm-10">
-                                    <input type="text" name="experience_needed" id="experience" class="form-control" placeholder="Experiència necessària per aconseguir-ho" value="<?php echo $data['experience_needed']; ?>" required>
+                                    <input type="text" name="experience_needed" id="experience" class="form-control" placeholder="Experiència necessària per aconseguir-ho" value="<?= $data['experience_needed']; ?>" required>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <div class="col-sm-offset-2 col-sm-10">
-                                    <input type="hidden" id="item" name="item" value="<?php echo $data['id']; ?>">
+                                    <input type="hidden" id="item" name="item" value="<?= $data['id']; ?>">
                                     <input type="hidden" id="a" name="a" value="savelevel">
                                     <button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-save"></span> Actualitzar dades</button>
                                     <a href="admin.php?a=levels" class="btn btn-danger" role="button"><span class="glyphicon glyphicon-retweet"></span> Tornar</a>
@@ -1054,30 +1054,30 @@ function printNewBadgeForm( $data = array(), $msg = array() )
 {
     ?>
                         <h1>Nova insígnia</h1>
-                        <p><?php echo getHTMLMessages($msg); ?></p>
+                        <p><?= getHTMLMessages($msg); ?></p>
                         <form action="admin.php" method="post" class="form-horizontal" role="form">
                             <div class="form-group">
                                 <label for="achievementname" class="col-sm-2 control-label">Nom de la insígnia</label>
                                 <div class="col-sm-10">
-                                    <input type="text" name="name" id="achievementname" class="form-control" placeholder="Nom de la insígnia" value="<?php echo $data['name']; ?>" required>
+                                    <input type="text" name="name" id="achievementname" class="form-control" placeholder="Nom de la insígnia" value="<?= $data['name']; ?>" required>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label for="badgesrc" class="col-sm-2 control-label">Imatge</label>
                                 <div class="col-sm-10">
-                                    <input type="text" name="image" id="badgesrc" class="form-control" placeholder="Imatge de la insígnia" value="<?php echo $data['image']; ?>">
+                                    <input type="text" name="image" id="badgesrc" class="form-control" placeholder="Imatge de la insígnia" value="<?= $data['image']; ?>">
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label for="description" class="col-sm-2 control-label">Descripció</label>
                                 <div class="col-sm-10">
-                                    <textarea name="description" id="description" class="form-control" rows="3" placeholder="Descripció de la insígnia"><?php echo $data['description']; ?></textarea>
+                                    <textarea name="description" id="description" class="form-control" rows="3" placeholder="Descripció de la insígnia"><?= $data['description']; ?></textarea>
                                 </div>
                             </div>
                            <div class="form-group">
                                 <label for="amount" class="col-sm-2 control-label">Quantitat necessària</label>
                                 <div class="col-sm-10">
-                                    <input type="text" name="amount_needed" id="amount" class="form-control" placeholder="Número de vegades per aconseguir-la" value="<?php echo $data['amount_needed']; ?>">
+                                    <input type="text" name="amount_needed" id="amount" class="form-control" placeholder="Número de vegades per aconseguir-la" value="<?= $data['amount_needed']; ?>">
                                 </div>
                             </div>
                             <div class="form-group">
@@ -1154,35 +1154,35 @@ function printEditBadgeForm($badgeId, $msg = array())
     $data = $result->fetch_assoc();
     ?>
                         <h1>Editar insígnia</h1>
-                        <p><?php echo getHTMLMessages($msg); ?></p>
+                        <p><?= getHTMLMessages($msg); ?></p>
                         <form action="admin.php" method="post" class="form-horizontal" role="form">
                             <div class="form-group">
                                 <label for="achievementname" class="col-sm-2 control-label">Nom de la insígnia</label>
                                 <div class="col-sm-10">
-                                    <input type="text" name="name" id="achievementname" class="form-control" placeholder="Nom de la insígnia" value="<?php echo $data['name']; ?>" required>
+                                    <input type="text" name="name" id="achievementname" class="form-control" placeholder="Nom de la insígnia" value="<?= $data['name']; ?>" required>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label for="badgesrc" class="col-sm-2 control-label">Imatge</label>
                                 <div class="col-sm-10">
-                                    <input type="text" name="image" id="badgesrc" class="form-control" placeholder="Imatge de la insígnia" value="<?php echo $data['image']; ?>">
+                                    <input type="text" name="image" id="badgesrc" class="form-control" placeholder="Imatge de la insígnia" value="<?= $data['image']; ?>">
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label for="description" class="col-sm-2 control-label">Descripció</label>
                                 <div class="col-sm-10">
-                                    <textarea name="description" id="description" class="form-control" rows="3" placeholder="Descripció de la insígnia"><?php echo $data['description']; ?></textarea>
+                                    <textarea name="description" id="description" class="form-control" rows="3" placeholder="Descripció de la insígnia"><?= $data['description']; ?></textarea>
                                 </div>
                             </div>
                            <div class="form-group">
                                 <label for="amount" class="col-sm-2 control-label">Quantitat necessària</label>
                                 <div class="col-sm-10">
-                                    <input type="text" name="amount_needed" id="amount" class="form-control" placeholder="Número de vegades per aconseguir-la" value="<?php echo $data['amount_needed']; ?>">
+                                    <input type="text" name="amount_needed" id="amount" class="form-control" placeholder="Número de vegades per aconseguir-la" value="<?= $data['amount_needed']; ?>">
                                 </div>
                             </div>
                             <div class="form-group">
                                 <div class="col-sm-offset-2 col-sm-10">
-                                    <input type="hidden" id="item" name="item" value="<?php echo $badgeId; ?>">
+                                    <input type="hidden" id="item" name="item" value="<?= $badgeId; ?>">
                                     <input type="hidden" id="a" name="a" value="savebadge">
                                     <button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-save"></span> Actualitzar dades</button>
                                     <a href="admin.php?a=badges" class="btn btn-danger" role="button"><span class="glyphicon glyphicon-retweet"></span> Tornar</a>
@@ -1500,7 +1500,7 @@ function printSendMessage( $msg = array() )
                <div class="panel panel-default">
                 <div class="panel-body">
                     <h2>Enviar mail als usuaris</h2>
-                    <p><?php echo getHTMLMessages($msg); ?></p>
+                    <p><?= getHTMLMessages($msg); ?></p>
                     <form action="admin.php" method="post" class="form-horizontal" role="form">
                         <div class="form-group">
                             <label for="subject" class="col-sm-2 control-label">Títol</label>
@@ -1519,7 +1519,7 @@ function printSendMessage( $msg = array() )
                             <div class="form-group">
                                 <label for="bcc" class="col-sm-2 control-label">Destinataris</label>
                                 <div class="col-sm-10">
-                                    <textarea id="bcc" class="form-control" rows="3" style="display:none;" disabled><?php echo implode(',', $bccRecipients); ?></textarea>
+                                    <textarea id="bcc" class="form-control" rows="3" style="display:none;" disabled><?= implode(',', $bccRecipients); ?></textarea>
                                     <a id="bcc_btn" href="#" class="btn btn-default" onClick="$('#bcc_btn').hide(); $('#bcc').show()"><span class="glyphicon glyphicon-eye-open"></span> Mostrar destinataris</a>
                                 </div>
                             </div>
@@ -1545,7 +1545,7 @@ function printQuestionManagement( $msg = array() )
                         <div class="panel panel-default">
                             <div class="panel-body">
                                 <p class="text-right">
-                                    <a href="<?php echo $_SERVER['PHP_SELF']; ?>?a=newquiz" class="btn btn-success" role="button"><span class="glyphicon glyphicon-plus"></span> Nova pregunta</a>
+                                    <a href="<?= $_SERVER['PHP_SELF']; ?>?a=newquiz" class="btn btn-success" role="button"><span class="glyphicon glyphicon-plus"></span> Nova pregunta</a>
                                 </p>
                 <table class="table table-hover" id="questions">
                     <thead>
@@ -1618,20 +1618,21 @@ function printEditQuestionForm( $questionId, $msg = array() )
     $questionId = intval($questionId);
 
     // get question data from DB
-    $query = sprintf( "SELECT * FROM questions WHERE id='%d' LIMIT 1", $questionId );
-    $result = $db->query($query);
-
-    if ($result->num_rows == 0) {
+    $data = $db->getRow(
+        sprintf("SELECT * FROM questions WHERE id='%d' LIMIT 1", $questionId)
+    );
+    if (is_null($data)) {
         // No existeix.
-        $missatges[] = array('type' => "error", 'msg' => "No he trobat informaci&oacute; per aquesta pregunta.");
+        $missatges[] = array(
+            'type' => "error",
+            'msg' => "No he trobat informaci&oacute; per aquesta pregunta."
+        );
         printQuestionManagement($missatges);
-
         return false;
     }
-    $data = $result->fetch_assoc();
 
-    // get all question_choices data from DB
-    $query = sprintf( "SELECT * FROM questions_choices WHERE question_id='%d'", $questionId );
+    // get all question_choices data from DB   
+    $query = sprintf("SELECT * FROM questions_choices WHERE question_id='%d'", $questionId);
     $result = $db->query($query);
 
     $data['choices'] = array();
@@ -1655,17 +1656,17 @@ function printEditQuestionForm( $questionId, $msg = array() )
     }
     ?>
                         <h1>Editar pregunta</h1>
-                        <p><?php echo getHTMLMessages($msg); ?></p>
-                        <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post" class="form-horizontal" role="form">
+                        <p><?= getHTMLMessages($msg); ?></p>
+                        <form action="<?= $_SERVER['PHP_SELF']; ?>" method="post" class="form-horizontal" role="form">
 
                             <?php printQuestionContentForm($data); ?>
 
                             <div class="form-group">
                                 <div class="col-sm-offset-2 col-sm-10">
-                                    <input type="hidden" id="item" name="item" value="<?php echo $data['id']; ?>">
+                                    <input type="hidden" id="item" name="item" value="<?= $data['id']; ?>">
                                     <input type="hidden" id="a" name="a" value="savequiz">
                                     <button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-save"></span> Actualitzar dades</button>
-                                    <a href="<?php echo $_SERVER['PHP_SELF']; ?>?a=quiz" class="btn btn-danger" role="button"><span class="glyphicon glyphicon-retweet"></span> Tornar</a>
+                                    <a href="<?= $_SERVER['PHP_SELF']; ?>?a=quiz" class="btn btn-danger" role="button"><span class="glyphicon glyphicon-retweet"></span> Tornar</a>
                                 </div>
                             </div>
                         </form>
@@ -1677,8 +1678,8 @@ function printNewQuestionForm( $data = array(), $msg = array() )
     global $db;
     ?>
                         <h1>Nova pregunta</h1>
-                        <p><?php echo getHTMLMessages($msg); ?></p>
-                        <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post" class="form-horizontal" role="form">
+                        <p><?= getHTMLMessages($msg); ?></p>
+                        <form action="<?= $_SERVER['PHP_SELF']; ?>" method="post" class="form-horizontal" role="form">
 
                             <?php printQuestionContentForm($data); ?>
 
@@ -1686,7 +1687,7 @@ function printNewQuestionForm( $data = array(), $msg = array() )
                                 <div class="col-sm-offset-2 col-sm-10">
                                     <input type="hidden" id="a" name="a" value="createquiz">
                                     <button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-save"></span> Crear pregunta</button>
-                                    <a href="<?php echo $_SERVER['PHP_SELF']; ?>?a=quiz" class="btn btn-danger" role="button"><span class="glyphicon glyphicon-retweet"></span> Tornar</a>
+                                    <a href="<?= $_SERVER['PHP_SELF']; ?>?a=quiz" class="btn btn-danger" role="button"><span class="glyphicon glyphicon-retweet"></span> Tornar</a>
                                 </div>
                             </div>
                         </form>
@@ -1860,7 +1861,7 @@ function printQuestionContentForm($data)
                            <div class="form-group">
                                 <label class="col-sm-2 control-label">Nom</label>
                                 <div class="col-sm-10">
-                                    <input type="text" name="name" class="form-control" placeholder="Títol de la pregunta" value="<?php if (isset($data['name'])) echo $data['name']; ?>" required>
+                                    <input type="text" name="name" class="form-control" placeholder="Títol de la pregunta" value="<?= (isset($data['name'])) ? $data['name'] : ''; ?>" required>
                                 </div>
                            </div>
 
@@ -1884,14 +1885,14 @@ function printQuestionContentForm($data)
                             <div class="form-group">
                                 <label class="col-sm-2 control-label">Pregunta</label>
                                 <div class="col-sm-10">
-                                    <textarea name="question" class="form-control tinymce" rows="3" placeholder="Quina és la pregunta?"><?php if ( isset($data['question']) ) echo $data['question']; ?></textarea>
+                                    <textarea name="question" class="form-control tinymce" rows="3" placeholder="Quina és la pregunta?"><?= (isset($data['question'])) ? $data['question'] : ''; ?></textarea>
                                 </div>
                             </div>
 
                             <div class="form-group">
                                 <label for="image" class="col-sm-2 control-label">Imatge</label>
                                 <div class="col-sm-10">
-                                    <input type="text" name="image" class="form-control" placeholder="URL de l'imatge (opcional)" value="<?php if (isset($data['image'])) echo $data['image']; ?>">
+                                    <input type="text" name="image" class="form-control" placeholder="URL de l'imatge (opcional)" value="<?= (isset($data['image'])) ? $data['image'] : ''; ?>">
                                 </div>
                             </div>
 
@@ -1924,10 +1925,10 @@ function printQuestionContentForm($data)
                             <div class="clonable">
                                 <div class="form-group">
                                     <div class="col-sm-offset-2 col-sm-6">
-                                        <input type="text" name="choices[]" class="form-control" placeholder="Text de la resposta" value="<?php echo $value; ?>">
+                                        <input type="text" name="choices[]" class="form-control" placeholder="Text de la resposta" value="<?= $value; ?>">
                                     </div>
                                     <div class="col-sm-2">
-                                        <input type="text" name="points[]" class="form-control" placeholder="Punts" value="<?php echo $data['points'][$key]; ?>">
+                                        <input type="text" name="points[]" class="form-control" placeholder="Punts" value="<?= $data['points'][$key]; ?>">
                                     </div>
                                     <div class="col-sm-1">
                                         <select name="correct[]" class="form-control">
@@ -1941,10 +1942,10 @@ function printQuestionContentForm($data)
                                         </select>
                                     </div>
                                     <div class="col-sm-1">
-                                        <span class="input-group-btn"><button type="button" class="btn btn-danger btn-trash">-</button></span>
+                                        <span class="input-group-btn"><button type="button" class="btn btn-danger btn-remove">-</button></span>
                                     </div>
                                 </div>
-                           </div>
+                            </div>
                                     <?php
                             }
                             ?>
@@ -1972,19 +1973,19 @@ function printQuestionContentForm($data)
                                         <span class="input-group-btn"><button type="button" class="btn btn-default btn-add">+</button></span>
                                     </div>
                                 </div>
-                           </div>
+                            </div>
 
                             <div class="form-group">
                                 <label class="col-sm-2 control-label">Solució explicada</label>
                                 <div class="col-sm-10">
-                                    <textarea name="solution" class="form-control tinymce" rows="3" placeholder="Quina és la solució detallada? (opcional)"><?php if ( isset($data['solution']) ) echo $data['solution']; ?></textarea>
+                                    <textarea name="solution" class="form-control tinymce" rows="3" placeholder="Quina és la solució detallada? (opcional)"><?= (isset($data['solution'])) ? $data['solution'] : ''; ?></textarea>
                                 </div>
                             </div>
 
                             <div class="form-group">
                                 <label for="tip" class="col-sm-2 control-label">Text a cercar</label>
                                 <div class="col-sm-10">
-                                    <input type="text" name="tip" class="form-control" placeholder="Text d'ajuda a la cerca (opcional)" value="<?php if (isset($data['tip'])) echo $data['tip']; ?>">
+                                    <input type="text" name="tip" class="form-control" placeholder="Text d'ajuda a la cerca (opcional)" value="<?= (isset($data['tip'])) ? $data['tip'] : ''; ?>">
                                 </div>
                             </div>
 
@@ -2008,7 +2009,7 @@ function printQuestionContentForm($data)
                                     <div class="col-sm-4">
                                         <select name="actions[]" class="form-control">
                                             <option value="">Sense acció</option>
-                                            <?php echo getHTMLSelectOptions($availableActions, $value); ?>
+                                            <?= getHTMLSelectOptions($availableActions, $value); ?>
                                         </select>
                                     </div>
                                     <label class="col-sm-1 control-label">Quan</label>
@@ -2039,7 +2040,7 @@ function printQuestionContentForm($data)
                                     <div class="col-sm-4">
                                         <select name="actions[]" class="form-control">
                                             <option value="">Sense acció</option>
-                                            <?php echo getHTMLSelectOptions($availableActions); ?>
+                                            <?= getHTMLSelectOptions($availableActions); ?>
                                         </select>
                                     </div>
                                     <label class="col-sm-1 control-label">Quan</label>
@@ -2067,27 +2068,25 @@ function printPreviewQuestion($questionId)
 {
     global $db;
 
-    $query = sprintf( "SELECT * FROM questions WHERE id='%s' LIMIT 1", $db->real_escape_string($questionId) );
-    $result = $db->query($query);
+    $question = $db->getRow(
+        sprintf("SELECT * FROM questions WHERE id='%d' LIMIT 1", $questionId)
+    );
 
-    if (0 == $result->num_rows) {
+    if (is_null($question)) {
         // La pregunta que ens han passat no existeix, per tant tornem a mostrar la llista.
-        $missatges[] = array('type' => "error", 'msg' => "No he trobat informaci&oacute; per aquesta pregunta.");
+        $missatges[] = array(
+            'type' => "error",
+            'msg' => "No he trobat informaci&oacute; per aquesta pregunta."
+        );
         printQuestionManagement();
 
         return false;
     }
 
-    $question = $result->fetch_assoc();
-
     // get question's choices, if none, return
-    $query = sprintf( "SELECT * FROM questions_choices WHERE question_id='%d'", $questionId);
-    $result = $db->query($query);
-
-    $question['choices'] = array();
-    while ( $row = $result->fetch_assoc() ) {
-        $question['choices'][] = $row;
-    }
+    $question['choices'] = $db->getAll(
+        sprintf("SELECT * FROM questions_choices WHERE question_id='%d'", $questionId)
+    );
 
     if ( empty($question['image']) ) {
         $question['image'] = 'images/question_default.jpg';
@@ -2095,17 +2094,17 @@ function printPreviewQuestion($questionId)
 
     ?>
     <h1>Veure pregunta
-    <a href="<?php echo $_SERVER['PHP_SELF']; ?>?a=editquiz&item=<?php echo $questionId; ?>" class="btn btn-info" role="button"><span class="glyphicon glyphicon-edit"></span> Editar</a>
-    <a href="<?php echo $_SERVER['PHP_SELF']; ?>?a=quiz" class="btn btn-danger" role="button"><span class="glyphicon glyphicon-retweet"></span> Tornar</a>
+    <a href="<?= $_SERVER['PHP_SELF']; ?>?a=editquiz&item=<?= $questionId; ?>" class="btn btn-info" role="button"><span class="glyphicon glyphicon-edit"></span> Editar</a>
+    <a href="<?= $_SERVER['PHP_SELF']; ?>?a=quiz" class="btn btn-danger" role="button"><span class="glyphicon glyphicon-retweet"></span> Tornar</a>
     </h1>
 
     <div class="panel panel-default" width="70%">
         <div class="panel-heading">
-            <h2><?php echo $question['name']; ?></h2>
+            <h2><?= $question['name']; ?></h2>
         </div>
         <div class="panel-body">
-            <img src="<?php echo $question['image']; ?>" width="120" class="img-rounded">
-            <h4><?php echo $question['question']; ?></h4>
+            <img src="<?= $question['image']; ?>" width="120" class="img-rounded">
+            <h4><?= $question['question']; ?></h4>
                 <ul class="list-group">
                     <?php
                         $htmlCode = array();
