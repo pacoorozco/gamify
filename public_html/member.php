@@ -5,24 +5,24 @@
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
- * 
+ *
  * @category   Pakus
  * @package    Member
- * @author     Paco Orozco <paco_@_pacoorozco.info> 
+ * @author     Paco Orozco <paco_@_pacoorozco.info>
  * @license    http://www.gnu.org/licenses/gpl-2.0.html (GPL v2)
  * @link       https://github.com/pacoorozco/gamify
  */
@@ -72,55 +72,76 @@ exit();
 /*** FUNCTIONS ***/
 function getSearchResults($searchterm)
 {
-        global $db;
+    global $db;
 
-        $htmlCode = array();
-        $htmlCode[] = '<ul class="list-unstyled list-group">';
+    $htmlCode = array();
+    $htmlCode[] = '<ul class="list-unstyled list-group">';
 
-        // Nomes farem cerques si busquen mes de tres caracters, aixo evita que sobrecarreguem la BDD
-        if ( ! isset($searchterm[3]) ) {
-            $htmlCode[] = '<li class="list-group-item list-group-item-info">Tecleja m&eacute;s de 3 car&agrave;cters per fer la cerca</li>';
+    // Nomes farem cerques si busquen mes de tres caracters, aixo evita que sobrecarreguem la BDD
+    if (!isset($searchterm[3])) {
+        $htmlCode[] = '<li class="list-group-item list-group-item-info">'
+            . 'Tecleja m&eacute;s de 3 car&agrave;cters per fer la cerca</li>';
+    } else {
+        $searchResult = $db->getAll(
+            sprintf(
+                "SELECT uuid, username FROM vmembers WHERE username LIKE '%%%s%%'",
+                $db->qstr($searchterm)
+            )
+        );
+
+        if (is_null($searchResult)) {
+            // No s'ha trobat res
+            $htmlCode[] = '<li class="list-group-item list-group-item-danger">'
+                . 'No he trobat cap resultat</li>';
         } else {
-            $query = sprintf("SELECT uuid, username FROM vmembers WHERE username LIKE '%%%s%%'", $db->real_escape_string($searchterm));
-            $result = $db->query($query);
-
-            if (0 == $result->num_rows) {
-                // No s'ha trobat res
-                $htmlCode[] = '<li class="list-group-item list-group-item-danger">No he trobat cap resultat</li>';
-
-            } else {
-                // Hem trobat informacio
-                while ( $row = $result->fetch_assoc() ) {
-                    $htmlCode[] = '<li><a href="member.php?a=viewuser&item=' . $row['uuid'] . '" title="Veure ' . $row['username'] . '" class="list-group-item"><span class="glyphicon glyphicon-user"></span> ' . $row['username'] . "</a></li>";
-                }
+            // Hem trobat informacio
+            foreach ($searchResult as $row) {
+                $htmlCode[] = '<li><a href="member.php?a=viewuser&item='
+                    . $row['uuid'] . '" title="Veure ' . $row['username']
+                    . '" class="list-group-item"><span class="glyphicon glyphicon-user"></span> '
+                    . $row['username'] . "</a></li>";
             }
         }
-        $htmlCode[] = '</ul>';
+    }
+    $htmlCode[] = '</ul>';
 
     return implode($htmlCode, PHP_EOL);
 }
 
+/**
+ * Prints profile page for a given user
+ *
+ * @param string $userUUID
+ */
 function printProfile($userUUID)
 {
     global $db;
 
-    $query = sprintf("SELECT t1.id, t1.username, t1.total_points, t1.month_points, t1.last_access, t1.level_id, t2.name AS level_name, t2.image AS level_image,t2.experience_needed FROM vmembers AS t1, levels AS t2 WHERE t1.level_id = t2.id AND t1.uuid='%s' LIMIT 1", $userUUID);
-    $result = $db->query($query);
-    $row = $result->fetch_assoc();
+    $row = $db->getRow(
+        sprintf(
+            "SELECT t1.id, t1.username, t1.total_points, t1.month_points, t1.last_access, "
+            . "t1.level_id, t2.name AS level_name, t2.image AS level_image, t2.experience_needed "
+            . "FROM vmembers AS t1, levels AS t2 "
+            . "WHERE t1.level_id = t2.id AND t1.uuid='%s' LIMIT 1",
+            $userUUID
+        )
+    );
     $userId = $row['id'];
 
     // check if user to view profile is admin
     $admin = userHasPrivileges($userId, 'administrator');
 
-    $query = sprintf("SELECT profile_image FROM members WHERE id='%d' LIMIT 1", $userId);
-    $result = $db->query($query);
-    $row2 = $result->fetch_assoc();
-    $row['profile_image'] = $row2['profile_image'];
+    $row['profile_image'] = $db->getOne(
+        sprintf("SELECT profile_image FROM members WHERE id='%d' LIMIT 1", $userId)
+    );
 
-    if (false === $admin) {
-        $query = sprintf( "SELECT * FROM levels WHERE experience_needed >= '%d' LIMIT 1", $row['total_points']);
-        $result = $db->query($query);
-        $row2 = $result->fetch_assoc();
+    if (!$admin) {
+        $row2 = $db->getRow(
+            sprintf(
+                "SELECT * FROM levels WHERE experience_needed >= '%d' LIMIT 1",
+                $row['total_points']
+            )
+        );
 
         $levelper= round($row['total_points'] / $row2['experience_needed'] * 100);
     }
@@ -130,16 +151,16 @@ function printProfile($userUUID)
             <div class="col-md-7">
                 <div class="row">
                     <div class="col-md-4">
-                        <?php
-                        if (empty($row['profile_image'])) {
-                            $row['profile_image'] = 'images/default_profile_pic.png';
-                        }
-                        ?>
+    <?php
+    if (empty($row['profile_image'])) {
+        $row['profile_image'] = 'images/default_profile_pic.png';
+    }
+    ?>
                         <img src="<?= $row['profile_image']; ?>" class="img-thumbnail" id="profileImage">
-                        <?php
-                        if ($userId == $_SESSION['member']['id']) {
-                            // L'usuari por editar la seva imatge.
-                        ?>
+    <?php
+    if ($userId == $_SESSION['member']['id']) {
+        // L'usuari por editar la seva imatge.
+        ?>
                         <p class="text-center"><a href="#" id="uploadFile" title="Upload"><span class="glyphicon glyphicon-open"></span> Canviar imatge</a></p>
                         <p id="messageBox"></p>
                         <script>
@@ -163,9 +184,9 @@ function printProfile($userUUID)
                             } );
                         </script>
 
-                        <?php
-                        }
-                        ?>
+    <?php
+    }
+    ?>
                     </div>
                     <div class="col-md-8">
                         <p class="h1"><?php echo $row['username']; ?></p>
@@ -173,113 +194,157 @@ function printProfile($userUUID)
                         <p class="small">Darrera connexió el <?php echo strftime('%A, %d de %B', $row['last_access']); ?></p>
                     </div>
                 </div>
-                <?php
-                if (false === $admin) {
-                ?>
+    <?php
+    if (!$admin) {
+        ?>
                 <h3>Activitat <small>darrers 10 events</small></h3>
-                <?php
-                $query = sprintf("SELECT * FROM points WHERE id_member='%d' ORDER BY date DESC LIMIT 10", $userId);
-                $result = $db->query($query);
-                $htmlCode = array();
-                while ( $row3 = $result->fetch_assoc() ) {
-                        $htmlCode[] = sprintf ("<p>%s va rebre <strong>%d punts</strong> d'experiència per <em>%s</em></p>",
-                                getElapsedTimeString($row3['date']),
-                                $row3['points'],
-                                $row3['memo']
-                                );
-                }
-                echo implode(PHP_EOL, $htmlCode);
-                }
-                ?>
+        <?php
+        $htmlCode = array();
+        $events = $db->getAll(
+            sprintf(
+                "SELECT * FROM points WHERE id_member='%d' ORDER BY date DESC LIMIT 10",
+                $userId
+            )
+        );
+
+        foreach ($events as $row3) {
+            $htmlCode[] = sprintf(
+                "<p>%s va rebre <strong>%d punts</strong> d'experiència per <em>%s</em></p>",
+                getElapsedTimeString($row3['date']),
+                $row3['points'],
+                $row3['memo']
+            );
+        }
+        echo implode(PHP_EOL, $htmlCode);
+    }
+    ?>
             </div>
 
             <div class="col-md-offset-1 col-md-4">
                 <h3>Experiència</h3>
                 <div class="media">
-                    <img src="<?= getLevelImage($row['level_id']); ?>" width="100" alt="<?php echo $row['level_name']; ?>" class="img-thumbnail media-object pull-left">
+                    <img src="<?= getLevelImage($row['level_id']); ?>" width="100" alt="<?= $row['level_name']; ?>" class="img-thumbnail media-object pull-left">
                     <div class="media-body">
-                        <p class="lead media-heading"><?php echo $row['level_name']; ?></p>
-                        <?php
-                        if (false === $admin) {
-                        ?>
+                        <p class="lead media-heading"><?= $row['level_name']; ?></p>
+    <?php
+    if (!$admin) {
+        ?>
                         <p>Nivell següent</p>
                         <div class="progress">
-                            <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="<?php echo $row['total_points']; ?>" aria-valuemin="0" aria-valuemax="<?php echo $row2['experience_needed']; ?>" style="width: <?php echo $levelper; ?>%">
-                            <span><?php echo $row['total_points'] . '/' . $row2['experience_needed']; ?></span>
+                            <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="<?= $row['total_points']; ?>" aria-valuemin="0" aria-valuemax="<?= $row2['experience_needed']; ?>" style="width: <?= $levelper; ?>%">
+                            <span><?= $row['total_points'] . '/' . $row2['experience_needed']; ?></span>
                             </div>
                         </div>
-                        <?php
-                        }
-                        ?>
+    <?php
+    }
+    ?>
                     </div>
                 </div>
 
-                <?php
-                if (false === $admin) {
-                $query = sprintf("SELECT COUNT(*) AS completed FROM members_badges WHERE id_member='%d' AND status='completed'", $userId);
-                $result = $db->query($query);
-                $row = $result->fetch_assoc();
-                $badges = $row['completed'];
+    <?php
+    if (!$admin) {
+        $badges = $db->getOne(
+            sprintf(
+                "SELECT COUNT(*) AS completed FROM members_badges "
+                . "WHERE id_member='%d' AND status='completed'",
+                $userId
+            )
+        );
 
-                $query = sprintf("SELECT t1.image, t1.name, t1.description, t1.amount_needed, t2.amount, t2.status FROM badges AS t1, members_badges AS t2 WHERE t2.id_member='%d' AND t1.id=t2.id_badges", $userId);
-                $result = $db->query($query);
-                echo '<h3>Insígnies ('. $badges .')</h3>';
-                $htmlCode = array();
-                while ($row = $result->fetch_assoc()) {
-                    $progress = '';
-                    if ($userId == $_SESSION['member']['id']) {
-                        $achievesToBadge = $row['amount_needed'] - $row['amount'];
-                        if (($row['amount_needed'] > 1) && ($achievesToBadge > 0)) {
-                            $progress = sprintf(
-                                "\nMuy bien! Tienes %d %s, sólo te %s %d más.",
-                                $row['amount'],
-                                ($row['amount'] > 1) ? 'logros' : 'logro',
-                                ($achievesToBadge > 1) ? 'faltan' : 'falta',
-                                $achievesToBadge
-                            );
-                        }
-                    }
-                    $title = sprintf("%s\n%s%s", $row['name'], $row['description'], $progress);
-                    $htmlCode[] = '<a href="#" title="' . $title . '">';
-                    $image = ('completed' == $row['status']) ? $row['image'] : 'images/default_badge_off.png';
-                    $htmlCode[] = '<img src="' . $image .'" alt="'. $row['name'] . '" class="img-thumbnail" width="80">';
-                    $htmlCode[] = '</a>';
-                }
-                echo implode(PHP_EOL, $htmlCode);
-                }
-                ?>
+        echo '<h3>Insígnies ('. $badges .')</h3>';
+        echo getHTMLBadges($userId);
+    }
+    ?>
             </div>
         </div>
     <?php
 }
 
+/**
+ * Return HTML code to print badges of a give user
+ *
+ * @param int $userId Given user to show badges
+ * @return string HTML code to echo
+ */
+function getHTMLBadges($userId)
+{
+    global $db;
+
+    $htmlCode = array();
+    $currentUserId = $_SESSION['member']['id'];
+
+    $badgeList = $db->getAll(
+        sprintf(
+            "SELECT t1.image, t1.name, t1.description, t1.amount_needed, "
+            . "t2.amount, t2.status FROM badges AS t1, members_badges AS t2 "
+            . "WHERE t2.id_member='%d' AND t1.id=t2.id_badges",
+            $userId
+        )
+    );
+
+    foreach ($badgeList as $row) {
+        $progress = '';
+        $achievesToBadge = $row['amount_needed'] - $row['amount'];
+        if ($userId == $currentUserId
+            && $row['amount_needed'] > 1
+            && $achievesToBadge > 0) {
+            $progress = sprintf(
+                "\n\nMuy bien! Tienes %d %s, sólo te %s %d más.",
+                $row['amount'],
+                ($row['amount'] > 1) ? 'logros' : 'logro',
+                ($achievesToBadge > 1) ? 'faltan' : 'falta',
+                $achievesToBadge
+            );
+        }
+        $title = sprintf("%s\n%s%s", $row['name'], $row['description'], $progress);
+        $htmlCode[] = '<a href="#" title="' . $title . '">';
+        $image = ('completed' == $row['status']) ? $row['image'] : 'images/default_badge_off.png';
+        $htmlCode[] = '<img src="' . $image .'" alt="'. $row['name'] . '" class="img-thumbnail" width="80">';
+        $htmlCode[] = '</a>';
+    }
+
+    return implode(PHP_EOL, $htmlCode);
+}
+
 function uploadProfilePicture()
 {
-    global $CONFIG, $_SESSION, $db;
+    global $CONFIG, $db;
 
     # upload the file to the filesystem uploads dir
     $destinationPath = $CONFIG['site']['uploads'] . '/profiles';
     list($returnedValue, $returnedMessage) = uploadFile('uploadFile', $destinationPath);
 
-    if (false === $returnedValue) { return 'ERROR'; }
+    if (!$returnedValue) {
+        return 'ERROR';
+    }
 
     // Deletes previous profile picture file
-    $query = sprintf("SELECT profile_image FROM members WHERE id='%d'", $_SESSION['member']['id']);
-    $result = $db->query($query);
-    $row = $result->fetch_assoc();
-    if (file_exists($row['profile_image'])) { unlink($row['profile_image']); }
+    $profileImage = $db->getOne(
+        sprintf(
+            "SELECT profile_image FROM members WHERE id='%d'",
+            $_SESSION['member']['id']
+        )
+    );
+    if (file_exists($profileImage)) {
+        unlink($profileImage);
+    }
 
     // ACTION: Si es la primera vegada que puja una imatge... guanya un badge
-    if (empty($row['profile_image'])) {
+    if (empty($profileImage)) {
         doSilentAction($_SESSION['member']['id'], 19);
     }
     // END ACTION
 
-    $query = sprintf("UPDATE members SET profile_image='%s' WHERE id='%d'",
-            $returnedMessage,
-            $_SESSION['member']['id']
-            );
-    $db->query($query);
+    $db->update(
+        'members',
+        array(
+            'profile_image' =>  $returnedMessage
+        ),
+        sprintf("id='%d' LIMIT 1", $_SESSION['member']['id'])
+    );
+    
+    // Modifica la imatge a la sessio actual
+    $_SESSION['member']['profile_image'] = $returnedMessage;
 
     return $returnedMessage;
 }

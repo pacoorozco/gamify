@@ -5,24 +5,24 @@
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
- * 
+ *
  * @category   Pakus
  * @package    Home
- * @author     Paco Orozco <paco_@_pacoorozco.info> 
+ * @author     Paco Orozco <paco_@_pacoorozco.info>
  * @license    http://www.gnu.org/licenses/gpl-2.0.html (GPL v2)
  * @link       https://github.com/pacoorozco/gamify
  */
@@ -32,11 +32,11 @@ require_once realpath(dirname(__FILE__) . '/../resources/lib/Bootstrap.class.inc
 
 require_once TEMPLATES_PATH . '/tpl_header.inc';
 
-if (userIsLoggedIn()) {   
+if (userIsLoggedIn()) {
     // Home for members!
     require_once TEMPLATES_PATH . '/tpl_home_member.inc';
 } else {
-    // Home for anonymous 
+    // Home for anonymous
     require_once TEMPLATES_PATH . '/tpl_home_anonym.inc';
 }
 
@@ -47,11 +47,11 @@ exit();
 function printHTMLRankingTable($users = array())
 {
     global $db;
-    
+
     $htmlCode = array();
     $top3 = 3;
     $top10 = 10;
-    
+
     // Get all levels from table and create an array
     $levels = $db->getAssoc(
         "SELECT id, name FROM levels"
@@ -72,7 +72,7 @@ function printHTMLRankingTable($users = array())
     $position = 1;
     $currentranking = 0;
     $toprest = $top10 - $top3;
-        
+
     foreach ($users as $row) {
         $currentuser = '';
         if ($row['username'] == $_SESSION['member']['username']) {
@@ -102,7 +102,7 @@ function printHTMLRankingTable($users = array())
         $badges = ($row['badges'] > 0) ? '<span class="badge">' . $row['badges'] . '</span>' : '';
         $htmlCode[] = '<td style=" vertical-align: middle;" class="text-center">' . $badges . '</td>';
         $htmlCode[] = '</tr>';
-            
+
         $ranking[$position] = implode(PHP_EOL, $htmlCode);
         unset($htmlCode);
         $position++;
@@ -118,7 +118,7 @@ function printHTMLRankingTable($users = array())
         }
 
         echo '<tr><td colspan="5" class="text-center">...</td></tr>';
-        
+
         if ($currentranking + $toprest < $position) {
             $init = $currentranking - 1;
             $end = $currentranking+$toprest-2;

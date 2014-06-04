@@ -203,7 +203,7 @@ function doLogin($username, $password)
                 $userLogged = true;
             }
     }
-    
+
     if ($userLogged) {
         // Get the user-agent string of the user.
         $userBrowser = $_SERVER['HTTP_USER_AGENT'];
