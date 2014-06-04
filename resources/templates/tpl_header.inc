@@ -102,7 +102,7 @@
                             <div class="col-md-5">
                                 <?php
                                 $image = (empty($_SESSION['member']['profile_image']))
-                                        ? 'images/profile_default.png'
+                                        ? 'images/default_profile_pic.png'
                                         : $_SESSION['member']['profile_image'];
                                 ?>
                                 <img src="<?= $image; ?>" alt="<?= $_SESSION['member']['username']; ?>" class="img-thumbnail img-responsive">

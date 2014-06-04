@@ -161,7 +161,7 @@ function printLoginForm($username = '', $missatges = array())
 function doLogout()
 {
     // destroy $_SESSION in order to logot
-    \Pakus\Application\Session::regenerateSession();
+    \Pakus\Application\Session::destroySession();
 }
 
 function doLogin($username, $password)
@@ -173,7 +173,7 @@ function doLogin($username, $password)
     // Comprovem que l'usuari consti com a membre
     $usuari = $db->getRow(
         sprintf(
-            "SELECT uuid, id, username, email, password FROM members "
+            "SELECT uuid, id, username, email, password, profile_image FROM members "
             . "WHERE username='%s' AND disabled='0' LIMIT 1",
             $db->qstr($username)
         )
@@ -207,20 +207,22 @@ function doLogin($username, $password)
     if ($userLogged) {
         // Get the user-agent string of the user.
         $userBrowser = $_SERVER['HTTP_USER_AGENT'];
+        $randomString = getRandomString(15);
 
         $_SESSION['member'] = $usuari;
         $_SESSION['member']['login_string'] = hash(
             'sha512',
-            md5($password) . $userBrowser
+            $randomString . $userBrowser
         );
 
-        // Actualitzem el camp last_access
+        // Actualitzem el camp last_access i guardem el token
         $db->update(
             'members',
             array(
+                'session_id' => $randomString,
                 'last_access' => time()
             ),
-            sprintf("uuid='%d' LIMIT 1", $usuari['uuid'])
+            sprintf("uuid='%s' LIMIT 1", $usuari['uuid'])
         );
     }
 

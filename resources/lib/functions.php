@@ -43,20 +43,20 @@ function userIsLoggedIn()
         $_SESSION['member']['login_string']
     )) {
         // Get the user's password from database, only for enabled users
-        $userPassword = $db->getOne(
+        $userToken = $db->getOne(
             sprintf(
-                "SELECT `password` FROM `members` "
+                "SELECT `session_id` FROM `members` "
                 . "WHERE `uuid`='%s' AND `disabled`='0' LIMIT 1",
                 $db->qstr($_SESSION['member']['uuid'])
             )
         );
 
-        if (empty($userPassword)) {
+        if (empty($userToken)) {
             // User's doesn't exists or is disabled, so not logged
             return false;
         }
 
-        $loginCheck = hash('sha512', $userPassword . $_SERVER['HTTP_USER_AGENT']);
+        $loginCheck = hash('sha512', $userToken . $_SERVER['HTTP_USER_AGENT']);
         if ($loginCheck == $_SESSION['member']['login_string']) {
             // User is logged in!
             return true;
@@ -73,6 +73,26 @@ function redirect($url, $includeCurrentURL = false) {
 	}
 	header('Location: ' . $url);
 	exit();
+}
+
+/**
+ * Creates a random string with a defined length
+ *
+ * @param integer $length (optional) Desired lenght
+ * @return string
+ */
+function getRandomString($length = 10) {
+    $validCharacters = "abcdefghijklmnopqrstuxyvwzABCDEFGHIJKLMNOPQRSTUXYVWZ+-*#&@!?";
+    $validCharNumber = strlen($validCharacters);
+
+    $result = "";
+
+    for ($i = 0; $i < $length; $i++) {
+        $index = mt_rand(0, $validCharNumber - 1);
+        $result .= $validCharacters[$index];
+    }
+
+    return $result;
 }
 
 /**
