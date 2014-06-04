@@ -29,7 +29,8 @@
 
 define('IN_SCRIPT',1);
 
-require_once realpath(dirname(__FILE__) . '/../resources/lib/bootstrap.php');
+require_once realpath(dirname(__FILE__) . '/../resources/lib/Bootstrap.class.inc');
+\Pakus\Application\Bootstrap::init(APP_BOOTSTRAP_FULL);
 
 $method = getGETVar('method');
 $format = getGETVar('format');

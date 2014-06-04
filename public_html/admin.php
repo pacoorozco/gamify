@@ -5,48 +5,47 @@
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
- * 
+ *
  * @category   Pakus
  * @package    Admin
- * @author     Paco Orozco <paco_@_pacoorozco.info> 
+ * @author     Paco Orozco <paco_@_pacoorozco.info>
  * @license    http://www.gnu.org/licenses/gpl-2.0.html (GPL v2)
  * @link       https://github.com/pacoorozco/gamify
  */
 
-require_once realpath(dirname(__FILE__) . '/../resources/lib/bootstrap.php');
+require_once realpath(dirname(__FILE__) . '/../resources/lib/Bootstrap.class.inc');
+\Pakus\Application\Bootstrap::init(APP_BOOTSTRAP_FULL);
 
 // Page only for members
-if ( false === loginCheck() ) {
-    // save referrer to $_SESSION['nav'] for after login redirect
-    $_SESSION['nav'] = urlencode($_SERVER['SCRIPT_NAME'] . '?' . $_SERVER['QUERY_STRING']);
-    header('Location: login.php');
-    exit;
+if (!userIsLoggedIn()) {
+    // save referrer to $_SESSION['nav'] for redirect after login
+    redirect('login.php', $includePreviousURL = true);
 }
 
 // Check if user has privileges
-if ( ! userHasPrivileges($_SESSION['member']['id'], 'administrator') ) {
+if (! userHasPrivileges($_SESSION['member']['id'], 'administrator')) {
     // User has no privileges
-    require_once TEMPLATES_PATH . '/header.php';
+    require_once TEMPLATES_PATH . '/tpl_header.inc';
     printAccessDenied();
-    require_once TEMPLATES_PATH . '/footer.php';
+    require_once TEMPLATES_PATH . '/tpl_footer.inc';
     exit();
 }
 
-require_once TEMPLATES_PATH . '/header.php';
+require_once TEMPLATES_PATH . '/tpl_header.inc';
 
 $missatges = array();
 
@@ -56,33 +55,26 @@ switch ($action) {
     case 'actions':
         printActions();
         break;
-
     case 'giveexperience':
         $data = array();
         $data['id'] = getPOSTVar('item');
         $data['experience'] = getPOSTVar('experience');
         $data['memo'] = getPOSTVar('memo');
-
         addExperience($data);
         break;
-
     case 'givebadge':
         $data = array();
         $data['id_member'] = getPOSTVar('item');
         $data['id_badge'] = getPOSTVar('achievement');
         $data['amount'] = getPOSTVar('amount');
-
         action($data);
         break;
-
     case 'users':
         printUserManagement();
         break;
-
     case 'newuser':
         printNewUserForm();
         break;
-
     case 'createuser':
         $data = array();
         $data['username'] = getPOSTVar('username');
@@ -90,15 +82,12 @@ switch ($action) {
         $data['repeatpassword'] = getPOSTVar('repeatpassword');
         $data['email'] = getPOSTVar('email');
         $data['role'] = getPOSTVar('role');
-
         createUser($data);
         break;
-
     case 'edituser':
         $userId = getREQUESTVar('item');
         printEditUserForm($userId);
         break;
-
     case 'saveuser':
         $data = array();
         $data['id'] = getPOSTVar('item');
@@ -106,56 +95,44 @@ switch ($action) {
         $data['repeatpassword'] = getPOSTVar('repeatpassword');
         $data['email'] = getPOSTVar('email');
         $data['role'] = getPOSTVar('role');
-
         saveUserData($data);
         break;
-
     case 'deleteuser':
         $userId = getREQUESTVar('item');
-
         if (deleteUser($userId)) {
-           $missatges[] = array('type' => "success", 'msg' => "L'usuari s'ha el&middot;liminat correctament.");
+            $missatges[] = array('type' => "success", 'msg' => "L'usuari s'ha el&middot;liminat correctament.");
         } else {
-           $missatges[] = array('type' => "error", 'msg' => "No s'ha pogut el&middot;liminar l'usuari.");
+            $missatges[] = array('type' => "error", 'msg' => "No s'ha pogut el&middot;liminar l'usuari.");
         }
         printUserManagement($missatges);
         break;
-
     case 'levels':
         printLevelManagement();
         break;
-
     case 'newlevel':
         printNewLevelForm();
         break;
-
     case 'createlevel':
         $data = array();
         $data['name'] = getPOSTVar('name');
         $data['experience_needed'] = getPOSTVar('experience_needed');
         $data['image'] = getPOSTVar('image');
-
         createLevel($data);
         break;
-
     case 'editlevel':
         $levelId = getREQUESTVar('item');
         printEditLevelForm($levelId);
         break;
-
     case 'savelevel':
         $data = array();
         $data['id'] = getPOSTVar('item');
         $data['name'] = getPOSTVar('name');
         $data['experience_needed'] = getPOSTVar('experience_needed');
         $data['image'] = getPOSTVar('image');
-
         saveLevelData($data);
         break;
-
     case 'deletelevel':
         $levelId = getREQUESTVar('item');
-
         if (deleteLevel($levelId)) {
            $missatges[] = array('type' => "success", 'msg' => "El n&iacute;vell s'ha el&middot;liminat correctament.");
         } else {
@@ -163,15 +140,12 @@ switch ($action) {
         }
         printLevelManagement($missatges);
         break;
-
     case 'badges':
         printBadgeManagement();
         break;
-
     case 'newbadge':
         printNewBadgeForm();
         break;
-
     case 'createbadge':
         $data = array();
         $data['name'] = getPOSTVar('name');
@@ -181,12 +155,10 @@ switch ($action) {
 
         createBadge($data);
         break;
-
     case 'editbadge':
         $badgeId = getREQUESTVar('item');
         printEditBadgeForm($badgeId);
         break;
-
     case 'savebadge':
         $data = array();
         $data['id'] = getPOSTVar('item');
@@ -197,7 +169,6 @@ switch ($action) {
 
         saveBadgeData($data);
         break;
-
     case 'deletebadge':
         $badgeId = getREQUESTVar('item');
 
@@ -208,33 +179,28 @@ switch ($action) {
         }
         printBadgeManagement($missatges);
         break;
-
     case 'messages':
         printSendMessage();
         break;
-
     case 'sendmessage':
         $missatges = array();
         $data = array();
         $subject = getPOSTVar('subject');
         $missatge = getPOSTVar('missatge');
 
-        if ( sendMessage($subject, $missatge) ) {
+        if (sendMessage($subject, $missatge)) {
            $missatges[] = array('type' => "success", 'msg' => "El missatge s'ha enviat correctament.");
         } else {
            $missatges[] = array('type' => "error", 'msg' => "No s'ha pogut enviar el missatge.");
         }
         printSendMessage($missatges);
         break;
-
     case 'quiz':
         printQuestionManagement();
         break;
-
     case 'newquiz':
         printNewQuestionForm();
         break;
-
     case 'createquiz':
         $data = array();
         $data['name'] = getPOSTVar('name');
@@ -254,12 +220,10 @@ switch ($action) {
 
         createQuestion($data);
         break;
-
     case 'editquiz':
         $questionId = getREQUESTVar('item');
         printEditQuestionForm($questionId);
         break;
-
     case 'savequiz':
         $data = array();
         $data['id'] = getPOSTVar('item');
@@ -280,7 +244,6 @@ switch ($action) {
 
         saveQuestionData($data);
         break;
-
     case 'deletequiz':
         $questionId = getREQUESTVar('item');
 
@@ -291,17 +254,15 @@ switch ($action) {
         }
         printQuestionManagement($missatges);
         break;
-
     case 'previewquiz':
         $questionId = getREQUESTVar('item');
         printPreviewQuestion($questionId);
         break;
-
     default:
         printAdminDashboard();
 }
 
-require_once TEMPLATES_PATH . '/footer.php';
+require_once TEMPLATES_PATH . '/tpl_footer.inc';
 exit();
 
 /*** FUNCTIONS ***/
@@ -329,7 +290,7 @@ function printAdminDashboard()
     printQuestionManagement();
 }
 
-function printActions ( $msg = array() )
+function printActions ($msg = array())
 {
     global $db;
 
@@ -435,7 +396,7 @@ function printActions ( $msg = array() )
     <?php
 }
 
-function printUserManagement ( $msg = array() )
+function printUserManagement ($msg = array())
 {
     global $db;
 
@@ -485,7 +446,7 @@ function printUserManagement ( $msg = array() )
     echo getHTMLDataTable('#users');
 }
 
-function printLevelManagement( $msg = array() )
+function printLevelManagement($msg = array())
 {
     global $db;
 
@@ -538,7 +499,7 @@ function printLevelManagement( $msg = array() )
     echo getHTMLDataTable('#levels');
 }
 
-function printBadgeManagement( $msg = array() )
+function printBadgeManagement($msg = array())
 {
     global $db;
 
@@ -574,7 +535,7 @@ function printBadgeManagement( $msg = array() )
             $htmlCode[] = '<span class="label label-danger">inactiva</span>';
         }
         $htmlCode[] = '</td>';
-        if ( empty($row['image']) ) {
+        if (empty($row['image'])) {
             $htmlCode[] = '<td><img src="images/default_badge_off.png" alt="'. $row['name'] .'" class="img-thumbnail" width="64"></td>';
         } else {
             $htmlCode[] = '<td><img src="'. $row['image'] .'" alt="'. $row['name'] .'" class="img-thumbnail" width="64"></td>';
@@ -599,7 +560,7 @@ function printBadgeManagement( $msg = array() )
 }
 
 /*** USERS ***/
-function printNewUserForm( $data = array(), $msg = array() )
+function printNewUserForm($data = array(), $msg = array())
 {
     global $CONFIG;
     ?>
@@ -609,7 +570,7 @@ function printNewUserForm( $data = array(), $msg = array() )
                             <div class="form-group">
                                 <label for="username" class="col-sm-2 control-label">Usuari</label>
                                 <div class="col-sm-10">
-                                    <input type="text" name="username" id="username" class="form-control" placeholder="Usuari" value="<?php if (isset($data['username'])) echo $data['username']; ?>" required>
+                                    <input type="text" name="username" id="username" class="form-control" placeholder="Usuari" value="<?= (isset($data['username'])) ? $data['username'] : ''; ?>" required>
                                 </div>
                             </div>
                             <?php
@@ -633,7 +594,7 @@ function printNewUserForm( $data = array(), $msg = array() )
                             <div class="form-group">
                                 <label for="email" class="col-sm-2 control-label">Adreça de correu</label>
                                 <div class="col-sm-10">
-                                    <input type="email" name="email" id="email" class="form-control" placeholder="nom.cognom@domini.cat" value="<?php if (isset($data['email'])) echo $data['email']; ?>" required>
+                                    <input type="email" name="email" id="email" class="form-control" placeholder="nom.cognom@domini.cat" value="<?= (isset($data['email'])) ? $data['email'] : ''; ?>" required>
                                 </div>
                             </div>
                             <div class="form-group">
@@ -658,22 +619,22 @@ function printNewUserForm( $data = array(), $msg = array() )
     <?php
 }
 
-function createUser( $data = array() )
+function createUser($data = array())
 {
     global $db, $CONFIG;
 
     $missatges = array();
 
     // Validate supplied data
-    if ( empty($data['username']) ) {
+    if (empty($data['username'])) {
         $missatges[] = array('type' => "error", 'msg' => "El nom d'usuari no &eacute;s v&agrave;lid.");
     }
 
-    if ( getUserExists($data['username']) ) {
+    if (getUserExists($data['username'])) {
         $missatges[] = array('type' => "error", 'msg' => "El nom d'usuari ja existeix.");
     }
 
-    if ( ! filter_var($data['email'], FILTER_VALIDATE_EMAIL) ) {
+    if (!filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
         $missatges[] = array('type' => "error", 'msg' => "L'adre&ccedil;a de correu no &eacute;s correcta.");
     }
 
@@ -690,11 +651,11 @@ function createUser( $data = array() )
         $data['password'] = '';
     }
 
-    if ( ($data['role'] != 'member') && ($data['role'] != 'administrator') ) {
+    if (($data['role'] != 'member') && ($data['role'] != 'administrator')) {
         $missatges[] = array('type' => "error", 'msg' => "El valor del rol &eacute;s incorrecte.");
     }
 
-    if ( ! empty($missatges) ) {
+    if (!empty($missatges)) {
         printNewUserForm($data, $missatges);
 
         return false;
@@ -708,7 +669,8 @@ function createUser( $data = array() )
                 'password' => md5($data['password']),
                 'email' => $data['email'],
                 'role' => $data['role']
-            ));
+            )
+        );
 
     if (0 == $userId) {
         $missatges[] = array('type' => "error", 'msg' => "No s'ha pogut crear l'usuari.");
