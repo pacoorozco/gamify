@@ -21,7 +21,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  * @category   Pakus
- * @package    Session
+ * @package    Application
+ * @class      Session
  * @author     Paco Orozco <paco_@_pacoorozco.info>
  * @license    http://www.gnu.org/licenses/gpl-2.0.html (GPL v2)
  * @link       https://github.com/pacoorozco/gamify
@@ -47,35 +48,16 @@ class Session
      * This function starts, validates and secures a session.
      *
      * @param string $sessionName The name of the session.
-     * @param integer $limit Expiration date of the session cookie, 0 for session only
-     * @param string $path Used to restrict where the browser sends the cookie
-     * @param string $domain Used to allow subdomains access to the cookie
-     * @param bool $secure If true the browser only sends the cookie over https
      */
-    public static function startSession(
-        $sessionName = '',
-        $limit = 0,
-        $path = '/',
-        $domain = null,
-        $secure = null
-    ) {
+    public static function startSession($sessionName = '')
+    {
         // sets the session name to the one set above.
         session_name($sessionName . '_session');
-
-        // Set the domain to default to the current domain.
-        $domain = isset($domain) ? $domain : isset($_SERVER['SERVER_NAME']);
-
-        // Set the default secure value to whether the site is being accessed with SSL
-        $https = isset($secure) ? $secure : isset($_SERVER['HTTPS']);
-
-        // Set the cookie settings and start the session
-        session_set_cookie_params($limit, $path, $domain, $secure, true);
 
         // start the PHP session
         session_start();
 
         // Make sure the session hasn't expired, and destroy it if it has
-        
         if (self::validateSession()) {
             // Check to see if the session is new or a hijacking attempt
             if (!self::preventHijacking()) {
@@ -96,12 +78,10 @@ class Session
      * the proper host. On new visits and hacking attempts this function will
      * return false.
      *
-     * @return bool
+     * @return bool TRUE on normal behavour, FALSE if Hijacking is detected
      */
     protected static function preventHijacking()
     {
-        return true;
-        
         if (!isset($_SESSION['IPaddress']) || !isset($_SESSION['userAgent'])) {
             return false;
         }

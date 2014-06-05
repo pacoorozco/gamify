@@ -2,6 +2,7 @@ Version X.XX (developement version)
 ------------
 * Improve gamify.conf.sample documentation and help
 * [BUG-#5] 'Is possible to answer secret questions twice'
+* Solves a bug with login script and cookie params
 
 Version 2.9
 -----------

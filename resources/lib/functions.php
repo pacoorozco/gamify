@@ -66,13 +66,14 @@ function userIsLoggedIn()
     return false;
 }
 
-function redirect($url, $includeCurrentURL = false) {
-    if($includeCurrentURL) {
-            // save referrer to $_SESSION['nav'] for redirect later
-            $_SESSION['nav'] = urlencode($_SERVER['SCRIPT_NAME'] . '?' . $_SERVER['QUERY_STRING']);
-	}
-	header('Location: ' . $url);
-	exit();
+function redirect($url, $includeCurrentURL = false)
+{
+    if ($includeCurrentURL) {
+        // save referrer to $_SESSION['nav'] for redirect later
+        $_SESSION['nav'] = urlencode($_SERVER['SCRIPT_NAME'] . '?' . $_SERVER['QUERY_STRING']);
+    }
+    header(sprintf("Location: %s", $url));
+    exit();
 }
 
 /**
@@ -81,7 +82,8 @@ function redirect($url, $includeCurrentURL = false) {
  * @param integer $length (optional) Desired lenght
  * @return string
  */
-function getRandomString($length = 10) {
+function getRandomString($length = 10)
+{
     $validCharacters = "abcdefghijklmnopqrstuxyvwzABCDEFGHIJKLMNOPQRSTUXYVWZ+-*#&@!?";
     $validCharNumber = strlen($validCharacters);
 
