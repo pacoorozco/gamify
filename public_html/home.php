@@ -37,7 +37,7 @@ if (userIsLoggedIn()) {
     require_once TEMPLATES_PATH . '/tpl_home_member.inc';
 } else {
     // Home for anonymous
-    require_once TEMPLATES_PATH . '/tpl_home_anonym.inc';
+    require_once TEMPLATES_PATH . '/tpl_home_anonymous.inc';
 }
 
 require_once TEMPLATES_PATH . '/tpl_footer.inc';

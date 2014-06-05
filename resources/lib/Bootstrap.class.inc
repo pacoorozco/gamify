@@ -157,6 +157,11 @@ class Bootstrap
 
         // Sets DEBUG mode based on parsed configuration
         $CONFIG['site']['debug'] = isset($CONFIG['site']['debug']) ? true : false;
+        
+        // Include some libraries
+        require_once LIBRARY_PATH . '/AltoRouter/AltoRouter.php';
+        require_once LIBRARY_PATH . '/Swift/swift_required.php';
+        require_once LIBRARY_PATH . '/functions.php';        
     }
 
     /**
@@ -195,8 +200,6 @@ class Bootstrap
     private static function bootstrapFull()
     {
         // We need some libraries, we require all here.
-        require_once LIBRARY_PATH . '/Swift/swift_required.php';
-        require_once LIBRARY_PATH . '/functions.php';
         require_once LIBRARY_PATH . '/gamify.php';
     }
 }
