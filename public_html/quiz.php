@@ -5,24 +5,24 @@
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
- * 
+ *
  * @category   Pakus
  * @package    Quiz
- * @author     Paco Orozco <paco_@_pacoorozco.info> 
+ * @author     Paco Orozco <paco_@_pacoorozco.info>
  * @license    http://www.gnu.org/licenses/gpl-2.0.html (GPL v2)
  * @link       https://github.com/pacoorozco/gamify
  */
@@ -81,6 +81,7 @@ function answerQuestion($questionUUID, $answers)
     if (is_null($question)) {
         // La pregunta que ens han passat no existeix, per tant tornem a mostrar la llista.
         printQuestionList();
+
         return false;
     }
 
@@ -92,10 +93,11 @@ function answerQuestion($questionUUID, $answers)
             $question['id']
         )
     );
-    
+
     if (!is_null($result)) {
         // L'usuari ja havia respost la pregunta
         viewQuestionByUUID($questionUUID);
+
         return;
     }
 
@@ -106,6 +108,7 @@ function answerQuestion($questionUUID, $answers)
             'msg' => '<strong>Atenció</strong>: No has seleccionat cap resposta, torna-ho a provar.'
         );
         printAnswerQuestionForm($questionUUID, $missatges);
+
         return false;
     }
 
@@ -116,9 +119,10 @@ function answerQuestion($questionUUID, $answers)
             $question['id']
         )
     );
-    
+
     if (is_null($choices)) {
         printQuestionList();
+
         return false;
     }
 
@@ -163,7 +167,7 @@ function answerQuestion($questionUUID, $answers)
             'answers' => $db->qstr(implode(',', $answers))
         )
     );
-    
+
     $missatges[] = array(
         'type' => "info",
         'msg' => sprintf(
@@ -215,7 +219,7 @@ function answerQuestion($questionUUID, $answers)
             }
         }
     }
-    
+
     viewQuestionByUUID($questionUUID, $missatges);
 }
 
@@ -233,9 +237,10 @@ function printAnswerQuestionForm($questionUUID, $msg = array())
     if (is_null($question)) {
         // La pregunta que ens han passat no existeix, per tant tornem a mostrar la llista.
         printQuestionList();
+
         return false;
     }
-    
+
     // Mirem si la pregunta ha estat resposta per aquest usuari
     $result = $db->getOne(
         sprintf(
@@ -244,10 +249,11 @@ function printAnswerQuestionForm($questionUUID, $msg = array())
             $question['id']
         )
     );
-    
+
     if (!is_null($result)) {
         // L'usuari ja havia respost la pregunta o aquest està tancada
         viewQuestionByUUID($questionUUID);
+
         return;
     }
 
@@ -258,9 +264,10 @@ function printAnswerQuestionForm($questionUUID, $msg = array())
             $question['id']
         )
     );
-    
+
     if (is_null($question['choices'])) {
         printQuestionList();
+
         return false;
     }
 
@@ -439,6 +446,7 @@ function viewQuestionByUUID($questionUUID, $msg = array())
     if (is_null($question)) {
         // La pregunta que ens han passat no existeix, per tant tornem a mostrar la llista.
         printQuestionList();
+
         return false;
     }
 
@@ -455,6 +463,7 @@ function viewQuestionByUUID($questionUUID, $msg = array())
     if ((!$answered) && ('active' == $question['status'])) {
         // L'usuari no ha respost la pregunta i està oberta
         printAnswerQuestionForm($questionUUID);
+
         return;
     }
 
@@ -472,7 +481,7 @@ function viewQuestionByUUID($questionUUID, $msg = array())
 
     printQuestionHeader('question');
     ?>
-    <p><?= getHTMLMessages($msg); ?></p>            
+    <p><?= getHTMLMessages($msg); ?></p>
     <div class="panel panel-default" width="70%">
         <div class="panel-heading">
             <h2><?= $question['name']; ?></h2>

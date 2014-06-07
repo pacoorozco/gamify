@@ -6,24 +6,24 @@
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
- * 
+ *
  * @category   Pakus
  * @package    Database
- * @author     Paco Orozco <paco_@_pacoorozco.info> 
+ * @author     Paco Orozco <paco_@_pacoorozco.info>
  * @license    http://www.gnu.org/licenses/gpl-2.0.html (GPL v2)
  * @link       https://github.com/pacoorozco/gamify
  */
@@ -35,7 +35,7 @@ namespace Pakus\Database;
  *
  * This class implements a Database Abstraction Layer in order to manage SQL
  * queries in more efficient way
- * 
+ *
  * It uses a mysqli object, so you can use all mysqli functions calls with this
  * class object
  *
@@ -51,7 +51,7 @@ class DB extends \mysqli
 
     /**
      * Returns the first row from database result and returns a PHP array
-     * 
+     *
      * @param string $query
      * @return array|null Array with row values and row names as keys on success, null on failure
      */
@@ -68,7 +68,7 @@ class DB extends \mysqli
 
     /**
      * Returns the first field of the first row result
-     * 
+     *
      * @param string $query
      * @return string|null String with the first value on success, null on failure
      */
@@ -87,13 +87,13 @@ class DB extends \mysqli
 
     /**
      * Returns an array populated with all the selected rows
-     * 
+     *
      * Note: do not use this on a large result sets as you may run out of memory.
      * Use query() method instead and iterate through returned result
-     * 
-     * 
+     *
+     *
      * @param string $query
-     * @return array|null Array containing an array with row values and 
+     * @return array|null Array containing an array with row values and
      *                    row names as keys on success, null on failure
      */
     public function getAll($query)
@@ -115,12 +115,12 @@ class DB extends \mysqli
     /**
      * Returns an array where all keys are the first fields of a row and values
      * are the second ones
-     * 
+     *
      * Note: do not use this on a large result sets as you may run out of memory.
      * Use query() method instead and iterate through returned result
-     * 
+     *
      * @param string $query
-     * @return array|null Array where all keys are the first fields of a row 
+     * @return array|null Array where all keys are the first fields of a row
      *                    and values are the second ones on success, null on failure
      */
     public function getAssoc($query)
@@ -144,9 +144,9 @@ class DB extends \mysqli
     /**
      * Escapes and quotes and returns string to use in a query. Use instead
      * mysqli::real_escape_string()
-     * 
+     *
      * If given an array, calls qstr() method
-     * 
+     *
      * @param string $str
      * @return string Escaped string
      */
@@ -165,7 +165,7 @@ class DB extends \mysqli
 
     /**
      * Calls qstr() method for all values in given array and returns
-     * 
+     *
      * @param array $arr
      * @return array Array of escaped strings
      */
@@ -180,19 +180,19 @@ class DB extends \mysqli
 
     /**
      * Inserts data into database
-     * 
+     *
      * The first perameter is the table you wish to insert data into and the
      * second is an associative array
-     * 
+     *
      * The key is a string defining the column of the table to input into and
      * the value being the information to input
-     * 
+     *
      * Returns ID of the inserted record
-     * 
+     *
      * All values will be passed to qstr() to make it safe
-     * 
+     *
      * In example:
-     * 
+     *
      * $insertedRecordId = $db->insert(
      *         'table_name',
      *         array(
@@ -201,7 +201,7 @@ class DB extends \mysqli
      *             'column3' => 'value3
      *         )
      *     );
-     * 
+     *
      * @param string $table
      * @param array associative array 'column' => 'value'
      * @return integer last inserted record on DB
@@ -225,15 +225,15 @@ class DB extends \mysqli
 
     /**
      * Updates data into database
-     * 
+     *
      * The update method works much in the same way as the insert method,
      * except it takes an additional parameter which is the WHERE clause of the
      * SQL query string
-     * 
+     *
      * All values will be passed to qstr() to make it safe
-     * 
+     *
      * In example:
-     * 
+     *
      * $result = $db->update(
      *         'table_name',
      *         array(
@@ -243,7 +243,7 @@ class DB extends \mysqli
      *         ),
      *         'id = 5 AND status = true'
      *     );
-     * 
+     *
      * @param string $table
      * @param array associative array 'column' => 'value'
      * @param string where clause, is left optional in case wants to update all
@@ -267,13 +267,13 @@ class DB extends \mysqli
 
         return $this->query($query);
     }
-    
+
     /**
      * Deletes record from database
-     * 
-     * 
+     *
+     *
      * In example:
-     * 
+     *
      * $result = $db->update(
      *         'table_name',
      *         array(
@@ -283,7 +283,7 @@ class DB extends \mysqli
      *         ),
      *         'id = 5 AND status = true'
      *     );
-     * 
+     *
      * @param string $table
      * @param string Where clause, is left optional in case wants to delete all
      * @return bool true on success, false on failure

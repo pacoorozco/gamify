@@ -342,7 +342,7 @@ function uploadProfilePicture()
         ),
         sprintf("id='%d' LIMIT 1", $_SESSION['member']['id'])
     );
-    
+
     // Modifica la imatge a la sessio actual
     $_SESSION['member']['profile_image'] = $returnedMessage;
 

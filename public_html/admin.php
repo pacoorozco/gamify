@@ -129,7 +129,7 @@ switch ($action) {
         $data['name'] = getPOSTVar('name');
         $data['experience_needed'] = getPOSTVar('experience_needed');
         $data['image'] = getPOSTVar('image');
-        saveLevelData($data);
+        updateLevel($data);
         break;
     case 'deletelevel':
         $levelId = getREQUESTVar('item');
@@ -167,7 +167,7 @@ switch ($action) {
         $data['description'] = getPOSTVar('description');
         $data['amount_needed'] = getPOSTVar('amount_needed');
 
-        saveBadgeData($data);
+        updateBadge($data);
         break;
     case 'deletebadge':
         $badgeId = getREQUESTVar('item');
@@ -619,32 +619,32 @@ function printNewUserForm($data = array(), $msg = array())
     <?php
 }
 
-function createUser($data = array())
+function validateUserData($data, &$msg)
 {
-    global $db, $CONFIG;
-
-    $missatges = array();
+    global $CONFIG;
+    $error = array();
 
     // Validate supplied data
     if (empty($data['username'])) {
-        $missatges[] = array('type' => "error", 'msg' => "El nom d'usuari no &eacute;s v&agrave;lid.");
-    }
-
-    if (getUserExists($data['username'])) {
-        $missatges[] = array('type' => "error", 'msg' => "El nom d'usuari ja existeix.");
+        $error[] = array(
+            'type' => "error",
+            'msg' => "El nom d'usuari no &eacute;s v&agrave;lid."
+        );
     }
 
     if (!filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
-        $missatges[] = array('type' => "error", 'msg' => "L'adre&ccedil;a de correu no &eacute;s correcta.");
+        $error[] = array(
+            'type' => "error",
+            'msg' => "L'adre&ccedil;a de correu no &eacute;s correcta."
+        );
     }
 
     if ($CONFIG['authentication']['type'] == 'LOCAL') {
-        if ( empty($data['password']) ) {
-            $missatges[] = array('type' => "error", 'msg' => "El camp contrasenya no pot estar buida.");
-        }
-
         if ($data['password'] != $data['repeatpassword']) {
-            $missatges[] = array('type' => "error", 'msg' => "La contrasenya i la verficaci&oacute; no coincideixen.");
+            $error[] = array(
+                'type' => "error",
+                'msg' => "La contrasenya i la verficaci&oacute; no coincideixen."
+            );
         }
     } else {
         // set default password to NULL
@@ -652,7 +652,46 @@ function createUser($data = array())
     }
 
     if (($data['role'] != 'member') && ($data['role'] != 'administrator')) {
-        $missatges[] = array('type' => "error", 'msg' => "El valor del rol &eacute;s incorrecte.");
+        $error[] = array(
+            'type' => "error",
+            'msg' => "El valor del rol &eacute;s incorrecte."
+        );
+    }
+
+    if (!empty($error)) {
+        // We have found some errors, returning ot origin call
+        $msg = $error;
+
+        return false;
+    }
+
+    // All data is validated
+    return true;
+}
+
+function createUser($data = array())
+{
+    global $db, $CONFIG;
+
+    $missatges = array();
+
+    // Validate supplied data
+
+    validateUserData($data, $missatges);
+
+    if (getUserExists($data['username'])) {
+        $missatges[] = array(
+            'type' => "error",
+            'msg' => "El nom d'usuari ja existeix.");
+    }
+
+    if ($CONFIG['authentication']['type'] == 'LOCAL') {
+        if (empty($data['password'])) {
+            $missatges[] = array(
+                'type' => "error",
+                'msg' => "El camp contrasenya no pot estar buida."
+            );
+        }
     }
 
     if (!empty($missatges)) {
@@ -673,12 +712,21 @@ function createUser($data = array())
         );
 
     if (0 == $userId) {
-        $missatges[] = array('type' => "error", 'msg' => "No s'ha pogut crear l'usuari.");
+        $missatges[] = array(
+            'type' => "error",
+            'msg' => "No s'ha pogut crear l'usuari."
+        );
         printNewUserForm($data, $missatges);
-    } else {
-        $missatges[] = array('type' => "success", 'msg' => "L'usuari '<strong>". $data['username'] ."</strong>' s'ha creat correctament.");
-        printUserManagement($missatges);
+
+        return false;
     }
+    $missatges[] = array(
+        'type' => "success",
+        'msg' => "L'usuari '<strong>". $data['username'] ."</strong>' s'ha creat correctament."
+    );
+    printUserManagement($missatges);
+
+    return true;
 }
 
 function printEditUserForm($userId, $msg = array())
@@ -810,7 +858,7 @@ function saveUserData( $data = array() )
     }
 
     if ( $db->query($query) ) {
-        $missatges[] = array('type' => "success", 'msg' => "Dades d'usuari '<strong>". getUserName($data['id']) ."</strong>' actualitzades.");
+        $missatges[] = array('type' => "success", 'msg' => "Dades d'usuari '<strong>". getUserNameById($data['id']) ."</strong>' actualitzades.");
         printUserManagement($missatges);
 
     } else {
@@ -825,271 +873,209 @@ function deleteUser($userId)
 
     // user_id must be an integer
     $userId = intval($userId);
-    if ( ! getUserExists($userId) ) return false;
 
-    $query = sprintf( "DELETE FROM members WHERE id = '%d' LIMIT 1", $userId );
-    $db->query($query);
+    $db->delete(
+        'members',
+        sprintf("id='%d' LIMIT 1", $userId)
+    );
 
-    return ( ! getUserExists($userId) );
+    return (!getUserExists($userId));
 }
 
 /*** LEVELS ***/
 
-function printNewLevelForm( $data = array(), $msg = array() )
+function printNewLevelForm($data = array(), $msg = array())
 {
-    ?>
-                        <h1>Nou nivell</h1>
-                        <p><?= getHTMLMessages($msg); ?></p>
-                        <form action="admin.php" method="post" class="form-horizontal" role="form">
-                            <div class="form-group">
-                                <label for="levelname" class="col-sm-2 control-label">Nom</label>
-                                <div class="col-sm-10">
-                                    <input type="text" name="name" id="levelname" class="form-control" placeholder="Nom del nivell" value="<?= $data['name']; ?>" required>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="levelsrc" class="col-sm-2 control-label">Imatge</label>
-                                <div class="col-sm-10">
-                                    <input type="text" name="image" id="levelsrc" class="form-control" placeholder="Imatge del nivell">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="experience" class="col-sm-2 control-label">Experiència necessària</label>
-                                <div class="col-sm-10">
-                                    <input type="text" name="experience_needed" id="experience" class="form-control" placeholder="Experiència necessària per aconseguir-ho" value="<?= $data['experience_needed']; ?>" required>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <div class="col-sm-offset-2 col-sm-10">
-                                    <input type="hidden" id="a" name="a" value="createlevel">
-                                    <button type="submit" class="btn btn-success">Crear nivell</button>
-                                    <a href="admin.php?a=levels" class="btn btn-default" role="button">Cancel·lar</a>
-                                </div>
-                            </div>
-                        </form>
-
-    <?php
+    return printLevelForm('new', $data, $msg);
 }
 
-function createLevel( $data = array() )
+function createLevel($data = array())
 {
     global $db;
-
     $missatges = array();
 
-    // Validate supplied data
-    if ( empty($data['name']) ) {
-        $missatges[] = array('type' => "error", 'msg' => "El nom del n&iacute;vell és obligatori.");
-    }
-
-    $data['experience_needed'] = intval($data['experience_needed']);
-    if ( empty($data['experience_needed']) ) {
-        $missatges[] = array('type' => "error", 'msg' => "El camp experiència és obligatori.");
-    }
-
-    $query = sprintf( "SELECT name FROM levels WHERE name = '%s' OR experience_needed = '%d'", $data['name'], $data['experience_needed'] );
-    $result = $db->query($query);
-
-    if ($result->num_rows != 0) {
-        // A level exists with the same name or with de same experience_needed.
-        $missatges[] = array('type' => "error", 'msg' => "Ja existeix un nivell amb el mateix nom o la mateixa experiència.");
-    }
-
-    if ( ! empty($missatges) ) {
+    if (!validateLevelData($data, $missatges)) {
         printNewLevelForm($data, $missatges);
 
         return false;
     }
 
-    $levelId = $db->insert('levels',
-            array (
-                'name' => $data['name'],
-                'experience_needed' => $data['experience_needed'],
-                'image' => $data['image']
-            ));
+    $levelId = $db->insert(
+        'levels',
+        array (
+            'name' => $data['name'],
+            'experience_needed' => $data['experience_needed'],
+            'image' => $data['image']
+        )
+    );
 
     if (0 == $levelId) {
-        $missatges[] = array('type' => "error", 'msg' => "No s'ha pogut crear el nivell.");
+        $missatges[] = array(
+            'type' => "error",
+            'msg' => "No s'ha pogut crear el nivell."
+        );
         printNewLevelForm($data, $missatges);
-    } else {
-        $missatges[] = array('type' => "success", 'msg' => "El nivell '<strong>". $data['name'] ."</strong>' s'ha creat correctament.");
-        printLevelManagement($missatges);
+
+        return false;
     }
+
+    $missatges[] = array(
+        'type' => "success",
+        'msg' => "El nivell '<strong>". $data['name'] ."</strong>' s'ha creat correctament."
+    );
+    printLevelManagement($missatges);
+
+    return true;
+}
+
+function printLevelForm($form = '', $data = array(), $msg = array())
+{
+    // Call HTML template, where $form and $data will be used
+    include TEMPLATES_PATH . '/tpl_adm_level_form.inc';
+
+    return true;
 }
 
 function printEditLevelForm($levelId, $msg = array())
 {
     global $db;
 
-    $missatges = array();
-
-    // level_id must be integer
-    $levelId = intval($levelId);
-
     // Get user data from DB
-    $query = sprintf( "SELECT * FROM levels WHERE id = '%d' LIMIT 1", $levelId );
-    $result = $db->query($query);
-
-    if ($result->num_rows == 0) {
+    $data = $db->getRow(
+        sprintf("SELECT * FROM levels WHERE id='%d' LIMIT 1", intval($levelId))
+    );
+    if (is_null($data)) {
         // No existeix.
-        $missatges[] = array('type' => "error", 'msg' => "No he trobat informaci&oacute; per aquest nivell.");
+        $missatges = array(
+            'type' => "error",
+            'msg' => "No he trobat informaci&oacute; per aquest nivell."
+        );
         printLevelManagement($missatges);
 
         return false;
     }
-    $data = $result->fetch_assoc();
-    ?>
-                        <h1>Editar nivell</h1>
-                        <p><?= getHTMLMessages($msg); ?></p>
-                        <form action="admin.php" method="post" class="form-horizontal" role="form">
-                           <div class="form-group">
-                                <label for="levelname" class="col-sm-2 control-label">Nom</label>
-                                <div class="col-sm-10">
-                                    <input type="text" name="name" id="levelname" class="form-control" placeholder="Nom del nivell" value="<?= $data['name']; ?>" required>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="levelsrc" class="col-sm-2 control-label">Imatge</label>
-                                <div class="col-sm-10">
-                                    <input type="text" name="image" id="levelsrc" class="form-control" placeholder="Imatge del nivell" value="<?= $data['image']; ?>">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="experience" class="col-sm-2 control-label">Experiència necessària</label>
-                                <div class="col-sm-10">
-                                    <input type="text" name="experience_needed" id="experience" class="form-control" placeholder="Experiència necessària per aconseguir-ho" value="<?= $data['experience_needed']; ?>" required>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <div class="col-sm-offset-2 col-sm-10">
-                                    <input type="hidden" id="item" name="item" value="<?= $data['id']; ?>">
-                                    <input type="hidden" id="a" name="a" value="savelevel">
-                                    <button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-save"></span> Actualitzar dades</button>
-                                    <a href="admin.php?a=levels" class="btn btn-danger" role="button"><span class="glyphicon glyphicon-retweet"></span> Tornar</a>
-                                </div>
-                            </div>
-                        </form>
 
-    <?php
+    return printLevelForm('edit', $data, $msg);
 }
 
-function saveLevelData( $data = array() )
+function validateLevelData($data, &$msg)
+{
+    global $db;
+
+    $error = array();
+
+    // Validate supplied data
+    $data['id'] = isset($data['id']) ? intval($data['id']) : 0;
+    $data['experience_needed'] = intval($data['experience_needed']);
+
+    if (empty($data['name'])) {
+        $error[] = array(
+            'type' => "error",
+            'msg' => "El camp nom és obligatori.");
+    }
+
+    if (empty($data['experience_needed'])) {
+        $error[] = array(
+            'type' => "error",
+            'msg' => "El camp experiència és obligatori.");
+    }
+
+    $levelName = $db->getOne(
+        sprintf("SELECT name FROM levels "
+            . "WHERE (name='%s' OR experience_needed='%d') AND id != '%d'",
+            $db->qstr($data['name']),
+            $data['experience_needed'],
+            $data['id']
+        )
+    );
+
+    if (!is_null($levelName)) {
+        // A level exists with the same name or with de same experience_needed.
+        $error[] = array(
+            'type' => "error",
+            'msg' => "Ja existeix un nivell amb el mateix nom o la mateixa experiència."
+        );
+    }
+
+    if (!empty($error)) {
+        // We have found some errors, returning ot origin call
+        $msg = $error;
+
+        return false;
+    }
+
+    // All data is validated
+    return true;
+}
+
+function updateLevel($data = array())
 {
     global $db;
 
     $missatges = array();
-
-    // Validate supplied data
     $data['id'] = intval($data['id']);
 
-    $query = sprintf( "SELECT name FROM levels WHERE id = '%d'", $data['id'] );
-    $result = $db->query($query);
-
-    if ($result->num_rows == 0) {
+    if (!getLevelExists($data['id'])) {
         // A level doesn't exists .
-        $missatges[] = array('type' => "error", 'msg' => "<strong>ATENCI&Oacute;</strong>: El nivell suministrat per actualitzar no existeix.");
+        $missatges[] = array(
+            'type' => "error",
+            'msg' => "<strong>ATENCI&Oacute;</strong>: El nivell suministrat per actualitzar no existeix."
+        );
         printLevelManagement($missatges);
 
         return false;
     }
 
-    if ( empty($data['name']) ) {
-        $missatges[] = array('type' => "error", 'msg' => "El camp nom és obligatori.");
-    }
-
-    $data['experience_needed'] = intval($data['experience_needed']);
-    if ( empty($data['experience_needed']) ) {
-        $missatges[] = array('type' => "error", 'msg' => "El camp experiència és obligatori.");
-    }
-
-    $query = sprintf( "SELECT id FROM levels WHERE ( name = '%s' OR experience_needed = '%d') AND id != '%d'", $data['name'], $data['experience_needed'], $data['id'] );
-    $result = $db->query($query);
-
-    if ($result->num_rows != 0) {
-        // A level exists with the same name or with de same experience_needed.
-        $missatges[] = array('type' => "error", 'msg' => "Ja existeix un nivell amb el mateix nom o la mateixa experiència.");
-    }
-
-    if ( ! empty($missatges) ) {
+    if (!validateLevelData($data, $missatges)) {
         printEditLevelForm($data['id'], $missatges);
 
         return false;
     }
 
-    $query = sprintf("UPDATE levels SET name='%s', experience_needed='%s', image='%s' WHERE id = '%d' LIMIT 1",
-                      $db->real_escape_string($data['name']), $data['experience_needed'], $db->real_escape_string($data['image']), $data['id'] );
-    $db->query($query);
-
-    if ( $db->query($query) ) {
-        $missatges[] = array('type' => "success", 'msg' => "Dades del nivell '<strong>". $data['name'] ."</strong>' actualitzades.");
+    if ($db->update(
+        'levels',
+        array(
+            'name' => $data['name'],
+            'experience_needed' => $data['experience_needed'],
+            'image' => $data['image']
+        ),
+        sprintf("id = '%d' LIMIT 1", $data['id'])
+        )) {
+        $missatges[] = array(
+            'type' => "success",
+            'msg' => "Dades del nivell '<strong>" . $data['name'] . "</strong>' actualitzades."
+        );
         printLevelManagement($missatges);
-    } else {
-        $missatges[] = array('type' => "error", 'msg' => "No s'ha pogut actualitzar les dades del nivell.");
-        printEditLevelForm($data, $missatges);
+
+        return true;
     }
+
+    $missatges[] = array(
+        'type' => "error",
+        'msg' => "No s'ha pogut actualitzar les dades del nivell."
+    );
+    printEditLevelForm($data, $missatges);
+
+    return false;
 }
 
 function deleteLevel($levelId)
 {
     global $db;
 
-    // level_id must be an integer
-    $levelId = intval($levelId);
-    $query = sprintf( "SELECT id FROM levels WHERE id = '%d'", $levelId );
-    $result = $db->query($query);
-    if ($result->num_rows == 0) return false;
+    $db->delete(
+        'levels',
+        sprintf("id = '%d' LIMIT 1", intval($levelId))
+    );
 
-    $query = sprintf( "DELETE FROM levels WHERE id = '%d' LIMIT 1", $levelId );
-    $db->query($query);
-
-    $query = sprintf( "SELECT id FROM levels WHERE id = '%d'", $levelId );
-    $result = $db->query($query);
-
-    return ($result->num_rows == 0);
+    return (!getLevelExists($levelId));
 }
 
 /*** BADGES ***/
 
-function printNewBadgeForm( $data = array(), $msg = array() )
+function printNewBadgeForm($data = array(), $msg = array())
 {
-    ?>
-                        <h1>Nova insígnia</h1>
-                        <p><?= getHTMLMessages($msg); ?></p>
-                        <form action="admin.php" method="post" class="form-horizontal" role="form">
-                            <div class="form-group">
-                                <label for="achievementname" class="col-sm-2 control-label">Nom de la insígnia</label>
-                                <div class="col-sm-10">
-                                    <input type="text" name="name" id="achievementname" class="form-control" placeholder="Nom de la insígnia" value="<?= $data['name']; ?>" required>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="badgesrc" class="col-sm-2 control-label">Imatge</label>
-                                <div class="col-sm-10">
-                                    <input type="text" name="image" id="badgesrc" class="form-control" placeholder="Imatge de la insígnia" value="<?= $data['image']; ?>">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="description" class="col-sm-2 control-label">Descripció</label>
-                                <div class="col-sm-10">
-                                    <textarea name="description" id="description" class="form-control" rows="3" placeholder="Descripció de la insígnia"><?= $data['description']; ?></textarea>
-                                </div>
-                            </div>
-                           <div class="form-group">
-                                <label for="amount" class="col-sm-2 control-label">Quantitat necessària</label>
-                                <div class="col-sm-10">
-                                    <input type="text" name="amount_needed" id="amount" class="form-control" placeholder="Número de vegades per aconseguir-la" value="<?= $data['amount_needed']; ?>">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <div class="col-sm-offset-2 col-sm-10">
-                                    <input type="hidden" id="a" name="a" value="createbadge">
-                                    <button type="submit" class="btn btn-success">Crear insígnia</button>
-                                    <a href="admin.php?a=badges" class="btn btn-default" role="button">Cancel·lar</a>
-                                </div>
-                            </div>
-                        </form>
-
-    <?php
+    return printBadgeForm('new', $data, $msg);
 }
 
 function createBadge( $data = array() )
@@ -1098,102 +1084,119 @@ function createBadge( $data = array() )
 
     $missatges = array();
 
-    // Validate supplied data
-    if ( empty($data['name']) ) {
-        $missatges[] = array('type' => "error", 'msg' => "El nom de la insígnia és obligatori.");
-    }
-
-    $data['amount_needed'] = intval($data['amount_needed']);
-    if ( empty($data['amount_needed']) ) {
-        $missatges[] = array('type' => "error", 'msg' => "El camp experiència és obligatori.");
-    }
-
-    if ( ! empty($missatges) ) {
+    if (!validateBadgeData($data, $missatges)) {
         printNewBadgeForm($data, $missatges);
 
         return false;
     }
 
     $badgeId = $db->insert('badges',
-            array (
-                'name' => $data['name'],
-                'image' => $data['image'],
-                'description' => $data['description'],
-                'amount_needed' => $data['amount_needed']
-            ));
+        array (
+            'name' => $data['name'],
+            'image' => $data['image'],
+            'description' => $data['description'],
+            'amount_needed' => $data['amount_needed']
+        )
+    );
 
     if (0 == $badgeId) {
-        $missatges[] = array('type' => "error", 'msg' => "No s'ha pogut crear la insígnia.");
+        $missatges[] = array(
+            'type' => "error",
+            'msg' => "No s'ha pogut crear la insígnia."
+        );
         printNewLevelForm($data, $missatges);
-    } else {
-        $missatges[] = array('type' => "success", 'msg' => "La insígnia '<strong>". $data['name'] ."</strong>' s'ha creat correctament.");
-        printBadgeManagement($missatges);
+
+        return false;
     }
+    $missatges[] = array(
+        'type' => "success",
+        'msg' => "La insígnia '<strong>". $data['name'] ."</strong>' s'ha creat correctament."
+    );
+    printBadgeManagement($missatges);
+
+    return true;
+}
+
+function printBadgeForm($form = '', $data = array(), $msg = array())
+{
+    // Call HTML template, where $form and $data will be used
+    include TEMPLATES_PATH . '/tpl_adm_badge_form.inc';
+
+    return true;
 }
 
 function printEditBadgeForm($badgeId, $msg = array())
 {
     global $db;
 
-    $missatges = array();
-
-    // level_id must be integer
-    $badgeId = intval($badgeId);
-
     // Get user data from DB
-    $query = sprintf( "SELECT * FROM badges WHERE id = '%d' LIMIT 1", $badgeId );
-    $result = $db->query($query);
+    $data = $db->getRow(
+        sprintf("SELECT * FROM badges WHERE id='%d' LIMIT 1", intval($badgeId))
+    );
 
-    if ($result->num_rows == 0) {
-        // No existeix.
-        $missatges[] = array('type' => "error", 'msg' => "No he trobat informaci&oacute; per aquesta insígnia.");
+    if (is_null($data)) {
+        $missatges = array(
+            'type' => "error",
+            'msg' => "No he trobat informaci&oacute; per aquesta insígnia."
+        );
         printBadgeManagement($missatges);
 
         return false;
     }
-    $data = $result->fetch_assoc();
-    ?>
-                        <h1>Editar insígnia</h1>
-                        <p><?= getHTMLMessages($msg); ?></p>
-                        <form action="admin.php" method="post" class="form-horizontal" role="form">
-                            <div class="form-group">
-                                <label for="achievementname" class="col-sm-2 control-label">Nom de la insígnia</label>
-                                <div class="col-sm-10">
-                                    <input type="text" name="name" id="achievementname" class="form-control" placeholder="Nom de la insígnia" value="<?= $data['name']; ?>" required>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="badgesrc" class="col-sm-2 control-label">Imatge</label>
-                                <div class="col-sm-10">
-                                    <input type="text" name="image" id="badgesrc" class="form-control" placeholder="Imatge de la insígnia" value="<?= $data['image']; ?>">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="description" class="col-sm-2 control-label">Descripció</label>
-                                <div class="col-sm-10">
-                                    <textarea name="description" id="description" class="form-control" rows="3" placeholder="Descripció de la insígnia"><?= $data['description']; ?></textarea>
-                                </div>
-                            </div>
-                           <div class="form-group">
-                                <label for="amount" class="col-sm-2 control-label">Quantitat necessària</label>
-                                <div class="col-sm-10">
-                                    <input type="text" name="amount_needed" id="amount" class="form-control" placeholder="Número de vegades per aconseguir-la" value="<?= $data['amount_needed']; ?>">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <div class="col-sm-offset-2 col-sm-10">
-                                    <input type="hidden" id="item" name="item" value="<?= $badgeId; ?>">
-                                    <input type="hidden" id="a" name="a" value="savebadge">
-                                    <button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-save"></span> Actualitzar dades</button>
-                                    <a href="admin.php?a=badges" class="btn btn-danger" role="button"><span class="glyphicon glyphicon-retweet"></span> Tornar</a>
-                                </div>
-                            </div>
-                        </form>
 
-    <?php
+    return printBadgeForm('edit', $data, $msg);
+}
+function validateBadgeData($data, &$msg)
+{
+    global $db;
+    $error = array();
+
+    // Validate supplied data
+    $data['id'] = isset($data['id']) ? intval($data['id']) : 0;
+    $data['amount_needed'] = intval($data['amount_needed']);
+
+    if (empty($data['name'])) {
+        $error[] = array(
+            'type' => "error",
+            'msg' => "El nom de la insígnia és obligatori."
+        );
+    }
+
+    if (empty($data['amount_needed'])) {
+        $error[] = array(
+            'type' => "error",
+            'msg' => "El camp quantitat és obligatori."
+        );
+    }
+
+    $badgeName = $db->getOne(
+        sprintf("SELECT name FROM badges "
+            . "WHERE name='%s' AND id!='%d' LIMIT 1",
+            $data['name'],
+            $data['id']
+        )
+    );
+
+    if (!is_null($badgeName)) {
+        // A badge exists with the same name or with de same experience_needed.
+        $missatges[] = array(
+            'type' => "error",
+            'msg' => "Ja existeix una insígnia amb el mateix nom."
+        );
+    }
+
+    if (!empty($error)) {
+        // We have found some errors, returning ot origin call
+        $msg = $error;
+
+        return false;
+    }
+
+    // All data is validated
+    return true;
 }
 
-function saveBadgeData( $data = array() )
+function updateBadge($data = array())
 {
     global $db;
 
@@ -1201,69 +1204,62 @@ function saveBadgeData( $data = array() )
 
     // Validate supplied data
     $data['id'] = intval($data['id']);
+    $data['amount_needed'] = intval($data['amount_needed']);
 
-    $query = sprintf( "SELECT name FROM badges WHERE id = '%d'", $data['id'] );
-    $result = $db->query($query);
-
-    if ($result->num_rows == 0) {
+    if (!getBadgeExists($data['id'])) {
         // A badge doesn't exists .
-        $missatges[] = array('type' => "error", 'msg' => "<strong>ATENCI&Oacute;</strong>: La insígnia suministrada per actualitzar no existeix.");
+        $missatges[] = array(
+            'type' => "error",
+            'msg' => "<strong>ATENCI&Oacute;</strong>: La insígnia suministrada no existeix."
+        );
         printBadgeManagement($missatges);
 
         return false;
     }
 
-    if ( empty($data['name']) ) {
-        $missatges[] = array('type' => "error", 'msg' => "El nom de la insígnia és obligatori.");
-    }
-
-    $data['amount_needed'] = intval($data['amount_needed']);
-    if ( empty($data['amount_needed']) ) {
-        $missatges[] = array('type' => "error", 'msg' => "El camp quantitat és obligatori.");
-    }
-
-    $query = sprintf( "SELECT id FROM badges WHERE name = '%s' AND id != '%d' LIMIT 1", $data['name'], $data['id'] );
-    $result = $db->query($query);
-
-    if ($result->num_rows != 0) {
-        // A badge exists with the same name or with de same experience_needed.
-        $missatges[] = array('type' => "error", 'msg' => "Ja existeix una insígnia amb el mateix nom.");
-    }
-
-    if ( ! empty($missatges) ) {
+    if (!validateBadgeData($data, $missatges)) {
         printEditBadgeForm($data['badge_id'], $missatges);
 
         return false;
     }
 
-    $query = sprintf("UPDATE badges SET name='%s', image='%s', description='%s', amount_needed='%d' WHERE id = '%d' LIMIT 1", $db->real_escape_string($data['name']), $db->real_escape_string($data['image']), $db->real_escape_string($data['description']), $data['amount_needed'], $data['id'] );
-
-    if ( $db->query($query) ) {
-        $missatges[] = array('type' => "success", 'msg' => "Dades de la insígia '<strong>". $data['name'] ."</strong>' actualitzades.");
+    if ($db->update(
+        'badges',
+        array(
+            'name' => $data['name'],
+            'image' => $data['image'],
+            'description' => $data['description'],
+            'amount_needed' => $data['amount_needed']
+        ),
+        sprintf("id='%d' LIMIT 1", $data['id'])
+    )) {
+        $missatges[] = array(
+            'type' => "success",
+            'msg' => "Dades de la insígia '<strong>". $data['name'] ."</strong>' actualitzades."
+        );
         printBadgeManagement($missatges);
-    } else {
-        $missatges[] = array('type' => "error", 'msg' => "No s'ha pogut actualitzar les dades de la insígnia.");
-        printEditBadgeForm($data, $missatges);
+
+        return true;
     }
+    $missatges[] = array(
+        'type' => "error",
+        'msg' => "No s'ha pogut actualitzar les dades de la insígnia."
+    );
+    printEditBadgeForm($data, $missatges);
+
+    return false;
 }
 
 function deleteBadge($badgeId)
 {
     global $db;
 
-    // badge_id must be an integer
-    $badgeId = intval($badgeId);
-    $query = sprintf( "SELECT id FROM badges WHERE id = '%d'", $badgeId );
-    $result = $db->query($query);
-    if ($result->num_rows == 0) return false;
+    $db->delete(
+        'badges',
+        sprintf("id = '%d' LIMIT 1", intval($badgeId))
+    );
 
-    $query = sprintf( "DELETE FROM badges WHERE id = '%d' LIMIT 1", $badgeId );
-    $db->query($query);
-
-    $query = sprintf( "SELECT id FROM badges WHERE id = '%d'", $badgeId );
-    $result = $db->query($query);
-
-    return ($result->num_rows == 0);
+    return (!getBadgeExists($badgeId));
 }
 
 function addExperience ( $data = array() )
@@ -1628,10 +1624,11 @@ function printEditQuestionForm( $questionId, $msg = array() )
             'msg' => "No he trobat informaci&oacute; per aquesta pregunta."
         );
         printQuestionManagement($missatges);
+
         return false;
     }
 
-    // get all question_choices data from DB   
+    // get all question_choices data from DB
     $query = sprintf("SELECT * FROM questions_choices WHERE question_id='%d'", $questionId);
     $result = $db->query($query);
 
@@ -1840,227 +1837,232 @@ function deleteQuestion($questionId)
     $questionId = intval($questionId);
 
     // delete all choices
-    $query = sprintf( "DELETE FROM questions_choices WHERE question_id='%d'", $questionId );
-    $db->query($query);
+    $db->delete(
+        'questions_choices',
+        sprintf("question_id='%d'", $questionId)
+    );
 
     // delete all actions
-    $query = sprintf( "DELETE FROM questions_badges WHERE question_id='%d'", $questionId );
-    $db->query($query);
+    $db->delete(
+        'questions_badges',
+        sprintf("question_id='%d'", $questionId)
+    );
 
-    $query = sprintf( "DELETE FROM questions WHERE id='%d' LIMIT 1", $questionId );
-
-    return $db->query($query);
+    return $db->delete(
+        'questions',
+        sprintf("id='%d' LIMIT 1", $questionId)
+    );
 }
 
 function printQuestionContentForm($data)
 {
     global $db;
 
+    // Prepare $data before HTML, if a value doesn't exist give a defaults one
+    $required = array('name', 'question', 'image', 'solution', 'tip');
+    $data = getVarDefaults($data, $required);
+    ?>
+                               <div class="form-group">
+                                    <label class="col-sm-2 control-label">Nom</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" name="name" class="form-control" placeholder="Títol de la pregunta" value="<?= $data['name']; ?>" required>
+                                    </div>
+                               </div>
+
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label">Estat</label>
+                                    <div class="col-sm-2">
+                                        <select name="status" class="form-control">
+    <?php
+    $availableOptions = array(
+        'draft' => 'Esborrany',
+        'active' => 'Activa',
+        'hidden' => 'Oculta',
+        'inactive' => 'Inactiva'
+    );
+    echo getHTMLSelectOptions($availableOptions, $data['status']);
+    ?>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label">Pregunta</label>
+                                    <div class="col-sm-10">
+                                        <textarea name="question" class="form-control tinymce" rows="3" placeholder="Quina és la pregunta?"><?= $data['question']; ?></textarea>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="image" class="col-sm-2 control-label">Imatge</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" name="image" class="form-control" placeholder="URL de l'imatge (opcional)" value="<?= $data['image']; ?>">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label">Tipus</label>
+                                    <div class="col-sm-2">
+                                        <select name="type" class="form-control">
+    <?php
+    $availableOptions = array(
+        'single' => 'Resposta única',
+        'multi' => 'Resposta multiple'
+    );
+    echo getHTMLSelectOptions($availableOptions, $data['type']);
+    ?>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <legend>Respostes possibles</legend>
+                                <div class="form-group">
+                                    <label class="col-sm-offset-2 col-sm-6">Text de la resposta</label>
+                                    <label class="col-sm-2">Punts</label>
+                                    <label class="col-sm-1">correcta?</label>
+                                </div>
+
+    <?php
+    foreach ($data['choices'] as $key => $value) {
+        ?>
+                                    <div class="clonable">
+                                        <div class="form-group">
+                                            <div class="col-sm-offset-2 col-sm-6">
+                                                <input type="text" name="choices[]" class="form-control" placeholder="Text de la resposta" value="<?= $value; ?>">
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" name="points[]" class="form-control" placeholder="Punts" value="<?= $data['points'][$key]; ?>">
+                                            </div>
+                                            <div class="col-sm-1">
+                                                <select name="correct[]" class="form-control">
+        <?php
+        $availableOptions = array(
+            'yes' => 'Si',
+            'no' => 'No'
+        );
+        echo getHTMLSelectOptions($availableOptions, $data['correct'][$key]);
+        ?>
+                                                </select>
+                                            </div>
+                                            <div class="col-sm-1">
+                                                <span class="input-group-btn"><button type="button" class="btn btn-danger btn-remove">-</button></span>
+                                            </div>
+                                        </div>
+                                    </div>
+        <?php
+    }
     ?>
 
-                           <div class="form-group">
-                                <label class="col-sm-2 control-label">Nom</label>
-                                <div class="col-sm-10">
-                                    <input type="text" name="name" class="form-control" placeholder="Títol de la pregunta" value="<?= (isset($data['name'])) ? $data['name'] : ''; ?>" required>
+                                <div class="clonable">
+                                    <div class="form-group">
+                                        <div class="col-sm-offset-2 col-sm-6">
+                                            <input type="text" name="choices[]" class="form-control" placeholder="Text de la resposta">
+                                        </div>
+                                        <div class="col-sm-2">
+                                            <input type="text" name="points[]" class="form-control" placeholder="Punts">
+                                        </div>
+                                        <div class="col-sm-1">
+                                            <select name="correct[]" class="form-control">
+    <?php
+    $availableOptions = array(
+        'yes' => 'Si',
+        'no' => 'No'
+    );
+    echo getHTMLSelectOptions($availableOptions, 'no');
+    ?>
+                                            </select>
+                                        </div>
+                                        <div class="col-sm-1">
+                                            <span class="input-group-btn"><button type="button" class="btn btn-default btn-add">+</button></span>
+                                        </div>
+                                    </div>
                                 </div>
-                           </div>
 
-                            <div class="form-group">
-                                <label class="col-sm-2 control-label">Estat</label>
-                                <div class="col-sm-2">
-                                    <select name="status" class="form-control">
-                                    <?php
-                                    $availableOptions = array(
-                                        'draft' => 'Esborrany',
-                                        'active' => 'Activa',
-                                        'hidden' => 'Oculta',
-                                        'inactive' => 'Inactiva'
-                                        );
-                                    echo getHTMLSelectOptions($availableOptions, $data['status']);
-                                    ?>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="col-sm-2 control-label">Pregunta</label>
-                                <div class="col-sm-10">
-                                    <textarea name="question" class="form-control tinymce" rows="3" placeholder="Quina és la pregunta?"><?= (isset($data['question'])) ? $data['question'] : ''; ?></textarea>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="image" class="col-sm-2 control-label">Imatge</label>
-                                <div class="col-sm-10">
-                                    <input type="text" name="image" class="form-control" placeholder="URL de l'imatge (opcional)" value="<?= (isset($data['image'])) ? $data['image'] : ''; ?>">
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="col-sm-2 control-label">Tipus</label>
-                                <div class="col-sm-2">
-                                    <select name="type" class="form-control">
-                                    <?php
-                                    $availableOptions = array(
-                                        'single' => 'Resposta única',
-                                        'multi' => 'Resposta multiple'
-                                        );
-                                    echo getHTMLSelectOptions($availableOptions, $data['type']);
-                                    ?>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <legend>Respostes possibles</legend>
-                            <div class="form-group">
-                                <label class="col-sm-offset-2 col-sm-6">Text de la resposta</label>
-                                <label class="col-sm-2">Punts</label>
-                                <label class="col-sm-1">correcta?</label>
-                            </div>
-
-                            <?php
-
-                            foreach ($data['choices'] as $key => $value) {
-                                    ?>
-                            <div class="clonable">
                                 <div class="form-group">
-                                    <div class="col-sm-offset-2 col-sm-6">
-                                        <input type="text" name="choices[]" class="form-control" placeholder="Text de la resposta" value="<?= $value; ?>">
-                                    </div>
-                                    <div class="col-sm-2">
-                                        <input type="text" name="points[]" class="form-control" placeholder="Punts" value="<?= $data['points'][$key]; ?>">
-                                    </div>
-                                    <div class="col-sm-1">
-                                        <select name="correct[]" class="form-control">
-                                        <?php
-                                            $availableOptions = array(
-                                                'yes' => 'Si',
-                                                'no' => 'No'
-                                        );
-                                        echo getHTMLSelectOptions($availableOptions, $data['correct'][$key]);
-                                        ?>
-                                        </select>
-                                    </div>
-                                    <div class="col-sm-1">
-                                        <span class="input-group-btn"><button type="button" class="btn btn-danger btn-remove">-</button></span>
+                                    <label class="col-sm-2 control-label">Solució explicada</label>
+                                    <div class="col-sm-10">
+                                        <textarea name="solution" class="form-control tinymce" rows="3" placeholder="Quina és la solució detallada? (opcional)"><?= $data['solution']; ?></textarea>
                                     </div>
                                 </div>
-                            </div>
-                                    <?php
-                            }
-                            ?>
 
-                            <div class="clonable">
                                 <div class="form-group">
-                                    <div class="col-sm-offset-2 col-sm-6">
-                                        <input type="text" name="choices[]" class="form-control" placeholder="Text de la resposta">
-                                    </div>
-                                    <div class="col-sm-2">
-                                        <input type="text" name="points[]" class="form-control" placeholder="Punts">
-                                    </div>
-                                    <div class="col-sm-1">
-                                        <select name="correct[]" class="form-control">
-                                        <?php
-                                            $availableOptions = array(
-                                                'yes' => 'Si',
-                                                'no' => 'No'
-                                        );
-                                        echo getHTMLSelectOptions($availableOptions, 'no');
-                                        ?>
-                                        </select>
-                                    </div>
-                                    <div class="col-sm-1">
-                                        <span class="input-group-btn"><button type="button" class="btn btn-default btn-add">+</button></span>
+                                    <label for="tip" class="col-sm-2 control-label">Text a cercar</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" name="tip" class="form-control" placeholder="Text d'ajuda a la cerca (opcional)" value="<?= $data['tip']; ?>">
                                     </div>
                                 </div>
-                            </div>
 
-                            <div class="form-group">
-                                <label class="col-sm-2 control-label">Solució explicada</label>
-                                <div class="col-sm-10">
-                                    <textarea name="solution" class="form-control tinymce" rows="3" placeholder="Quina és la solució detallada? (opcional)"><?= (isset($data['solution'])) ? $data['solution'] : ''; ?></textarea>
-                                </div>
-                            </div>
+    <?php
+    $query = "SELECT id, name FROM badges WHERE status='active'";
+    $result = $db->query($query);
+    $availableActions = array();
+    while ($row = $result->fetch_assoc()) {
+        $availableActions[$row['id']] = $row['name'];
+    }
+    ?>
 
-                            <div class="form-group">
-                                <label for="tip" class="col-sm-2 control-label">Text a cercar</label>
-                                <div class="col-sm-10">
-                                    <input type="text" name="tip" class="form-control" placeholder="Text d'ajuda a la cerca (opcional)" value="<?= (isset($data['tip'])) ? $data['tip'] : ''; ?>">
-                                </div>
-                            </div>
+                                <legend>Accions associades</legend>
 
-                            <?php
-                            $query = "SELECT id, name FROM badges WHERE status='active'";
-                            $result = $db->query($query);
-                            $availableActions = array();
-                            while ( $row = $result->fetch_assoc() ) {
-                                $availableActions[$row['id']] = $row['name'];
-                            }
-                            ?>
-
-                            <legend>Accions associades</legend>
-
-                            <?php
-                            foreach ($data['actions'] as $key => $value) {
-                                ?>
-                            <div class="clonable">
-                                <div class="form-group">
-                                    <label class="col-sm-2 control-label">Afegir acció</label>
-                                    <div class="col-sm-4">
-                                        <select name="actions[]" class="form-control">
-                                            <option value="">Sense acció</option>
-                                            <?= getHTMLSelectOptions($availableActions, $value); ?>
-                                        </select>
+    <?php
+    foreach ($data['actions'] as $key => $value) {
+        ?>
+                                    <div class="clonable">
+                                        <div class="form-group">
+                                            <label class="col-sm-2 control-label">Afegir acció</label>
+                                            <div class="col-sm-4">
+                                                <select name="actions[]" class="form-control">
+                                                    <option value="">Sense acció</option>
+        <?= getHTMLSelectOptions($availableActions, $value); ?>
+                                                </select>
+                                            </div>
+                                            <label class="col-sm-1 control-label">Quan</label>
+                                            <div class="col-sm-4">
+                                                <select name="when[]" class="form-control">
+        <?php
+        $availableOptions = array(
+            'success' => 'Resposta correcta',
+            'fail' => 'Resposta incorrecta',
+            'always' => 'Sempre'
+        );
+        echo getHTMLSelectOptions($availableOptions, $data['when'][$key]);
+        ?>
+                                                </select>
+                                            </div>
+                                            <div class="col-sm-1">
+                                                <span class="input-group-btn"><button type="button" class="btn btn-danger btn-trash">-</button></span>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <label class="col-sm-1 control-label">Quan</label>
-                                    <div class="col-sm-4">
-                                        <select name="when[]" class="form-control">
-                                        <?php
-                                        $availableOptions = array(
-                                            'success' => 'Resposta correcta',
-                                            'fail' => 'Resposta incorrecta',
-                                            'always' => 'Sempre'
-                                            );
-                                        echo getHTMLSelectOptions($availableOptions, $data['when'][$key]);
-                                        ?>
-                                        </select>
-                                    </div>
-                                    <div class="col-sm-1">
-                                        <span class="input-group-btn"><button type="button" class="btn btn-danger btn-trash">-</button></span>
-                                    </div>
-                                </div>
-                            </div>
-                                <?php
-
-                            }
-                            ?>
-                            <div class="clonable">
-                                <div class="form-group">
-                                    <label class="col-sm-2 control-label">Afegir acció</label>
-                                    <div class="col-sm-4">
-                                        <select name="actions[]" class="form-control">
-                                            <option value="">Sense acció</option>
-                                            <?= getHTMLSelectOptions($availableActions); ?>
-                                        </select>
-                                    </div>
-                                    <label class="col-sm-1 control-label">Quan</label>
-                                    <div class="col-sm-4">
-                                        <select name="when[]" class="form-control">
-                                        <?php
-                                        $availableOptions = array(
-                                            'success' => 'Resposta correcta',
-                                            'fail' => 'Resposta incorrecta',
-                                            'always' => 'Sempre'
-                                            );
-                                        echo getHTMLSelectOptions($availableOptions, 'always');
-                                        ?>
-                                        </select>
-                                    </div>
-                                    <div class="col-sm-1">
-                                        <span class="input-group-btn"><button type="button" class="btn btn-default btn-add">+</button></span>
+        <?php
+    }
+    ?>
+                                <div class="clonable">
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label">Afegir acció</label>
+                                        <div class="col-sm-4">
+                                            <select name="actions[]" class="form-control">
+                                                <option value="">Sense acció</option>
+    <?= getHTMLSelectOptions($availableActions); ?>
+                                            </select>
+                                        </div>
+                                        <label class="col-sm-1 control-label">Quan</label>
+                                        <div class="col-sm-4">
+                                            <select name="when[]" class="form-control">
+    <?php
+    $availableOptions = array(
+        'success' => 'Resposta correcta',
+        'fail' => 'Resposta incorrecta',
+        'always' => 'Sempre'
+    );
+    echo getHTMLSelectOptions($availableOptions, 'always');
+    ?>
+                                            </select>
+                                        </div>
+                                        <div class="col-sm-1">
+                                            <span class="input-group-btn"><button type="button" class="btn btn-default btn-add">+</button></span>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
     <?php
 }
 

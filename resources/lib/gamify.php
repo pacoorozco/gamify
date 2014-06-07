@@ -5,24 +5,24 @@
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
- * 
+ *
  * @category   Pakus
  * @package    Gamify
- * @author     Paco Orozco <paco_@_pacoorozco.info> 
+ * @author     Paco Orozco <paco_@_pacoorozco.info>
  * @license    http://www.gnu.org/licenses/gpl-2.0.html (GPL v2)
  * @link       https://github.com/pacoorozco/gamify
  */
@@ -394,4 +394,80 @@ function getLevelAssignements($levelId)
             $levelId
         )
     );
+}
+
+function getPendingQuizs($userId)
+{
+    global $db;
+
+    $pending = $db->getOne(
+        sprintf(
+            "SELECT count(*) AS pending FROM questions "
+            . "WHERE status='active' AND "
+            . "id NOT IN (SELECT id_question FROM members_questions WHERE id_member='%d')",
+            intval($userId)
+        )
+    );
+
+    return ( $pending > 0 ) ? $pending : '';
+}
+
+/**
+  * user_exists($user)
+  *
+  * Retorna TRUE si l'usuari existeix
+  *
+  * Parameters:
+  *  $user: Potser un identificador d'usuari o un nom d'usuari
+  *
+  * Returns:
+  *  $result:   True si existeix, false en cas contrari
+  */
+function getUserExists($user)
+{
+    if (is_int($user)) {
+        return (getUserNameById($user) === false ) ? false : true;
+    } else {
+        return (getUserIdByName($user) === false ) ? false : true;
+    }
+}
+
+function getUserNameById($userId)
+{
+    global $db;
+
+    return $db->getOne(
+        sprintf("SELECT username FROM members WHERE id='%d' LIMIT 1", intval($userId))
+    );
+}
+
+function getUserIdByName($username)
+{
+    global $db;
+
+    return $db->getOne(
+        sprintf("SELECT id FROM members WHERE username='%s' LIMIT 1", $username)
+    );
+}
+
+function getBadgeExists($badgeId)
+{
+    global $db;
+
+    $badgeName = $db->getOne(
+        sprintf("SELECT name FROM badges WHERE id='%d' LIMIT 1", intval($badgeId))
+    );
+
+    return is_null($badgeName) ? false : true;
+}
+
+function getLevelExists($levelId)
+{
+    global $db;
+
+    $levelName = $db->getOne(
+        sprintf("SELECT name FROM levels WHERE id='%d' LIMIT 1", intval($levelId))
+    );
+
+    return is_null($levelName) ? false : true;
 }

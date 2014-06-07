@@ -295,22 +295,6 @@ END;
     return $htmlCode;
 }
 
-function getPendingQuizs($userId)
-{
-    global $db;
-
-    $pending = $db->getOne(
-        sprintf(
-            "SELECT count(*) AS pending FROM questions "
-            . "WHERE status='active' AND "
-            . "id NOT IN (SELECT id_question FROM members_questions WHERE id_member='%d')",
-            $userId
-        )
-    );
-
-    return ( $pending > 0 ) ? $pending : '';
-}
-
 function getGETVar($in, $default = '')
 {
         return isset($_GET[$in]) ? getSanitizedInput($_GET[$in]) : $default;
@@ -483,40 +467,23 @@ function getNewUUID()
         mt_rand(0, 0xffff)
     );
 }
+
 /**
-  * user_exists($user)
-  *
-  * Retorna TRUE si l'usuari existeix
-  *
-  * Parameters:
-  *  $user: Potser un identificador d'usuari o un nom d'usuari
-  *
-  * Returns:
-  *  $result:   True si existeix, false en cas contrari
-  */
-function getUserExists($user)
+ * Gets a safe HTML value var to print
+ *
+ * @param type $variable May be an array of data
+ * @param array $values (optional) Are the values we want to default
+ * @return string The $variable value with safe HTML special chars
+ */
+function getVarDefaults($variable, $values = array())
 {
-    if (is_int($user)) {
-        return (getUserNameById($user) === false ) ? false : true;
+    if (is_array($variable)) {
+        foreach ($values as $key) {
+            $variable[$key] = isset($variable[$key]) ? getVarDefaults($variable[$key]) : '';
+        }
     } else {
-        return (getUserIdByName($user) === false ) ? false : true;
+        $variable = htmlspecialchars($variable);
     }
-}
 
-function getUserNameById($userId)
-{
-    global $db;
-
-    return $db->getOne(
-        sprintf("SELECT username FROM members WHERE id='%d' LIMIT 1", intval($userId))
-    );
-}
-
-function getUserIdByName($username)
-{
-    global $db;
-
-    return $db->getOne(
-        sprintf("SELECT id FROM members WHERE username='%s' LIMIT 1", $username)
-    );
+    return $variable;
 }
