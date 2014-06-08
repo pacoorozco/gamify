@@ -487,3 +487,30 @@ function getVarDefaults($variable, $values = array())
 
     return $variable;
 }
+
+function getBaseUrl()
+{
+    // output: /myproject/index.php
+    $currentPath = $_SERVER['PHP_SELF'];
+
+    // output: Array ( [dirname] => /myproject [basename] => index.php [extension] => php [filename] => index )
+    $pathInfo = pathinfo($currentPath);
+
+    // output: localhost
+    $hostName = $_SERVER['HTTP_HOST'];
+
+    // output: http:// or https://
+    $isSecure = false;
+    if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') {
+        $isSecure = true;
+    } elseif ((!empty ($_SERVER['HTTP_X_FORWARDED_PROTO'])
+        && ($_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https'))
+        || ((!empty ($_SERVER['HTTP_X_FORWARDED_SSL']) 
+        && $_SERVER['HTTP_X_FORWARDED_SSL'] == 'on'))) {
+        $isSecure = true;
+    }
+    $protocol = $isSecure ? 'https://' : 'http://';
+
+    // return: http://localhost/myproject/
+    return $protocol . $hostName . $pathInfo['dirname'] . "/";
+}

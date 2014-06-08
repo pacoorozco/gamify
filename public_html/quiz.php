@@ -446,7 +446,6 @@ function viewQuestionByUUID($questionUUID, $msg = array())
     if (is_null($question)) {
         // La pregunta que ens han passat no existeix, per tant tornem a mostrar la llista.
         printQuestionList();
-
         return false;
     }
 
@@ -463,8 +462,7 @@ function viewQuestionByUUID($questionUUID, $msg = array())
     if ((!$answered) && ('active' == $question['status'])) {
         // L'usuari no ha respost la pregunta i està oberta
         printAnswerQuestionForm($questionUUID);
-
-        return;
+        return true;
     }
 
     // get question's choices, if none, return
@@ -491,10 +489,14 @@ function viewQuestionByUUID($questionUUID, $msg = array())
             <h4><?= $question['question']; ?></h4>
     <?php
     if (!$answered) {
-        echo '<div class="alert alert-warning"><p>No veus la solució per què no vas respondre aquesta pregunta.</p></div>';
+        echo '<div class="alert alert-warning">'
+            . '<p>No veus la solució per què no vas respondre aquesta pregunta.</p>'
+            . '</div>';
     } else {
         if (!empty($question['solution'])) {
-            echo '<div class="alert alert-success"><p><strong>La resposta correcta és: </strong></p><p>'. $question['solution'] .'</p></div>';
+            echo '<div class="alert alert-success">'
+            . '<p><strong>La resposta correcta és: </strong></p><p>' 
+            . $question['solution'] .'</p></div>';
         }
     }
     ?>
@@ -503,7 +505,9 @@ function viewQuestionByUUID($questionUUID, $msg = array())
                 </ul>
     <?php
     if ($answered) {
-        echo '<div class="alert alert-info"><p>Vas respondre aquesta pregunta el ' . $responses['last_time'] . ' i vas obtindre <strong>' . $responses['amount'] .' punts</strong>.</p></div>';
+        echo '<div class="alert alert-info"><p>Vas respondre aquesta pregunta el '
+            . $responses['last_time'] . ' i vas obtindre <strong>'
+            . $responses['amount'] .' punts</strong>.</p></div>';
     }
     ?>
         </div>

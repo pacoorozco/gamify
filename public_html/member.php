@@ -161,7 +161,11 @@ function printProfile($userUUID)
     if ($userId == $_SESSION['member']['id']) {
         // L'usuari por editar la seva imatge.
         ?>
-                        <p class="text-center"><a href="#" id="uploadFile" title="Upload"><span class="glyphicon glyphicon-open"></span> Canviar imatge</a></p>
+                        <p class="text-center">
+                            <a href="#" id="uploadFile" title="Upload">
+                                <span class="glyphicon glyphicon-open"></span> Canviar imatge
+                            </a>
+                        </p>
                         <p id="messageBox"></p>
                         <script>
                             var uploadURL = "<?= $_SERVER['PHP_SELF']; ?>?a=upload";
@@ -191,7 +195,9 @@ function printProfile($userUUID)
                     <div class="col-md-8">
                         <p class="h1"><?php echo $row['username']; ?></p>
                         <p class="lead"><?php echo $row['level_name']; ?></p>
-                        <p class="small">Darrera connexió el <?php echo strftime('%A, %d de %B', $row['last_access']); ?></p>
+                        <p class="small">
+                            Darrera connexió el <?= strftime('%A, %d de %B', $row['last_access']); ?>
+                        </p>
                     </div>
                 </div>
     <?php
