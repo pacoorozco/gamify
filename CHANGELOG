@@ -2,6 +2,7 @@ Version 2.xx (developement version)
 ------------
 * [BUG-#10] 'Some DB.class functions returns incorrect values'
 * Adds an image to default level 'Novato'
+* Adds uploads/badges, uploads/profiles and uploads/levels folders
 
 Version 2.10
 ------------
