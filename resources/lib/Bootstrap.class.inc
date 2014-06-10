@@ -37,7 +37,7 @@ define('APP_NAME', 'gamify_GoW');
 /**
  * The current system version.
  */
-define('APP_VERSION', '2.10-dev');
+define('APP_VERSION', '2.10');
 
 /**
  * First bootstrap phase: initialize configuration.
