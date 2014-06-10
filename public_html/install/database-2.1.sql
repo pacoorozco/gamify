@@ -140,12 +140,6 @@ CREATE TABLE IF NOT EXISTS `members_questions` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- -----------------------------------------------------
--- View `vmembers`
--- -----------------------------------------------------
-DROP VIEW IF EXISTS `vmembers`;
-CREATE ALGORITHM=UNDEFINED DEFINER=root@localhost SQL SECURITY DEFINER VIEW vmembers AS select members.id AS id,members.uuid,members.username AS username,members.email AS email,members.role AS role,members.level_id AS level_id,members.session_id AS session_id,members.last_access AS last_access,members.disabled AS disabled,vtop.points AS total_points,vtop_month.points AS month_points from ((members left join vtop on((members.id = vtop.id))) left join vtop_month on((members.id = vtop_month.id)));
-
--- -----------------------------------------------------
 -- View `vtop`
 -- -----------------------------------------------------
 DROP VIEW IF EXISTS `vtop`;
@@ -156,6 +150,12 @@ CREATE ALGORITHM=UNDEFINED DEFINER=root@localhost SQL SECURITY DEFINER VIEW vtop
 -- -----------------------------------------------------
 DROP VIEW IF EXISTS `vtop_month`;
 CREATE ALGORITHM=UNDEFINED DEFINER=root@localhost SQL SECURITY DEFINER VIEW vtop_month AS select members.id AS id,sum(points.points) AS points from (members left join points on(((members.id = points.id_member) and (timestampdiff(MONTH,points.`date`,now()) < 1) and (year(points.`date`) = year(now()))))) group by members.id;
+
+-- -----------------------------------------------------
+-- View `vmembers`
+-- -----------------------------------------------------
+DROP VIEW IF EXISTS `vmembers`;
+CREATE ALGORITHM=UNDEFINED DEFINER=root@localhost SQL SECURITY DEFINER VIEW vmembers AS select members.id AS id,members.uuid,members.username AS username,members.email AS email,members.role AS role,members.level_id AS level_id,members.session_id AS session_id,members.last_access AS last_access,members.disabled AS disabled,vtop.points AS total_points,vtop_month.points AS month_points from ((members left join vtop on((members.id = vtop.id))) left join vtop_month on((members.id = vtop_month.id)));
 
 ALTER TABLE `members`
   ADD CONSTRAINT members_ibfk_3 FOREIGN KEY (level_id) REFERENCES `levels` (id);
@@ -181,5 +181,5 @@ ALTER TABLE `members_questions`
 -- -----------------------------------------------------
 -- Create first member 'admin' as an administrator
 -- -----------------------------------------------------
-INSERT INTO `levels` SET level_name='Novato', experience_needed='1';
+INSERT INTO `levels` SET name='Novato', experience_needed='1', image='uploads/levels/newbie_default.png';
 INSERT INTO `members` SET uuid='ebd78dc0-7252-4d65-9dc3-d4d36881a89d', username='admin', email='name@domain.com', password=MD5('hola123'), role='administrator';

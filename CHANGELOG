@@ -1,5 +1,7 @@
 Version 2.xx (developement version)
 ------------
+* [BUG-#10] 'Some DB.class functions returns incorrect values'
+* Adds an image to default level 'Novato'
 
 Version 2.10
 ------------

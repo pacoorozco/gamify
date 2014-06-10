@@ -426,9 +426,9 @@ function getPendingQuizs($userId)
 function getUserExists($user)
 {
     if (is_int($user)) {
-        return (getUserNameById($user) === false ) ? false : true;
+        return !is_null(getUserNameById($user));
     } else {
-        return (getUserIdByName($user) === false ) ? false : true;
+        return !is_null(getUserIdByName($user));
     }
 }
 
@@ -446,7 +446,7 @@ function getUserIdByName($username)
     global $db;
 
     return $db->getOne(
-        sprintf("SELECT id FROM members WHERE username='%s' LIMIT 1", $username)
+        sprintf("SELECT id FROM members WHERE username='%s' LIMIT 1", $db->qstr($username))
     );
 }
 

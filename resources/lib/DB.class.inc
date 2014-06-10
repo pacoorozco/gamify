@@ -63,7 +63,7 @@ class DB extends \mysqli
             return null;
         }
 
-        return $result->fetch_assoc();
+        return ($result->num_rows > 0) ? $result->fetch_assoc() : null;
     }
 
     /**
@@ -82,7 +82,7 @@ class DB extends \mysqli
 
         $row = $result->fetch_row();
 
-        return is_array($row) ? reset($row) : null;
+        return ($result->num_rows > 0) ? reset($row) : null;
     }
 
     /**
@@ -109,7 +109,7 @@ class DB extends \mysqli
             $ret[] = $row;
         }
 
-        return $ret;
+        return ($result->num_rows > 0) ? $ret : null;
     }
 
     /**
@@ -138,7 +138,7 @@ class DB extends \mysqli
             $ret[$values[0]] = $values[1];
         }
 
-        return $ret;
+        return ($result->num_rows > 0) ? $ret : null;
     }
 
     /**
@@ -220,7 +220,7 @@ class DB extends \mysqli
         $query = "INSERT INTO `" . $table . "` (" . $keys . ") VALUES (" . $values . ")";
         $this->query($query);
 
-        return $this->insert_id;
+        return ($this->insert_id > 0) ? $this->insert_id : false;
     }
 
     /**
