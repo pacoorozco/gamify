@@ -220,7 +220,7 @@ function doLogin($username, $password)
             'members',
             array(
                 'session_id' => $randomString,
-                'last_access' => time()
+                'last_access' => 'NOW()'
             ),
             sprintf("uuid='%s' LIMIT 1", $usuari['uuid'])
         );

@@ -208,7 +208,7 @@ function printProfile($userUUID)
         $htmlCode = array();
         $events = $db->getAll(
             sprintf(
-                "SELECT * FROM points WHERE id_member='%d' ORDER BY date DESC LIMIT 10",
+                "SELECT * FROM points WHERE id_member='%d' ORDER BY creation_time DESC LIMIT 10",
                 $userId
             )
         );
@@ -216,7 +216,7 @@ function printProfile($userUUID)
         foreach ($events as $row3) {
             $htmlCode[] = sprintf(
                 "<p>%s va rebre <strong>%d punts</strong> d'experiència per <em>%s</em></p>",
-                getElapsedTimeString($row3['date']),
+                getElapsedTimeString($row3['creation_time']),
                 $row3['points'],
                 $row3['memo']
             );

@@ -154,11 +154,10 @@ function doSilentAction($userId, $actionId)
             $status = 'completed';
         }
         $query = sprintf(
-            "INSERT INTO members_badges SET id_member='%d', id_badges='%d', amount='%d', last_time='%d', status='%s'",
+            "INSERT INTO members_badges SET id_member='%d', id_badges='%d', amount='%d', status='%s'",
             $data['id_member'],
             $data['id_badge'],
             $data['amount'],
-            time(),
             $status
         );
 
@@ -189,10 +188,9 @@ function doSilentAction($userId, $actionId)
             $status = 'completed';
 
             $query = sprintf(
-                "UPDATE members_badges SET amount='%d', status='%s', last_time='%d' WHERE id='%d' LIMIT 1",
+                "UPDATE members_badges SET amount='%d', status='%s' WHERE id='%d' LIMIT 1",
                 $data['amount'],
                 $status,
-                time(),
                 $data['id']
             );
 
@@ -207,9 +205,8 @@ function doSilentAction($userId, $actionId)
         } else {
             // update amount of this badges
             $query = sprintf(
-                "UPDATE members_badges SET amount='%d', last_time='%d' WHERE id = '%d' LIMIT 1",
+                "UPDATE members_badges SET amount='%d WHERE id = '%d' LIMIT 1",
                 $data['amount'],
-                time(),
                 $data['id']
             );
 

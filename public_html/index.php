@@ -27,7 +27,9 @@
  * @link       https://github.com/pacoorozco/gamify
  */
 
-//require_once 'home.php';
+require_once 'home.php';
+
+exit();
 require_once realpath(dirname(__FILE__) . '/../resources/lib/Bootstrap.class.inc');
 \Pakus\Application\Bootstrap::init(APP_BOOTSTRAP_FULL);
 

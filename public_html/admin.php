@@ -1397,8 +1397,8 @@ function action( $data = array() )
         if ($data['amount'] >= $data['amount_needed']) {
             $status = 'completed';
         }
-        $query = sprintf("INSERT INTO members_badges SET id_member='%d', id_badges='%d', amount='%d', last_time='%d', status='%s'",
-                          $data['id_member'], $data['id_badge'], $data['amount'], time(), $status );
+        $query = sprintf("INSERT INTO members_badges SET id_member='%d', id_badges='%d', amount='%d', status='%s'",
+                          $data['id_member'], $data['id_badge'], $data['amount'], $status );
 
         if ( $db->query($query) ) {
             $missatges[] = array('type' => "success", 'msg' => "Dades de l'usuari '<strong>". $data['username'] ."</strong>' actualitzades.");
@@ -1434,8 +1434,8 @@ function action( $data = array() )
             // complete badge
             $status = 'completed';
 
-            $query = sprintf( "UPDATE members_badges SET amount='%d', status='%s', last_time='%d' WHERE id = '%d' LIMIT 1",
-                               $data['amount'], $status, time(), $data['id'] );
+            $query = sprintf( "UPDATE members_badges SET amount='%d', status='%s' WHERE id = '%d' LIMIT 1",
+                               $data['amount'], $status, $data['id'] );
 
             if ( $db->query($query) ) {
                 // send a mail to user in order to tell him/her, his/her new achievement
@@ -1453,8 +1453,8 @@ function action( $data = array() )
             }
         } else {
             // update amount of this badges
-            $query = sprintf( "UPDATE members_badges SET amount='%d', last_time='%d' WHERE id = '%d' LIMIT 1",
-                               $data['amount'], time(), $data['id'] );
+            $query = sprintf( "UPDATE members_badges SET amount='%d' WHERE id = '%d' LIMIT 1",
+                               $data['amount'], $data['id'] );
 
             if ( $db->query($query) ) {
                 $missatges[] = array('type' => "success", 'msg' => "Dades de l'usuari '<strong>". $data['username'] ."</strong>' actualitzades.");
