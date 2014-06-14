@@ -43,11 +43,12 @@ namespace Pakus\Database;
  * @package    Database
  * @author     Paco Orozco <paco@pacoorozco.info>
  * @license    http://creativecommons.org/licenses/by-sa/3.0/deed.en (CC BY-SA 3.0)
- * @version    1.1
+ * @version    1.2
  * @link       https://git.upcnet.es/bo/gamify
  */
 class DB extends \mysqli
 {
+    public $debug = true;
 
     /**
      * Returns the first row from database result and returns a PHP array
@@ -142,7 +143,7 @@ class DB extends \mysqli
     }
 
     /**
-     * Escapes and quotes and returns string to use in a query. Use instead
+     * Escapes and returns string to use in a query. Use instead
      * mysqli::real_escape_string()
      *
      * If given an array, calls qstr() method
@@ -169,12 +170,75 @@ class DB extends \mysqli
      * @param array $arr
      * @return array Array of escaped strings
      */
-    public function qstrArr($arr)
+    private function qstrArr($arr)
     {
         foreach ($arr as $key => $value) {
             $arr[$this->qstr($key)] = $this->qstr($value);
         }
 
+        return $arr;
+    }
+
+    /**
+     * Quotes and returns string to use in a query
+     *
+     * If given an array, calls quoteArr() method
+     *
+     * @param string $str
+     * @return string Quoted string
+     */
+    public function quote($value)
+    {
+        if (is_array($value)) {
+            return $this->quoteArr($value);
+        }
+        if (empty($value) or is_string($value)) {
+            return "'" . $value . "'";
+        }
+        return $value;
+    }
+
+    /**
+     * Calls quote() method for all values in given array and returns
+     *
+     * @param array $arr
+     * @return array Array of quoted strings
+     */
+    private function quoteArr($arr)
+    {
+        foreach ($arr as $key => $value) {
+            $arr[$key] = $this->quote($value);
+        }
+        return $arr;
+    }
+
+    /**
+     * Returns values between backticks '`'
+     *
+     * If you pass an array, backtickArr() is called
+     *
+     * @param string $value
+     * @return string A backticked string
+     */
+    public function backtick($value)
+    {
+        if (is_array($value)) {
+            return $this->backtickArr($value);
+        }
+        return "`" . $value . "`";
+    }
+
+    /**
+     * Call backtick() method for all values in given array and returns
+     *
+     * @param array $arr
+     * @return array Array of backticked strings
+     */
+    private function backtickArr($arr)
+    {
+        foreach ($arr as $key => $value) {
+            $arr[$key] = $this->backtick($value);
+        }
         return $arr;
     }
 
@@ -212,12 +276,15 @@ class DB extends \mysqli
          * Cleaning the key allows the developer to insert the entire
          * $_POST array should he wish to and still be safe from attacks.
          */
-        $keys = '`' . implode("`, `", $this->qstr(array_keys($arr))) . '`';
+        $keys = implode(", ", $this->backtick($this->qstr(array_keys($arr))));
         // Values should always be cleaned
-        $values = "'" . implode("', '", $this->qstr(array_values($arr))) . "'";
+        $values = implode(", ", $this->quote($this->qstr(array_values($arr))));
 
         // Build the query string
-        $query = "INSERT INTO `" . $table . "` (" . $keys . ") VALUES (" . $values . ")";
+        $query = "INSERT INTO " . $this->backtick($table) . " (" . $keys . ") VALUES (" . $values . ")";
+        if ($this->debug) {
+            error_log($query);
+        }
         $this->query($query);
 
         return ($this->insert_id > 0) ? $this->insert_id : false;
@@ -252,19 +319,22 @@ class DB extends \mysqli
     public function update($table, $arr = array(), $where = false)
     {
         // Start the query string
-        $query = "UPDATE `" . $table . "` SET ";
+        $query = "UPDATE " . $this->backtick($table) . " SET ";
 
         // Build the SET part of the query string
         foreach ($arr as $key => $value) {
-            $query .= '`'.$this->qstr($key)."` = '".$this->qstr($value)."', ";
+            $query .= $this->backtick($this->qstr($key)) . ' = ' .
+                $this->quote($this->qstr($value)) . ', ';
         }
         $query = rtrim($query, ', ');
 
         // Add WHERE clause if given
         if (false !== $where) {
             $query .= " WHERE ". $where;
+        }       
+        if ($this->debug) {
+            error_log($query);
         }
-
         return $this->query($query);
     }
 
@@ -291,13 +361,15 @@ class DB extends \mysqli
     public function delete($table, $where = false)
     {
         // Start the query string
-        $query = "DELETE FROM `" . $table . "` ";
+        $query = "DELETE FROM " . $this->backtick($table) . " ";
 
         // Add WHERE clause if given
         if (false !== $where) {
             $query .= " WHERE ". $where;
         }
-
+        if ($this->debug) {
+            error_log($query);
+        }       
         return $this->query($query);
     }
 }

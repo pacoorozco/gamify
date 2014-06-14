@@ -1719,6 +1719,10 @@ function createQuestion( $data = array() )
 
             return false;
     }
+    
+    if ('active' == $data['status'] || 'hidden' == $data['status']) {
+        setQuestionPublishTime($questionId);
+    }
 
     // put choices into its table
     foreach ($data['choices'] as $key => $value) {
@@ -1758,6 +1762,33 @@ function createQuestion( $data = array() )
     printQuestionManagement($missatges);
 
     return true;
+}
+
+/**
+ * Set 'publish_date' column ONLY if it hasn't been set before
+ *
+ * @param int $questionId
+ */
+function setQuestionPublishTime($questionId)
+{
+    global $db;
+    
+    $publish_date = $db->getOne(
+        sprintf(
+            "SELECT publish_time FROM questions WHERE id='%d' AND publish_time != 0 LIMIT 1",
+            $questionId
+        )
+    );
+      
+    if (is_null($publish_date)) {
+        $db->update(
+            'questions',
+            array(
+                'publish_time' => date('Y-m-d H:i:s')
+            ),
+            sprintf("id='%d' LIMIT 1", $questionId)
+        );
+    }
 }
 
 function saveQuestionData( $data = array() )
@@ -1818,7 +1849,11 @@ function saveQuestionData( $data = array() )
             $db->real_escape_string($data['status']),
             $data['id']
             );
-
+    
+    if ('active' == $data['status'] || 'hidden' == $data['status']) {
+        setQuestionPublishTime($data['id']);
+    }   
+   
     if ( $db->query($query) ) {
         $missatges[] = array('type' => "success", 'msg' => "Dades actualitzades.");
         printQuestionManagement($missatges);
