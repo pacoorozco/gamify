@@ -196,7 +196,7 @@ function printProfile($userUUID)
                         <p class="h1"><?php echo $row['username']; ?></p>
                         <p class="lead"><?php echo $row['level_name']; ?></p>
                         <p class="small">
-                            Darrera connexió el <?= strftime('%A, %d de %B', $row['last_access']); ?>
+                            Darrera connexió el <?= strftime('%A %d de %B', strtotime($row['last_access'])); ?>
                         </p>
                     </div>
                 </div>

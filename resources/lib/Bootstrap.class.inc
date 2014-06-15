@@ -158,6 +158,11 @@ class Bootstrap
         // Sets DEBUG mode based on parsed configuration
         $CONFIG['site']['debug'] = isset($CONFIG['site']['debug']) ? true : false;
         
+        // Sets locale settings in case user has configured it
+        if (isset($CONFIG['site']['locale'])) {
+            setlocale(LC_ALL, $CONFIG['site']['locale']);
+        }
+        
         // Include some libraries
         require_once LIBRARY_PATH . '/AltoRouter/AltoRouter.php';
         require_once LIBRARY_PATH . '/Swift/swift_required.php';

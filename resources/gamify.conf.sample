@@ -31,6 +31,10 @@ base_url = 'http://www.example.com'
 ; Where to put uploaded files, must be a relative path
 uploads = uploads
 
+; To set PHP language messages, it won't translate this app, only 
+; system messages (i.ex.: dates...)
+locale = 'ca_ES.utf8'
+
 ; If you want to DEBUG this app, set this to '1'
 ; If you're debugging and you want to receive mail messages
 ; set debug_receiver to an email.
