@@ -142,19 +142,28 @@ CREATE TABLE IF NOT EXISTS `members_questions` (
 -- View `vtop`
 -- -----------------------------------------------------
 DROP VIEW IF EXISTS `vtop`;
-CREATE ALGORITHM=UNDEFINED DEFINER=root@localhost SQL SECURITY DEFINER VIEW vtop AS select members.id AS id,sum(points.points) AS points from (members left join points on((members.id = points.id_member))) group by members.id;
+CREATE ALGORITHM=UNDEFINED DEFINER=root@localhost SQL SECURITY DEFINER VIEW vtop AS
+SELECT members.id AS id, SUM(points.points) AS points 
+FROM (members LEFT JOIN points ON (members.id = points.id_member))
+GROUP BY members.id;
 
 -- -----------------------------------------------------
 -- View `vtop_month`
 -- -----------------------------------------------------
 DROP VIEW IF EXISTS `vtop_month`;
-CREATE ALGORITHM=UNDEFINED DEFINER=root@localhost SQL SECURITY DEFINER VIEW vtop_month AS select members.id AS id,sum(points.points) AS points from (members left join points on(((members.id = points.id_member) and (timestampdiff(MONTH,points.`date`,now()) < 1) and (year(points.`date`) = year(now()))))) group by members.id;
+CREATE ALGORITHM=UNDEFINED DEFINER=root@localhost SQL SECURITY DEFINER VIEW vtop_month AS 
+SELECT members.id AS id, SUM(points.points) AS points 
+FROM (members LEFT JOIN points ON (members.id = points.id_member))
+WHERE points.creation_time > DATE_SUB(NOW(), INTERVAL 1 MONTH)
+GROUP BY members.id;
 
 -- -----------------------------------------------------
 -- View `vmembers`
 -- -----------------------------------------------------
 DROP VIEW IF EXISTS `vmembers`;
-CREATE ALGORITHM=UNDEFINED DEFINER=root@localhost SQL SECURITY DEFINER VIEW vmembers AS select members.id AS id,members.uuid,members.username AS username,members.email AS email,members.role AS role,members.level_id AS level_id,members.session_id AS session_id,members.last_access AS last_access,members.disabled AS disabled,vtop.points AS total_points,vtop_month.points AS month_points from ((members left join vtop on((members.id = vtop.id))) left join vtop_month on((members.id = vtop_month.id)));
+CREATE ALGORITHM=UNDEFINED DEFINER=root@localhost SQL SECURITY DEFINER VIEW vmembers AS
+SELECT members.id AS id, members.uuid, members.username AS username, members.email AS email, members.role AS role, members.level_id AS level_id, (SELECT name FROM levels WHERE id=members.level_id) AS level_name, (SELECT COUNT(*) FROM members_badges WHERE id_member=members.id AND status='completed') AS badges, members.disabled AS disabled, vtop.points AS total_points, vtop_month.points AS month_points 
+FROM ((members LEFT JOIN vtop ON (members.id = vtop.id)) LEFT JOIN vtop_month ON (members.id = vtop_month.id));
 
 ALTER TABLE `members`
   ADD CONSTRAINT members_ibfk_3 FOREIGN KEY (level_id) REFERENCES `levels` (id);

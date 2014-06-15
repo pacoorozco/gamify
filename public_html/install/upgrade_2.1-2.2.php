@@ -46,7 +46,8 @@ $tables[] = "ALTER TABLE `questions` ADD `creation_time` TIMESTAMP NOT NULL DEFA
 $tables[] = "ALTER TABLE `questions` ADD `publish_time` TIMESTAMP NULL;";
 
 foreach ($tables as $query) {
-    $db->query($query) or die("ERROR: " . $db->error);
+    $db->query($query) 
+        or printf("ERROR: Executing %s\n\tError code: ", $query, $db->error);
 }
 
 printf("completed!\n");
@@ -135,6 +136,29 @@ $db->update(
 );
 
 printf("updated!\n");
+
+
+$tables = array();
+$tables[] = "DROP VIEW IF EXISTS `vtop_month`;";
+$tables[] = "CREATE ALGORITHM=UNDEFINED DEFINER=root@localhost SQL SECURITY DEFINER VIEW vtop_month AS 
+SELECT members.id AS id, SUM(points.points) AS points 
+FROM (members LEFT JOIN points ON (members.id = points.id_member))
+WHERE points.creation_time > DATE_SUB(NOW(), INTERVAL 1 MONTH)
+GROUP BY members.id;";
+$tables[] = "DROP VIEW IF EXISTS `vmembers`;";
+$tables[] = "CREATE ALGORITHM=UNDEFINED DEFINER=root@localhost SQL SECURITY DEFINER VIEW vmembers AS
+SELECT members.id AS id, members.uuid, members.username AS username, members.email AS email, members.role AS role, members.level_id AS level_id, (SELECT name FROM levels WHERE id=members.level_id) AS level_name, (SELECT COUNT(*) FROM members_badges WHERE id_member=members.id AND status='completed') AS badges, members.disabled AS disabled, vtop.points AS total_points, vtop_month.points AS month_points 
+FROM ((members LEFT JOIN vtop ON (members.id = vtop.id)) LEFT JOIN vtop_month ON (members.id = vtop_month.id));";
+
+printf("Creant vistes\n");
+
+foreach ($tables as $query) {
+    $db->query($query) 
+        or printf("ERROR: Executing %s\n\tError code: ", $query, $db->error);
+}
+
+printf("completed!\n");
+
 printf("</pre>\n");
 printf("<h2>L'actualitzacio a la v2.2 ha estat un exit</h2>\n");
 
