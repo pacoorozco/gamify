@@ -44,7 +44,7 @@ require_once TEMPLATES_PATH . '/tpl_footer.inc';
 exit();
 
 /*** FUNCTIONS ***/
-function printHTMLRankingTable($users = array())
+function printHTMLRankingTable($users = array(), $show = 'total_points')
 {
     global $db;
 
@@ -52,10 +52,6 @@ function printHTMLRankingTable($users = array())
     $top3 = 3;
     $top10 = 10;
 
-    // Get all levels from table and create an array
-    $levels = $db->getAssoc(
-        "SELECT id, name FROM levels"
-    );
     ?>
     <table class="table table-hover" >
     <thead>
@@ -74,6 +70,7 @@ function printHTMLRankingTable($users = array())
     $toprest = $top10 - $top3;
 
     foreach ($users as $row) {
+        $row['points'] = $row[$show];
         $currentuser = '';
         if ($row['username'] == $_SESSION['member']['username']) {
             $currentuser = "class='info'";
@@ -98,7 +95,7 @@ function printHTMLRankingTable($users = array())
         $htmlCode[] = '<a href="member.php?a=viewuser&item=' . $row['uuid'] . '">' . $row['username'] . '</a>';
         $htmlCode[] = '</td>';
         $htmlCode[] = '<td style=" vertical-align: middle;">' . $row['points'] . '</td>';
-        $htmlCode[] = '<td style=" vertical-align: middle;">' . $levels[$row['level_id']] . '</td>';
+        $htmlCode[] = '<td style=" vertical-align: middle;">' . $row['level_name'] . '</td>';
         $badges = ($row['badges'] > 0) ? '<span class="badge">' . $row['badges'] . '</span>' : '';
         $htmlCode[] = '<td style=" vertical-align: middle;" class="text-center">' . $badges . '</td>';
         $htmlCode[] = '</tr>';

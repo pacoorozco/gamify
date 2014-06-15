@@ -72,12 +72,9 @@
             <?php
             printHTMLRankingTable(
                 $db->getAll(
-                    "SELECT t1.uuid, t1.id, t1.username, t2.points, t1.level_id, "
-                    . "(SELECT COUNT(id) FROM members_badges AS t3 "
-                    . "WHERE t1.id = t3.id_member AND t3.status = 'completed') AS badges "
-                    . "FROM vmembers AS t1, vtop_month AS t2 "
-                    . "WHERE t1.id = t2.id "
-                    . "ORDER BY points DESC, badges DESC, username ASC"
+                    "SELECT * FROM vmembers "
+                    . "ORDER BY month_points DESC, badges DESC, username ASC",
+                    'month_points'
                 )
             );
             ?>
@@ -88,12 +85,9 @@
             <?php
             printHTMLRankingTable(
                 $db->getAll(
-                    "SELECT t1.uuid, t1.id, t1.username, t2.points, t1.level_id, "
-                    . "(SELECT COUNT(id) FROM members_badges AS t3 "
-                    . "WHERE t1.id = t3.id_member AND t3.status = 'completed') AS badges "
-                    . "FROM vmembers AS t1, vtop AS t2 "
-                    . "WHERE t1.id = t2.id "
-                    . "ORDER BY points DESC, badges DESC, username ASC"
+                    "SELECT * FROM vmembers "
+                    . "ORDER BY total_points DESC, badges DESC, username ASC",
+                    'total_points'
                 )
             );
             ?>

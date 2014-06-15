@@ -147,7 +147,7 @@ WHERE points.creation_time > DATE_SUB(NOW(), INTERVAL 1 MONTH)
 GROUP BY members.id;";
 $tables[] = "DROP VIEW IF EXISTS `vmembers`;";
 $tables[] = "CREATE ALGORITHM=UNDEFINED DEFINER=root@localhost SQL SECURITY DEFINER VIEW vmembers AS
-SELECT members.id AS id, members.uuid, members.username AS username, members.email AS email, members.role AS role, members.level_id AS level_id, (SELECT name FROM levels WHERE id=members.level_id) AS level_name, (SELECT COUNT(*) FROM members_badges WHERE id_member=members.id AND status='completed') AS badges, members.disabled AS disabled, vtop.points AS total_points, vtop_month.points AS month_points 
+SELECT members.id AS id, members.uuid, members.username AS username, members.email AS email, members.role AS role, members.last_access, members.level_id AS level_id, (SELECT name FROM levels WHERE id=members.level_id) AS level_name, (SELECT COUNT(*) FROM members_badges WHERE id_member=members.id AND status='completed') AS badges, members.disabled AS disabled, vtop.points AS total_points, vtop_month.points AS month_points 
 FROM ((members LEFT JOIN vtop ON (members.id = vtop.id)) LEFT JOIN vtop_month ON (members.id = vtop_month.id));";
 
 printf("Creant vistes\n");
