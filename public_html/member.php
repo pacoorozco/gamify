@@ -61,7 +61,7 @@ switch ($action) {
         $userUUID = getREQUESTVar('item');
         if (empty($userUUID)) {
             // if not suply any user to show, show the own ones
-            $userUUID = getUserUUID($_SESSION['member']['id']);
+            $userUUID = getUserUUIDById($_SESSION['member']['id']);
         }
         printProfile($userUUID);
 }
@@ -229,7 +229,7 @@ function printProfile($userUUID)
             <div class="col-md-offset-1 col-md-4">
                 <h3>Experiència</h3>
                 <div class="media">
-                    <img src="<?= getLevelImage($row['level_id']); ?>" width="100" alt="<?= $row['level_name']; ?>" class="img-thumbnail media-object pull-left">
+                    <img src="<?= getLevelImageById($row['level_id']); ?>" width="100" alt="<?= $row['level_name']; ?>" class="img-thumbnail media-object pull-left">
                     <div class="media-body">
                         <p class="lead media-heading"><?= $row['level_name']; ?></p>
     <?php

@@ -27,208 +27,153 @@
  * @link       https://github.com/pacoorozco/gamify
  */
 
+/**
+ * Adds XP to an user. If a new level has reached it will notify to user
+ *
+ * @param integer $userId
+ * @param integer $experience
+ * @param string $memo
+ * @return boolean
+ */
 function doSilentAddExperience($userId, $experience, $memo = '')
 {
     global $db;
 
     // validate data
-    $data['id'] = intval($userId);
-    $data['experience'] = intval($experience);
-    $data['memo'] = $memo;
+    $userId = intval($userId);
+    $experience = intval($experience);
+    $memo = empty($memo) ? 'alguna ra&oacute; desconeguda.' : $memo;
 
-    if (false === getUserExists($data['id'])) {
-        // L'usuari que ens han passat no existeix, per tant tornem a mostrar la llista.
+    if (!getUserExists($userId) || empty($experience)) {
+        // Parametres incorrectes
         return false;
-    }
-
-    if (empty($data['experience'])) {
-        return false;
-    }
-
-    if (empty($data['memo'])) {
-        $data['memo'] = "alguna ra&oacute; desconeguda.";
     }
 
     // get the current level, before adding points
-    $query = sprintf("SELECT level_id FROM vmembers WHERE id = '%d' LIMIT 1", $data['id']);
-    $result = $db->query($query);
-    $row = $result->fetch_assoc();
-    $oldLevel = $row['level_id'];
+    $oldLevel = getUserLevelById($userId);
 
     // adds experience to user
-    $result = $db->insert(
+    if (!$db->insert(
         'points',
         array(
-            'id_member' => $data['id'],
-            'points' => $data['experience'],
-            'memo' => $data['memo']
+            'id_member' => $userId,
+            'points' => $experience,
+            'memo' => $memo
         )
-    );
-
-    if (!$result) {
+    )) {
+        // There was a problem trying to update
         return false;
     }
 
     // get the current level, after adding points
-    $query = sprintf("SELECT id, username, email, total_points FROM vmembers WHERE id = '%d' LIMIT 1", $data['id']);
-    $result = $db->query($query);
-    $data = $result->fetch_assoc();
+    $newLevel = getUserLevelById($userId);
 
-    $query = sprintf(
-        "SELECT id, name, image FROM levels "
-        . "WHERE experience_needed = (SELECT MAX(experience_needed) "
-        . "FROM levels WHERE experience_needed <= '%d') LIMIT 1",
-        $data['total_points']
-    );
-    $result = $db->query($query);
-    $row = $result->fetch_assoc();
-    $data['level_id'] = $row['id'];
-    $data['name'] = $row['name'];
-    $data['image'] = $row['image'];
-
-    if ($oldLevel != $data['level_id']) {
-        $query = sprintf("UPDATE members SET level_id='%d' WHERE id = '%d' LIMIT 1", $data['level_id'], $data['id']);
-        $result = $db->query($query);
+    if ($oldLevel != $newLevel) {
+        // Updates level_id if something has changed
+        if (!$db->update(
+            'members',
+            array(
+                'level_id' => $newLevel
+            ),
+            sprintf("id='%d' LIMIT 1", $userId)
+        )) {
+            // ERROR
+            return false;
+        }
         // Send a mail to user in order to tell him/her, his/her new level
-        notifyLevelToUser($userId, $data['level_id']);
+        notifyLevelToUser($userId, $newLevel);
     }
-
     return true;
 }
 
-function doSilentAction($userId, $actionId)
+/**
+ * Adds an action to a user. It will notify if a badge is completed
+ *
+ * @param integer $userId
+ * @param integer $badgeId
+ * @param integer $amount
+ * @return boolean
+ */
+function doSilentAction($userId, $badgeId, $amount = 1)
 {
     global $db;
 
-    $missatges = array();
-
-    // validate data
-    $data = array();
-    $data['id_member'] = intval($userId);
-    $data['id_badge'] = intval($actionId);
-    $data['amount'] = 1;
-
-    // Get user data from DB
-    $query = sprintf("SELECT username, email FROM vmembers WHERE id='%d' LIMIT 1", $data['id_member']);
-    $result = $db->query($query);
-
-    if (0 == $result->num_rows) {
-        // L'usuari que ens han passat no existeix.
+    if (!getUserExists($userId) || !getBadgeExists($badgeId)) {
+        // L'usuari o el badge que ens han passat no existeixen
         return false;
     }
 
-    $row = $result->fetch_assoc();
-    $data['username'] = $row['username'];
-    $data['email'] = $row['email'];
-
-    // Get badge data from DB
-    $query = sprintf(
-        "SELECT name, amount_needed, image FROM badges WHERE id='%d' "
-        . "AND status='active' LIMIT 1",
-        $data['id_badge']
+    $badgeAmountNeeded = $db->getOne(
+        sprintf(
+            "SELECT `amount_needed` FROM `badges` "
+            . "WHERE `id`='%d' AND `status`='active' LIMIT 1",
+            $badgeId
+        )
     );
-    $result = $db->query($query);
-
-    if (0 == $result->num_rows) {
-        // La insígnia que ens han passat no existeix.
-        return false;
-    }
-
-    $row = $result->fetch_assoc();
-    $data['name'] = $row['name'];
-    $data['image'] = $row['image'];
-    $data['amount_needed'] = $row['amount_needed'];
-
-    $status = 'active';
-    $query = sprintf(
-        "SELECT * FROM members_badges WHERE id_member='%d' "
-        . "AND id_badges='%d' LIMIT 1",
-        $data['id_member'],
-        $data['id_badge']
+    $badgeAmountCompleted = $db->getOne(
+        sprintf(
+            "SELECT `amount` FROM `members_badges` "
+            . "WHERE `id_member`='%d' AND `id_badges`='%d' LIMIT 1",
+            $userId,
+            $badgeId
+        )
     );
-    $result = $db->query($query);
 
-    if (0 == $result->num_rows) {
+    if (is_null($badgeAmountCompleted)) {
         // this action has not been initiated to this user
-        if ($data['amount'] >= $data['amount_needed']) {
-            $status = 'completed';
-        }
-        $query = sprintf(
-            "INSERT INTO members_badges SET id_member='%d', id_badges='%d', amount='%d', status='%s'",
-            $data['id_member'],
-            $data['id_badge'],
-            $data['amount'],
-            $status
-        );
-
-        if ($db->query($query) && ('completed' == $status)) {
-                doSilentAddExperience($userId, 5, 'desbloquejar la ins&iacute;gnia: '. $data['name']);
-                // send a mail to user in order to tell him/her, his/her new badge
-                notifyBadgeToUser($data);
-
-                return $data['id_badge'];
-        }
-
-        return false;
-    }
-
-    $row = $result->fetch_assoc();
-    $data['id'] = $row['id'];
-
-    // checking if badge is not completed yet
-    if ('active' == $row['status']) {
-        // update amount in order to complete this badge.
-        $data['amount'] += $row['amount'];
-
-        // TODO - check if needed period of time is passed
-
-        // check if badge has completed
-        if ($data['amount'] >= $data['amount_needed']) {
-            // complete badge
-            $status = 'completed';
-
-            $query = sprintf(
-                "UPDATE members_badges SET amount='%d', status='%s' WHERE id='%d' LIMIT 1",
-                $data['amount'],
-                $status,
-                $data['id']
-            );
-
-            if ($db->query($query)) {
-                // send a mail to user in order to tell him/her, his/her new achievement
-                notifyBadgeToUser($data);
-
-                return $data['id_badge'];
-            } else {
-                return false;
-            }
-        } else {
-            // update amount of this badges
-            $query = sprintf(
-                "UPDATE members_badges SET amount='%d WHERE id = '%d' LIMIT 1",
-                $data['amount'],
-                $data['id']
-            );
-
-            $db->query($query);
-
+        if (!$db->insert(
+            'members_badges',
+            array(
+                'id_member' => $userId,
+                'id_badges' => $badgeId,
+                'amount' => 0
+            )
+        )) {
+            // ERROR
             return false;
         }
-    } else {
+    }
+    // At this point action is initiated for user
+    $badgeAmountCompleted = intval($badgeAmountCompleted);
+    $oldStatus = ($badgeAmountCompleted >= $badgeAmountNeeded) ? 'completed' : 'active';
+    $badgeAmountCompleted =+ intval($amount);
+    $newStatus = ($badgeAmountCompleted >= $badgeAmountNeeded) ? 'completed' : 'active';
+
+    if (!$db->update(
+        'members_badges',
+        array(
+            'amount' => $badgeAmountCompleted,
+            'status' => $newStatus
+        )
+    )) {
+        // ERROR
         return false;
     }
+
+    if (($oldStatus != $newStatus) && ('completed' == $newStatus)) {
+        // A badge has been completed, notify it to user
+        $memo = sprintf(
+            "desbloquejar la insígina: %s",
+            getBadgeNameById($badgeId)
+        );
+        doSilentAddExperience($userId, 5, $memo);
+        notifyBadgeToUser($userId, $badgeId);
+    }
+    return true;
 }
 
-function notifyBadgeToUser($data = array())
+function notifyBadgeToUser($userId, $badgeId)
 {
     global $CONFIG;
 
-    $badgeName = $data['name'];
-    $badgeImage = sprintf("%s/images/badges/%s", $CONFIG['site']['base_url'], $data['image']);
+    $userEmail = getUserEmailById($userId);
+    $badgeName = getBadgeNameById($badgeId);
+    $badgeImage = getBadgeImageById($badgeId, true);
+
     $userProfile = sprintf(
         "%s/member.php?a=viewuser&item=%s",
         $CONFIG['site']['base_url'],
-        getUserUUID($data['id_member'])
+        getUserUUIDById($userId)
     );
 
     $subject = 'Has aconseguit una nova insígnia a GoW!';
@@ -242,31 +187,21 @@ function notifyBadgeToUser($data = array())
 BADGE_MAIL;
 
     // Send the message
-    return sendMessage($subject, $mailBody, $data['email']);
+    return sendMessage($subject, $mailBody, $userEmail);
 }
 
 function notifyLevelToUser($userId, $levelId)
 {
-    global $CONFIG, $db;
+    global $CONFIG;
 
-    $query = sprintf("SELECT email FROM vmembers WHERE id='%d' LIMIT 1", $userId);
-    $result = $db->query($query);
-    $row = $result->fetch_assoc();
-    $userEmail = $row['email'];
+    $userEmail = getUserEmailById($userId);
+    $levelName = getLevelNameById($levelId);
+    $levelImage = getLevelImageById($levelId, true);
 
-    $query = sprintf(
-        "SELECT name FROM levels WHERE id='%d' LIMIT 1",
-        $levelId
-    );
-    $result = $db->query($query);
-    $row = $result->fetch_assoc();
-
-    $levelName = $row['name'];
-    $levelImage = getLevelImage($levelId, true);
     $userProfile = sprintf(
         "%s/member.php?a=viewuser&item=%s",
         $CONFIG['site']['base_url'],
-        getUserUUID($userId)
+        getUserUUIDById($userId)
     );
 
     $subject = 'Has pujat de nivell a GoW!';
@@ -283,44 +218,65 @@ LEVEL_MAIL;
     return sendMessage($subject, $mailBody, $userEmail);
 }
 
-function getLevelImage($levelId, $withURL = false)
+function getUserEmailById($userId)
+{
+    global $db;
+    return $db->getOne(
+        sprintf(
+            "SELECT `email` FROM `vmembers` WHERE `id`='%d' LIMIT 1",
+            $userId
+        )
+    );
+}
+
+function getLevelNameById($levelId)
+{
+    global $db;
+    return $db->getOne(
+        sprintf(
+            "SELECT `name` FROM `levels` WHERE `id`='%d' LIMIT 1",
+            $levelId
+        )
+    );
+}
+
+function getBadgeImageById($badgeId, $withURL = false)
 {
     global $db, $CONFIG;
-
-    $query = sprintf(
-        "SELECT image FROM levels WHERE id='%d' LIMIT 1",
-        $levelId
+    $image = $db->getOne(
+        sprintf(
+            "SELECT `image` FROM `badges` WHERE `id`='%d' LIMIT 1",
+            intval($badgeId)
+        )
     );
-    $result = $db->query($query);
-    $row = $result->fetch_assoc();
-
-    $imagePath = sprintf("%s/%s", $CONFIG['site']['uploads'], $row['image']);
-    if (true === $withURL) {
+    $imagePath = sprintf("%s/%s", $CONFIG['site']['uploads'], $image);
+    if ($withURL) {
         // returns absolute path
         return sprintf("%s/%s", $CONFIG['site']['base_url'], $imagePath);
     }
-
     return $imagePath;
 }
 
-function getUserLevelById($userId)
+function getLevelImageById($levelId, $withURL = false)
 {
-    global $db;
-
-    $query = sprintf("SELECT level_id FROM vmembers WHERE id='%d' LIMIT 1", intval($userId));
-    $result = $db->query($query);
-    if (0 == $result->num_rows) {
-        return false;
+    global $db, $CONFIG;
+    $image = $db->getOne(
+        sprintf(
+            "SELECT `image` FROM `levels` WHERE `id`='%d' LIMIT 1",
+            intval($levelId)
+        )
+    );
+    $imagePath = sprintf("%s/%s", $CONFIG['site']['uploads'], $image);
+    if ($withURL) {
+        // returns absolute path
+        return sprintf("%s/%s", $CONFIG['site']['base_url'], $imagePath);
     }
-    $row = $result->fetch_assoc();
-
-    return $row['level_id'];
+    return $imagePath;
 }
 
 function getQuestionAverage($questionUUID)
 {
     global $db;
-
     $query = sprintf(
         "SELECT AVG(t1.amount) AS average "
         . "FROM members_questions AS t1, questions AS t2 "
@@ -339,7 +295,6 @@ function getQuestionAverage($questionUUID)
 function getQuestionResponses($questionUUID)
 {
     global $db;
-
     return $db->getOne(
         sprintf(
             "SELECT COUNT(t1.id_member) AS responses "
@@ -350,10 +305,9 @@ function getQuestionResponses($questionUUID)
     );
 }
 
-function getUserUUID($userId)
+function getUserUUIDById($userId)
 {
     global $db;
-
     return $db->getOne(
         sprintf("SELECT uuid FROM vmembers WHERE id='%d' LIMIT 1", $userId)
     );
@@ -362,7 +316,6 @@ function getUserUUID($userId)
 function getUserId($userUUID)
 {
     global $db;
-
     return $db->getOne(
         sprintf("SELECT id FROM vmembers WHERE uuid='%s' LIMIT 1", $db->qstr($userUUID))
     );
@@ -371,7 +324,6 @@ function getUserId($userUUID)
 function getBadgeAssignements($badgeId)
 {
     global $db;
-
     return $db->getOne(
         sprintf(
             "SELECT COUNT(id_member) AS assignements FROM members_badges "
@@ -381,10 +333,29 @@ function getBadgeAssignements($badgeId)
     );
 }
 
+/**
+ * Calculates user's level and returns it level_id
+ *
+ * @param integer $userId The user's id to calculates level
+ * @return interger
+ */
+function getUserLevelById($userId)
+{
+    global $db;
+    return $db->getOne(
+        sprintf(
+            "SELECT id FROM levels "
+            . "WHERE experience_needed <= "
+            . "(SELECT SUM(points) FROM points WHERE id_member=%d) "
+            . "ORDER BY experience_needed DESC LIMIT 1",
+            $userId
+        )
+    );
+}
+
 function getLevelAssignements($levelId)
 {
     global $db;
-
     return $db->getOne(
         sprintf(
             "SELECT COUNT(id) AS assignements FROM vmembers WHERE level_id='%d'",
@@ -396,7 +367,6 @@ function getLevelAssignements($levelId)
 function getPendingQuizs($userId)
 {
     global $db;
-
     $pending = $db->getOne(
         sprintf(
             "SELECT count(*) AS pending FROM questions "
@@ -410,61 +380,91 @@ function getPendingQuizs($userId)
 }
 
 /**
-  * user_exists($user)
-  *
-  * Retorna TRUE si l'usuari existeix
-  *
-  * Parameters:
-  *  $user: Potser un identificador d'usuari o un nom d'usuari
-  *
-  * Returns:
-  *  $result:   True si existeix, false en cas contrari
-  */
+ * Returns true if supplied user exists
+ * $user parameter could be an user_id or username
+ *
+ * @param mixed $user
+ * @return bool
+ */
 function getUserExists($user)
 {
     if (is_int($user)) {
-        return !is_null(getUserNameById($user));
+        return getUserNameById($user) ? true : false;
     } else {
-        return !is_null(getUserIdByName($user));
+        return getUserIdByName($user) ? true : false;
     }
 }
 
+/**
+ * Returns the username from an user
+ *
+ * @param integer $userId
+ * @return string FALSE if user doesn't exists
+ */
 function getUserNameById($userId)
 {
     global $db;
-
-    return $db->getOne(
-        sprintf("SELECT username FROM members WHERE id='%d' LIMIT 1", intval($userId))
+    $username = $db->getOne(
+        sprintf(
+            "SELECT `username` FROM `vmembers` WHERE `id`='%d' LIMIT 1",
+            intval($userId)
+        )
     );
+    return is_null($username) ? false : $username;
 }
 
+/**
+ * Returns the user_id from an user
+ *
+ * @param string $username
+ * @return integer FALSE if user doesn't exists
+ */
 function getUserIdByName($username)
 {
     global $db;
-
-    return $db->getOne(
-        sprintf("SELECT id FROM members WHERE username='%s' LIMIT 1", $db->qstr($username))
+    $userId = $db->getOne(
+        sprintf(
+            "SELECT `id` FROM `vmembers` WHERE `username`='%s' LIMIT 1",
+            $db->qstr($username)
+        )
     );
+    return is_null($userId) ? false : $userId;
 }
 
+/**
+ * Returns if a badge exists or not
+ *
+ * @param integer $badgeId
+ * @return bool
+ */
 function getBadgeExists($badgeId)
 {
+    return getBadgeNameById($badgeId) ? true : false;
+}
+
+/**
+ * Returns the name of a badge
+ *
+ * @param string $badgeId
+ * @return integer FALSE if badge doesn't exists
+ */
+function getBadgeNameById($badgeId)
+{
     global $db;
-
     $badgeName = $db->getOne(
-        sprintf("SELECT name FROM badges WHERE id='%d' LIMIT 1", intval($badgeId))
+        sprintf(
+            "SELECT `name` FROM `badges` WHERE `id`='%d' LIMIT 1",
+            intval($badgeId)
+        )
     );
-
-    return is_null($badgeName) ? false : true;
+    return is_null($badgeName) ? false : $badgeName;
 }
 
 function getLevelExists($levelId)
 {
     global $db;
-
     $levelName = $db->getOne(
         sprintf("SELECT name FROM levels WHERE id='%d' LIMIT 1", intval($levelId))
     );
-
     return is_null($levelName) ? false : true;
 }
