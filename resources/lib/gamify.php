@@ -144,7 +144,8 @@ function doSilentAction($userId, $badgeId, $amount = 1)
         array(
             'amount' => $badgeAmountCompleted,
             'status' => $newStatus
-        )
+        ),
+        sprintf("id_member='%d' AND id_badges='%d' LIMIT 1", $userId, $badgeId)
     )) {
         // ERROR
         return false;
