@@ -23,6 +23,7 @@
  * @category   Pakus
  * @package    Application
  * @class      Session
+ * @version    1.1
  * @author     Paco Orozco <paco_@_pacoorozco.info>
  * @license    http://www.gnu.org/licenses/gpl-2.0.html (GPL v2)
  * @link       https://github.com/pacoorozco/gamify
@@ -157,5 +158,142 @@ class Session
         session_unset();
         session_destroy();
         session_start();
+    }
+
+    /**
+     * Set session variables
+     *
+     * // store the userid in the session
+     * Session::set('userid', $userid);
+     *
+     * // you can also store more complex values
+     * Session::set('array', array('varA', 'varB', 'varC' => array('val1', 'val2'));
+     *
+     * // you can also use an array to set multiple values at the same time
+     * Session::set(array(
+     *     'userid' => $userid,
+     *     'has_cookies' => $cookie
+     * ));
+     *
+     * // You can also set a specific key into array
+     * Session::set('array.varC', $value);
+     *
+     * // is the same as
+     * Session::set('array', array(
+     *     'varC' => $value
+     * ));
+     *
+     * @param string $name name of the variable to set
+     * @param mixed $value value to set
+     */
+    public static function set($name, $value = null)
+    {
+        if (strpos($name, '.') !== false) {
+            $parts = explode('.', $name);
+
+            switch (count($parts)) {
+                case 2:
+                    $_SESSION[$parts[0]][$parts[1]] = $value;
+                    break;
+                case 3:
+                    $_SESSION[$parts[0]][$parts[1]][$parts[2]] = $value;
+                    break;
+                case 4:
+                    $_SESSION[$parts[0]][$parts[1]][$parts[2]][$parts[3]] = $value;
+                    break;
+                default:
+                    $_SESSION = $value;
+            }
+        } else {
+            $_SESSION[$name] = $value;
+        }
+    }
+
+    /**
+     * Get session variables
+     *
+     * Example:
+     * // get the stored userid from the session
+     * $userid = Session::get('userid');
+     *
+     * // you can retrieve the entire array stored
+     * $arr = Session::get('array');
+     *
+     * // or get a specific key from the array
+     * $arr = Session::get('array.varC');
+     *
+     * @param string $name name of the variable to get
+     * @param mixed $default the default value to return if $key doesn't exists
+     * @return mixed the value
+     */
+    public static function get($name, $default = null)
+    {
+        if (isset($_SESSION[$name])) {
+            return $_SESSION[$name];
+        }
+
+        if (strpos($name, '.') !== false) {
+            $parts = explode('.', $name);
+
+            switch (count($parts)) {
+                case 2:
+                    if (isset($_SESSION[$parts[0]][$parts[1]])) {
+                        return $_SESSION[$parts[0]][$parts[1]];
+                    }
+                    break;
+                case 3:
+                    if (isset($_SESSION[$parts[0]][$parts[1]][$parts[2]])) {
+                        return $_SESSION[$parts[0]][$parts[1]][$parts[2]];
+                    }
+                    break;
+                case 4:
+                    if (isset($_SESSION[$parts[0]][$parts[1]][$parts[2]][$parts[3]])) {
+                        return $_SESSION[$parts[0]][$parts[1]][$parts[2]][$parts[3]];
+                    }
+                    break;
+            }
+        }
+        return $default;
+    }
+
+    /**
+     * Delete session variables
+     *
+     * Example:
+     * // delete the stored userid from the session
+     * Session::delete('userid');
+     *
+     * // you can also delete a specific key from the array
+     * Session::delete('array.varC');
+     *
+     * @param string $name name of the variable to delete
+     */
+    public static function delete($name)
+    {
+        if (isset($_SESSION[$name])) {
+            unset($_SESSION[$name]);
+        }
+
+        if (strpos($name, '.') !== false) {
+            $parts = explode('.', $name);
+
+            switch (count($parts)) {
+                case 2:
+                    if (isset($_SESSION[$parts[0]][$parts[1]])) {
+                        unset($_SESSION[$parts[0]][$parts[1]]);
+                    }
+                    break;
+                case 3:
+                    if (isset($_SESSION[$parts[0]][$parts[1]][$parts[2]])) {
+                        unset($_SESSION[$parts[0]][$parts[1]][$parts[2]]);
+                    }
+                    break;
+                case 4:
+                    if (isset($_SESSION[$parts[0]][$parts[1]][$parts[2]][$parts[3]])) {
+                        unset($_SESSION[$parts[0]][$parts[1]][$parts[2]][$parts[3]]);
+                    }
+                    break;
+            }
+        }
     }
 }
