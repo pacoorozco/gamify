@@ -136,7 +136,7 @@ function doSilentAction($userId, $badgeId, $amount = 1)
     // At this point action is initiated for user
     $badgeAmountCompleted = intval($badgeAmountCompleted);
     $oldStatus = ($badgeAmountCompleted >= $badgeAmountNeeded) ? 'completed' : 'active';
-    $badgeAmountCompleted =+ intval($amount);
+    $badgeAmountCompleted = $badgeAmountCompleted + intval($amount);
     $newStatus = ($badgeAmountCompleted >= $badgeAmountNeeded) ? 'completed' : 'active';
 
     if (!$db->update(
