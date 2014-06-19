@@ -75,7 +75,8 @@
                     "SELECT * FROM vmembers "
                     . "ORDER BY month_points DESC, badges DESC, username ASC",
                     'month_points'
-                )
+                ),
+                'month_points'
             );
             ?>
             </div>
