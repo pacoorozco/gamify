@@ -43,19 +43,14 @@ namespace Pakus\Application;
  * @endcode
  *
  */
-class Session2
+class Session
 {
-    public function __construct($sessionName)
-    {
-        $this->startSession($sessionName);
-    }
-
     /**
      * This function starts, validates and secures a session.
      *
      * @param string $sessionName The name of the session.
      */
-    public function startSession($sessionName = '')
+    public static function startSession($sessionName = '')
     {
         // sets the session name to the one set above.
         session_name($sessionName . '_session');
@@ -64,18 +59,18 @@ class Session2
         session_start();
 
         // Make sure the session hasn't expired, and destroy it if it has
-        if ($this->validateSession()) {
+        if (self::validateSession()) {
             // Check to see if the session is new or a hijacking attempt
-            if (!$this->preventHijacking()) {
+            if (!self::preventHijacking()) {
                 // Reset session data and regenerate id
                 $_SESSION = array();
                 $_SESSION['IPaddress'] = isset($_SERVER['HTTP_X_FORWARDED_FOR'])
                     ? $_SERVER['HTTP_X_FORWARDED_FOR'] : $_SERVER['REMOTE_ADDR'];
                 $_SESSION['userAgent'] = $_SERVER['HTTP_USER_AGENT'];
-                $this->regenerateSession();
+                self::regenerateSession();
             }
         } else {
-            $this->destroySession();
+            self::destroySession();
         }
     }
 
@@ -86,7 +81,7 @@ class Session2
      *
      * @return bool TRUE on normal behavour, FALSE if Hijacking is detected
      */
-    protected function preventHijacking()
+    protected static function preventHijacking()
     {
         if (!isset($_SESSION['IPaddress']) || !isset($_SESSION['userAgent'])) {
             return false;
@@ -112,7 +107,7 @@ class Session2
      * This should be called whenever permission levels for a user change.
      *
      */
-    public function regenerateSession()
+    public static function regenerateSession()
     {
         // If this session is obsolete it means there already is a new id
         if (isset($_SESSION['OBSOLETE']) && $_SESSION['OBSOLETE'] == true) {
@@ -144,7 +139,7 @@ class Session2
      *
      * @return bool
      */
-    protected function validateSession()
+    protected static function validateSession()
     {
         if (isset($_SESSION['OBSOLETE']) && !isset($_SESSION['EXPIRES'])) {
             return false;
@@ -157,7 +152,7 @@ class Session2
         return true;
     }
 
-    public function destroySession()
+    public static function destroySession()
     {
         // destroy all $_SESSION variables and regenerate session_id
         session_unset();
@@ -191,7 +186,7 @@ class Session2
      * @param string $name name of the variable to set
      * @param mixed $value value to set
      */
-    public function set($name, $value = null)
+    public static function set($name, $value = null)
     {
         if (strpos($name, '.') !== false) {
             $parts = explode('.', $name);
@@ -231,7 +226,7 @@ class Session2
      * @param mixed $default the default value to return if $key doesn't exists
      * @return mixed the value
      */
-    public function get($name, $default = null)
+    public static function get($name, $default = null)
     {
         if (isset($_SESSION[$name])) {
             return $_SESSION[$name];
@@ -273,7 +268,7 @@ class Session2
      *
      * @param string $name name of the variable to delete
      */
-    public function delete($name)
+    public static function delete($name)
     {
         if (isset($_SESSION[$name])) {
             unset($_SESSION[$name]);
