@@ -190,8 +190,10 @@ class Bootstrap
      */
     private static function bootstrapSession()
     {
+        global $session;
+
         require_once LIBRARY_PATH . '/Session.class.inc';
-        \Pakus\Application\Session::startSession(APP_NAME);
+        $session = new \Pakus\Application\Session(APP_NAME);
     }
 
     /**

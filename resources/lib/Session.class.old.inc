@@ -37,25 +37,20 @@ namespace Pakus\Application;
  * specific host and browser, and regenerating the ID.
  *
  * @code
- * $sess = new \Pakus\Application\Session('MyName');
- * $sess = new \Pakus\Application\Session('MyBlog_Admin', 0, '/myBlog/', 'www.example.com');
- * $sess = new \Pakus\Application\Session('My_Accounts_Bank', 0, '/', 'accounts.bank.com', true);
+ * \Pakus\Application\Session::startSession('MyName');
+ * \Pakus\Application\Session::startSession('MyBlog_Admin', 0, '/myBlog/', 'www.example.com');
+ * \Pakus\Application\Session::startSession('My_Accounts_Bank', 0, '/', 'accounts.bank.com', true);
  * @endcode
  *
  */
 class Session
 {
-    public function __construct($sessionName = null)
-    {
-        $this->startSession($sessionName);
-    }
-
     /**
      * This function starts, validates and secures a session.
      *
      * @param string $sessionName The name of the session.
      */
-    protected function startSession($sessionName)
+    public static function startSession($sessionName = '')
     {
         // sets the session name to the one set above.
         session_name($sessionName . '_session');
@@ -64,19 +59,18 @@ class Session
         session_start();
 
         // Make sure the session hasn't expired, and destroy it if it has
-        if ($this->validateSession()) {
+        if (self::validateSession()) {
             // Check to see if the session is new or a hijacking attempt
-            if (!$this->preventHijacking()) {
+            if (!self::preventHijacking()) {
                 // Reset session data and regenerate id
                 $_SESSION = array();
-                $value = isset($_SERVER['HTTP_X_FORWARDED_FOR'])
+                $_SESSION['IPaddress'] = isset($_SERVER['HTTP_X_FORWARDED_FOR'])
                     ? $_SERVER['HTTP_X_FORWARDED_FOR'] : $_SERVER['REMOTE_ADDR'];
-                $this->set('IPaddress', $value);
-                $this->set('userAgent', $_SERVER['HTTP_USER_AGENT']);
-                $this->regenerateSession();
+                $_SESSION['userAgent'] = $_SERVER['HTTP_USER_AGENT'];
+                self::regenerateSession();
             }
         } else {
-            $this->destroySession();
+            self::destroySession();
         }
     }
 
@@ -87,9 +81,9 @@ class Session
      *
      * @return bool TRUE on normal behavour, FALSE if Hijacking is detected
      */
-    protected function preventHijacking()
+    protected static function preventHijacking()
     {
-        if (!$this->issetKey('IPaddress') || !$this->issetKey('userAgent')) {
+        if (!isset($_SESSION['IPaddress']) || !isset($_SESSION['userAgent'])) {
             return false;
         }
 
@@ -97,11 +91,11 @@ class Session
             ? $_SERVER['HTTP_X_FORWARDED_FOR']
             : $_SERVER['REMOTE_ADDR'];
 
-        if ($this->get('IPaddress') != $remoteIPAddress) {
+        if ($_SESSION['IPaddress'] != $remoteIPAddress) {
             return false;
         }
 
-        if ($this->get('userAgent') != $_SERVER['HTTP_USER_AGENT']) {
+        if ($_SESSION['userAgent'] != $_SERVER['HTTP_USER_AGENT']) {
             return false;
         }
 
@@ -113,16 +107,16 @@ class Session
      * This should be called whenever permission levels for a user change.
      *
      */
-    public function regenerateSession()
+    public static function regenerateSession()
     {
         // If this session is obsolete it means there already is a new id
-        if ($this->get('OBSOLETE') == true) {
+        if (isset($_SESSION['OBSOLETE']) && $_SESSION['OBSOLETE'] == true) {
             return;
         }
 
         // Set current session to expire in 10 seconds
-        $this->set('OBSOLETE', true);
-        $this->set('EXPIRES', time() + 10);
+        $_SESSION['OBSOLETE'] = true;
+        $_SESSION['EXPIRES'] = time() + 10;
 
         // Create new session without destroying the old one
         session_regenerate_id(false);
@@ -136,8 +130,8 @@ class Session
         session_start();
 
         // Now we unset the obsolete and expiration values for the session we want to keep
-        $this->delete('OBSOLETE');
-        $this->delete('EXPIRES');
+        unset($_SESSION['OBSOLETE']);
+        unset($_SESSION['EXPIRES']);
     }
 
     /**
@@ -145,31 +139,30 @@ class Session
      *
      * @return bool
      */
-    protected function validateSession()
+    protected static function validateSession()
     {
-        if ($this->issetKey('OBSOLETE') && !$this->issetKey('EXPIRES')) {
+        if (isset($_SESSION['OBSOLETE']) && !isset($_SESSION['EXPIRES'])) {
             return false;
         }
 
-        if ($this->issetKey('EXPIRES') && $this->get('EXPIRES') < time()) {
+        if (isset($_SESSION['EXPIRES']) && $_SESSION['EXPIRES'] < time()) {
             return false;
         }
 
         return true;
     }
 
-    public function destroySession()
+    public static function destroySession()
     {
         // destroy all $_SESSION variables and regenerate session_id
         session_unset();
         session_destroy();
         session_start();
     }
-    
+
     /**
      * Set session variables
      *
-     * @code
      * // store the userid in the session
      * Session::set('userid', $userid);
      *
@@ -189,12 +182,11 @@ class Session
      * Session::set('array', array(
      *     'varC' => $value
      * ));
-     * @endcode
      *
      * @param string $name name of the variable to set
      * @param mixed $value value to set
      */
-    public function set($name, $value = null)
+    public static function set($name, $value = null)
     {
         if (strpos($name, '.') !== false) {
             $parts = explode('.', $name);
@@ -220,7 +212,7 @@ class Session
     /**
      * Get session variables
      *
-     * @code
+     * Example:
      * // get the stored userid from the session
      * $userid = Session::get('userid');
      *
@@ -229,13 +221,12 @@ class Session
      *
      * // or get a specific key from the array
      * $arr = Session::get('array.varC');
-     * @endcode
      *
      * @param string $name name of the variable to get
      * @param mixed $default the default value to return if $key doesn't exists
      * @return mixed the value
      */
-    public function get($name, $default = null)
+    public static function get($name, $default = null)
     {
         if (isset($_SESSION[$name])) {
             return $_SESSION[$name];
@@ -264,32 +255,20 @@ class Session
         }
         return $default;
     }
-    
-    /**
-     * Return if $name is set
-     *
-     * @param string $name
-     * @return bool
-     */
-    public function issetKey($name)
-    {
-        return !is_null($this->get($name, null));
-    }
 
     /**
      * Delete session variables
      *
-     * @code
+     * Example:
      * // delete the stored userid from the session
      * Session::delete('userid');
      *
      * // you can also delete a specific key from the array
      * Session::delete('array.varC');
-     * @endcode
      *
      * @param string $name name of the variable to delete
      */
-    public function delete($name)
+    public static function delete($name)
     {
         if (isset($_SESSION[$name])) {
             unset($_SESSION[$name]);

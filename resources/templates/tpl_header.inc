@@ -82,9 +82,9 @@
                 <?php
                 if ( true === userIsLoggedIn() ) {
                 ?>
-                <li><a href="quiz.php" title="Participa amb nosaltres"><span class="glyphicon glyphicon-question-sign"></span> Participa <span class="badge"><?= getPendingQuizs($_SESSION['member']['id']); ?></span></a></li>
+                <li><a href="quiz.php" title="Participa amb nosaltres"><span class="glyphicon glyphicon-question-sign"></span> Participa <span class="badge"><?= getPendingQuizs($session->get('member.id')); ?></span></a></li>
                 <?php
-                if (userHasPrivileges($_SESSION['member']['id'])) {
+                if (userHasPrivileges($session->get('member.id'))) {
                     echo '<li><a href="admin.php" title="Panell d\'administració"><span class="glyphicon glyphicon-tasks"></span> Administra</a></li>';
                 }
                 }
@@ -94,7 +94,7 @@
             if ( true === userIsLoggedIn() ) {
                 ?>
         <ul class="nav navbar-nav navbar-right">
-        <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-user"></span> <?php echo $_SESSION['member']['username']; ?>
+        <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-user"></span> <?= $session->get('member.username'); ?>
                 <b class="caret"></b></a>
             <ul class="dropdown-menu">
                 <li>
@@ -102,18 +102,16 @@
                         <div class="row">
                             <div class="col-md-5">
                                 <?php
-                                $image = (empty($_SESSION['member']['profile_image']))
-                                        ? 'images/default_profile_pic.png'
-                                        : $_SESSION['member']['profile_image'];
+                                $image = $session->get('member.profile_image', 'images/default_profile_pic.png');
                                 ?>
-                                <img src="<?= $image; ?>" alt="<?= $_SESSION['member']['username']; ?>" class="img-thumbnail img-responsive">
+                                <img src="<?= $image; ?>" alt="<?= $session->get('member.username'); ?>" class="img-thumbnail img-responsive">
                                 <p class="small"></p>
                             </div>
                             <div class="col-md-7">
-                                <span><?= $_SESSION['member']['username']; ?>
+                                <span><?= $session->get('member.username'); ?>
                                     <a href="https://bit.ly/1rwwkFN"><span class="glyphicon glyphicon-heart"></span></a>
                                 </span>
-                                <p class="text-muted small"><?php echo $_SESSION['member']['email']; ?></p>
+                                <p class="text-muted small"><?= $session->get('member.email'); ?></p>
                                 <div class="divider"></div>
                                 <a href="member.php" title="El meu compte" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-user"></span> El meu compte</a>
                             </div>

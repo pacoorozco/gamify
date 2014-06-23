@@ -34,20 +34,20 @@
  */
 function userIsLoggedIn()
 {
-    global $db;
+    global $db, $session;
 
     // Check if all session variables are set
-    if (isset(
-        $_SESSION['member']['uuid'],
-        $_SESSION['member']['username'],
-        $_SESSION['member']['login_string']
-    )) {
+    if (
+        $session->issetKey('member.uuid')
+        && $session->issetKey('member.username')
+        && $session->issetKey('member.login_string')
+    ) {
         // Get the user's password from database, only for enabled users
         $userToken = $db->getOne(
             sprintf(
                 "SELECT `session_id` FROM `members` "
                 . "WHERE `uuid`='%s' AND `disabled`='0' LIMIT 1",
-                $db->qstr($_SESSION['member']['uuid'])
+                $db->qstr($session->get('member.uuid'))
             )
         );
 
@@ -57,7 +57,7 @@ function userIsLoggedIn()
         }
 
         $loginCheck = hash('sha512', $userToken . $_SERVER['HTTP_USER_AGENT']);
-        if ($loginCheck == $_SESSION['member']['login_string']) {
+        if ($loginCheck == $session->get('member.login_string')) {
             // User is logged in!
             return true;
         }
@@ -68,9 +68,10 @@ function userIsLoggedIn()
 
 function redirect($url, $includeCurrentURL = false)
 {
+    global $session;
     if ($includeCurrentURL) {
         // save referrer to $_SESSION['nav'] for redirect later
-        $_SESSION['nav'] = urlencode($_SERVER['SCRIPT_NAME'] . '?' . $_SERVER['QUERY_STRING']);
+        $session->set('nav', urlencode($_SERVER['SCRIPT_NAME'] . '?' . $_SERVER['QUERY_STRING']));
     }
     header(sprintf("Location: %s", $url));
     exit();
@@ -106,7 +107,7 @@ function getRandomString($length = 10)
  * Checks if some error has done while uploading.
  * Checks if filetype is allowed or no.
  *
- * @param   string  $file_field     Name of file upload in html form
+ * @param   string  $fileField     Name of file upload in html form
  * @param   string  $destination    The directory where file will be moved
  * @param   array   $allowedTypes  An array containing tiletypes allowed
  *
@@ -123,7 +124,7 @@ function getRandomString($length = 10)
  * On 'false' is an error message string
  * On 'true' is the generated filename.
  */
-function uploadFile($file_field, $destination, $allowedTypes = array())
+function uploadFile($fileField, $destination, $allowedTypes = array())
 {
 
     // Default allowed list of file to be uploaded
@@ -137,13 +138,13 @@ function uploadFile($file_field, $destination, $allowedTypes = array())
 
     // Undefined | Multiple Files | $_FILES Corruption Attack
     // If this request falls under any of them, treat it invalid.
-    if (!isset($_FILES[$file_field]['error']) || is_array($_FILES[$file_field]['error'])) {
+    if (!isset($_FILES[$fileField]['error']) || is_array($_FILES[$fileField]['error'])) {
         // Invalid parameters
         return array(false , 'Invalid parameters');
     }
 
     // Check $file['error'] value.
-    switch ($_FILES[$file_field]['error']) {
+    switch ($_FILES[$fileField]['error']) {
         case UPLOAD_ERR_OK:
             break;
         case UPLOAD_ERR_NO_FILE:
@@ -161,7 +162,7 @@ function uploadFile($file_field, $destination, $allowedTypes = array())
     // Check MIME Type
     $finfo = new finfo(FILEINFO_MIME_TYPE);
     if (false === $ext = array_search(
-        $finfo->file($_FILES[$file_field]['tmp_name']),
+        $finfo->file($_FILES[$fileField]['tmp_name']),
         $allowedTypes,
         true
     )) {
@@ -177,7 +178,7 @@ function uploadFile($file_field, $destination, $allowedTypes = array())
         $ext
     );
 
-    if (!move_uploaded_file($_FILES[$file_field]['tmp_name'], $filename)) {
+    if (!move_uploaded_file($_FILES[$fileField]['tmp_name'], $filename)) {
         // Failed to move uploaded file
         return array(false, 'Failed to move uploaded file');
     }
@@ -246,11 +247,11 @@ function getHTMLMessages($messages)
     return implode(PHP_EOL, $htmlCode);
 }
 
-function getHTMLSelectOptions($available_options, $selected_option = '')
+function getHTMLSelectOptions($availableOptions, $selectedOption = '')
 {
     $htmlCode = array();
-    foreach ($available_options as $key => $value) {
-        if ($key == $selected_option) {
+    foreach ($availableOptions as $key => $value) {
+        if ($key == $selectedOption) {
             $htmlCode[] = '<option value="' . $key . '" selected="selected">' . $value . '</option>';
         } else {
             $htmlCode[] = '<option value="' . $key . '">' . $value . '</option>';
@@ -310,13 +311,13 @@ function getREQUESTVar($in, $default = false)
         return isset($_POST[$in]) ? getPOSTVar($in) : ( isset($_GET[$in]) ? getGETVar($in) : $default );
 }
 
-function getSanitizedInput($in, $force_slashes = 0, $maxLength = 0)
+function getSanitizedInput($in, $forceSlashes = 0, $maxLength = 0)
 {
 
     // If $in is array we process every value
     if (is_array($in)) {
         foreach ($in as &$element) {
-            $element = getSanitizedInput($element, $force_slashes = 0, $maxLength = 0);
+            $element = getSanitizedInput($element, $forceSlashes = 0, $maxLength = 0);
         }
         unset ($element);
     } else {
@@ -329,7 +330,7 @@ function getSanitizedInput($in, $force_slashes = 0, $maxLength = 0)
         }
 
         // Add slashes
-        if ($force_slashes) {
+        if ($forceSlashes) {
             $in = addslashes($in);
         }
 
