@@ -1,8 +1,14 @@
 Version 2.xx (developement version)
 ------------
+
+Version 2.11
+------------
 * [BUG-#10] 'Some DB.class functions returns incorrect values'
 * Adds an image to default level 'Novato'
 * Adds uploads/badges, uploads/profiles and uploads/levels folders
+* Changes on Session class to manage $_SESSION in a better way
+* [ENH-#12] 'Optimize DB schema'
+* [BUG-#11] 'Levels are incorrectly assigned'
 
 Version 2.10
 ------------
