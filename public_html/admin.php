@@ -37,7 +37,7 @@ if (!userIsLoggedIn()) {
 }
 
 // Check if user has privileges
-if (! userHasPrivileges($_SESSION['member']['id'], 'administrator')) {
+if (! userHasPrivileges($session->get('member.id'), 'administrator')) {
     // User has no privileges
     require_once TEMPLATES_PATH . '/tpl_header.inc';
     printAccessDenied();

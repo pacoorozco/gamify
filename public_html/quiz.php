@@ -69,7 +69,7 @@ exit();
 /*** FUNCTIONS ***/
 function answerQuestion($questionUUID, $answers)
 {
-    global $db;
+    global $db, $session;
 
     $missatges = array();
     $question = $db->getRow(
@@ -84,12 +84,14 @@ function answerQuestion($questionUUID, $answers)
 
         return false;
     }
+    
+    $userId = $session->get('member.id');
 
     // Mirem si la pregunta ha estat resposta per aquest usuari
     $result = $db->getOne(
         sprintf(
             "SELECT id FROM members_questions WHERE id_member='%d' AND id_question='%d' LIMIT 1",
-            $_SESSION['member']['id'],
+            $userId,
             $question['id']
         )
     );
@@ -154,14 +156,14 @@ function answerQuestion($questionUUID, $answers)
     );
     if (is_null($result)) {
         // Es el primero, hay que dar badge
-        doSilentAction(intval($_SESSION['member']['id']), 1);
+        doSilentAction($userId, 1);
     }
     // ACTION: END
 
     $db->insert(
         'members_questions',
         array(
-            'id_member' => intval($_SESSION['member']['id']),
+            'id_member' => intval($userId),
             'id_question' => intval($question['id']),
             'amount' => intval($points),
             'answers' => $db->qstr(implode(',', $answers))
@@ -177,9 +179,9 @@ function answerQuestion($questionUUID, $answers)
         )
     );
 
-    $oldLevel = getUserLevelById($_SESSION['member']['id']);
-    doSilentAddExperience($_SESSION['member']['id'], $points, 'respondre la pregunta: '. $question['name']);
-    $newLevel = getUserLevelById($_SESSION['member']['id']);
+    $oldLevel = getUserLevelById($userId);
+    doSilentAddExperience($userId, $points, 'respondre la pregunta: '. $question['name']);
+    $newLevel = getUserLevelById($userId);
 
     if ($oldLevel != $newLevel) {
         $levelName = $db->getOne(
@@ -205,7 +207,7 @@ function answerQuestion($questionUUID, $answers)
     if ($result->num_rows > 0) {
         // hi ha accions a realitzar
         while ($row = $result->fetch_assoc()) {
-            if (doSilentAction($_SESSION['member']['id'], $row['badge_id']) == $row['badge_id']) {
+            if (doSilentAction($userId, $row['badge_id']) == $row['badge_id']) {
                 $badgeName = $db->getOne(
                     sprintf("SELECT name FROM badges WHERE id='%d'", $row['badge_id'])
                 );
@@ -225,7 +227,7 @@ function answerQuestion($questionUUID, $answers)
 
 function printAnswerQuestionForm($questionUUID, $msg = array())
 {
-    global $db;
+    global $db, $session;
 
     $question = $db->getRow(
         sprintf(
@@ -240,12 +242,14 @@ function printAnswerQuestionForm($questionUUID, $msg = array())
 
         return false;
     }
+    
+    $userId = $session->get('member.id');
 
     // Mirem si la pregunta ha estat resposta per aquest usuari
     $result = $db->getOne(
         sprintf(
             "SELECT amount FROM members_questions WHERE id_member='%d' AND id_question='%d' LIMIT 1",
-            $_SESSION['member']['id'],
+            $userId,
             $question['id']
         )
     );
@@ -329,10 +333,10 @@ function printQuestionHeader($a = 'list')
 
 function printQuestionList()
 {
-    global $db;
+    global $db, $session;
 
     $message = array();
-
+    
     printQuestionHeader('list');
     ?>
     <div class="panel panel-default" width="70%">
@@ -348,7 +352,7 @@ function printQuestionList()
     $query = sprintf(
         "SELECT * FROM questions WHERE status='active' AND id NOT IN "
         . "(SELECT id_question FROM members_questions WHERE id_member='%d')",
-        intval($_SESSION['member']['id'])
+        $session->get('member.id')
     );
 
     $result = $db->query($query);
@@ -384,7 +388,7 @@ function printQuestionList()
 
 function printHistoricQuestionList()
 {
-    global $db;
+    global $db, $session;
 
     $message = array();
 
@@ -401,7 +405,7 @@ function printHistoricQuestionList()
     $query = sprintf(
         "SELECT * FROM questions WHERE status='inactive' OR ( status='active' "
         . "AND id IN (SELECT id_question FROM members_questions WHERE id_member='%d') )",
-        intval($_SESSION['member']['id'])
+        $session->get('member.id')
     );
 
     $result = $db->query($query);
@@ -434,7 +438,7 @@ function printHistoricQuestionList()
 
 function viewQuestionByUUID($questionUUID, $msg = array())
 {
-    global $db;
+    global $db, $session;
 
     $question = $db->getRow(
         sprintf(
@@ -453,7 +457,7 @@ function viewQuestionByUUID($questionUUID, $msg = array())
     $responses = $db->getRow(
         sprintf(
             "SELECT last_time, amount, answers FROM members_questions WHERE id_member='%d' AND id_question='%d' LIMIT 1",
-            $_SESSION['member']['id'],
+            $session->get('member.id'),
             $question['id']
         )
     );

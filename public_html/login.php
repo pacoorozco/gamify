@@ -92,12 +92,12 @@ exit();
 
 function printLoginForm($username = '', $missatges = array())
 {
-    global $CONFIG;
+    global $CONFIG, $session;
 
     // get url to redirect after login
-    if (isset($_SESSION['nav'])) {
-        $nav = $_SESSION['nav'];
-        unset($_SESSION['nav']);
+    if ($session->issetKey('nav')) {
+        $nav = $session->get('nav');
+        $session->delete('nav');
     } else {
         $nav = getPOSTVar('nav');
     }
@@ -160,13 +160,14 @@ function printLoginForm($username = '', $missatges = array())
 
 function doLogout()
 {
+    global $session;
     // destroy $_SESSION in order to logot
-    \Pakus\Application\Session::destroySession();
+    $session->destroySession();
 }
 
 function doLogin($username, $password)
 {
-    global $CONFIG, $db;
+    global $CONFIG, $db, $session;
 
     $userLogged = false;
 
@@ -209,10 +210,13 @@ function doLogin($username, $password)
         $userBrowser = $_SERVER['HTTP_USER_AGENT'];
         $randomString = getRandomString(15);
 
-        $_SESSION['member'] = $usuari;
-        $_SESSION['member']['login_string'] = hash(
-            'sha512',
-            $randomString . $userBrowser
+        $session->set('member', $usuari);
+        $session->set(
+            'member.login_string', 
+            hash(
+                'sha512',
+                $randomString . $userBrowser
+            )
         );
 
         // Actualitzem el camp last_access i guardem el token

@@ -34,20 +34,20 @@
  */
 function userIsLoggedIn()
 {
-    global $db;
+    global $db, $session;
 
     // Check if all session variables are set
-    if (isset(
-        $_SESSION['member']['uuid'],
-        $_SESSION['member']['username'],
-        $_SESSION['member']['login_string']
-    )) {
+    if (
+        $session->issetKey('member.uuid')
+        && $session->issetKey('member.username')
+        && $session->issetKey('member.login_string')
+    ) {
         // Get the user's password from database, only for enabled users
         $userToken = $db->getOne(
             sprintf(
                 "SELECT `session_id` FROM `members` "
                 . "WHERE `uuid`='%s' AND `disabled`='0' LIMIT 1",
-                $db->qstr($_SESSION['member']['uuid'])
+                $db->qstr($session->get('member.uuid'))
             )
         );
 
@@ -57,7 +57,7 @@ function userIsLoggedIn()
         }
 
         $loginCheck = hash('sha512', $userToken . $_SERVER['HTTP_USER_AGENT']);
-        if ($loginCheck == $_SESSION['member']['login_string']) {
+        if ($loginCheck == $session->get('member.login_string')) {
             // User is logged in!
             return true;
         }
@@ -68,9 +68,10 @@ function userIsLoggedIn()
 
 function redirect($url, $includeCurrentURL = false)
 {
+    global $session;
     if ($includeCurrentURL) {
         // save referrer to $_SESSION['nav'] for redirect later
-        $_SESSION['nav'] = urlencode($_SERVER['SCRIPT_NAME'] . '?' . $_SERVER['QUERY_STRING']);
+        $session->set('nav', urlencode($_SERVER['SCRIPT_NAME'] . '?' . $_SERVER['QUERY_STRING']));
     }
     header(sprintf("Location: %s", $url));
     exit();

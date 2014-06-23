@@ -46,7 +46,7 @@ exit();
 /*** FUNCTIONS ***/
 function printHTMLRankingTable($users = array(), $show = 'total_points')
 {
-    global $db;
+    global $db, $session;
 
     $htmlCode = array();
     $top3 = 3;
@@ -72,7 +72,7 @@ function printHTMLRankingTable($users = array(), $show = 'total_points')
     foreach ($users as $row) {
         $row['points'] = $row[$show];
         $currentuser = '';
-        if ($row['username'] == $_SESSION['member']['username']) {
+        if ($row['username'] == $session->get('member.username')) {
             $currentuser = "class='info'";
             $currentranking = $position;
         }

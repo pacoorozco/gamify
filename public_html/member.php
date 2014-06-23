@@ -61,7 +61,7 @@ switch ($action) {
         $userUUID = getREQUESTVar('item');
         if (empty($userUUID)) {
             // if not suply any user to show, show the own ones
-            $userUUID = getUserUUIDById($_SESSION['member']['id']);
+            $userUUID = getUserUUIDById($session->get('member.id'));
         }
         printProfile($userUUID);
 }
@@ -115,7 +115,7 @@ function getSearchResults($searchterm)
  */
 function printProfile($userUUID)
 {
-    global $db;
+    global $db, $session;
 
     $row = $db->getRow(
         sprintf(
@@ -158,7 +158,7 @@ function printProfile($userUUID)
     ?>
                         <img src="<?= $row['profile_image']; ?>" class="img-thumbnail" id="profileImage">
     <?php
-    if ($userId == $_SESSION['member']['id']) {
+    if ($userId == $session->get('member.id')) {
         // L'usuari por editar la seva imatge.
         ?>
                         <p class="text-center">
@@ -274,10 +274,10 @@ function printProfile($userUUID)
  */
 function getHTMLBadges($userId)
 {
-    global $db;
+    global $db, $session;
 
     $htmlCode = array();
-    $currentUserId = $_SESSION['member']['id'];
+    $currentUserId = $session->get('member.id');
 
     $badgeList = $db->getAll(
         sprintf(
@@ -314,7 +314,7 @@ function getHTMLBadges($userId)
 
 function uploadProfilePicture()
 {
-    global $CONFIG, $db;
+    global $CONFIG, $db, $session;
 
     # upload the file to the filesystem uploads dir
     $destinationPath = $CONFIG['site']['uploads'] . '/profiles';
@@ -323,12 +323,14 @@ function uploadProfilePicture()
     if (!$returnedValue) {
         return 'ERROR';
     }
+    
+    $userId = $session->get('member.id');
 
     // Deletes previous profile picture file
     $profileImage = $db->getOne(
         sprintf(
             "SELECT profile_image FROM members WHERE id='%d'",
-            $_SESSION['member']['id']
+            $userId
         )
     );
     if (file_exists($profileImage)) {
@@ -337,7 +339,7 @@ function uploadProfilePicture()
 
     // ACTION: Si es la primera vegada que puja una imatge... guanya un badge
     if (empty($profileImage)) {
-        doSilentAction($_SESSION['member']['id'], 19);
+        doSilentAction($userId, 19);
     }
     // END ACTION
 
@@ -346,11 +348,11 @@ function uploadProfilePicture()
         array(
             'profile_image' =>  $returnedMessage
         ),
-        sprintf("id='%d' LIMIT 1", $_SESSION['member']['id'])
+        sprintf("id='%d' LIMIT 1", $userId)
     );
 
     // Modifica la imatge a la sessio actual
-    $_SESSION['member']['profile_image'] = $returnedMessage;
+    $session->set('member.profile_image', $returnedMessage);
 
     return $returnedMessage;
 }
