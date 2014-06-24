@@ -26,21 +26,6 @@
  * @license    http://www.gnu.org/licenses/gpl-2.0.html (GPL v2)
  * @link       https://github.com/pacoorozco/gamify
  */
-
-$hiddenFields = array();
-
-if ('edit' == $form) {
-    $title = 'Editar insígnia';
-    $hiddenFields['item'] = $data['id'];
-    $hiddenFields['a'] = 'savebadge';
-} else {
-    $title = 'Nova insígnia';
-    $hiddenFields['a'] = 'createbadge';
-}
-
-// Prepare $data before HTML, if a value doesn't exist give a defaults one
-$required = array('name', 'image', 'description', 'amount_needed');
-$data = getVarDefaults($data, $required);
 ?>
 <h1><?= $title; ?></h1>
 <p><?= getHTMLMessages($msg); ?></p>
@@ -71,12 +56,7 @@ $data = getVarDefaults($data, $required);
     </div>
     <div class="form-group">
         <div class="col-sm-offset-2 col-sm-10">
-    <?php
-    foreach ($hiddenFields as $name => $value) {
-        echo '<input type="hidden" id="' . $name . '" name="'
-            . $name . '" value="'. $value . '">' . PHP_EOL;
-    }
-    ?>
+    <?= implode(PHP_EOL, $htmlHiddenFields); ?>
             <button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-save"></span> Guardar dades</button>
             <a href="admin.php?a=badges" class="btn btn-danger" role="button"><span class="glyphicon glyphicon-retweet"></span> Tornar</a>
         </div>

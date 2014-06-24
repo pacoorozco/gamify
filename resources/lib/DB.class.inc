@@ -331,7 +331,7 @@ class DB extends \mysqli
         // Add WHERE clause if given
         if (false !== $where) {
             $query .= " WHERE ". $where;
-        }       
+        }
         if ($this->debug) {
             error_log($query);
         }
@@ -369,7 +369,7 @@ class DB extends \mysqli
         }
         if ($this->debug) {
             error_log($query);
-        }       
+        }
         return $this->query($query);
     }
 }

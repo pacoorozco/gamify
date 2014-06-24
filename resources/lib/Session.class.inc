@@ -53,7 +53,7 @@ class Session
     /**
      * This function starts, validates and secures a session.
      *
-     * @param string $sessionName The name of the session.
+     * @param   string  $sessionName    The name of the session.
      */
     protected function startSession($sessionName)
     {
@@ -85,7 +85,7 @@ class Session
      * the proper host. On new visits and hacking attempts this function will
      * return false.
      *
-     * @return bool TRUE on normal behavour, FALSE if Hijacking is detected
+     * @return  bool    TRUE on normal behavour, FALSE if Hijacking is detected
      */
     protected function preventHijacking()
     {
@@ -143,7 +143,7 @@ class Session
     /**
      * This function is used to see if a session has expired or not.
      *
-     * @return bool
+     * @return  bool
      */
     protected function validateSession()
     {
@@ -165,7 +165,7 @@ class Session
         session_destroy();
         session_start();
     }
-    
+
     /**
      * Set session variables
      *
@@ -191,8 +191,8 @@ class Session
      * ));
      * @endcode
      *
-     * @param string $name name of the variable to set
-     * @param mixed $value value to set
+     * @param   string  $name       name of the variable to set
+     * @param   mixed   $value      value to set
      */
     public function set($name, $value = null)
     {
@@ -231,9 +231,10 @@ class Session
      * $arr = Session::get('array.varC');
      * @endcode
      *
-     * @param string $name name of the variable to get
-     * @param mixed $default the default value to return if $key doesn't exists
-     * @return mixed the value
+     * @param   string  $name       name of the variable to get
+     * @param   mixed   $default    the default value to return if $key doesn't exists
+     *
+     * @return  mixed   the value
      */
     public function get($name, $default = null)
     {
@@ -264,12 +265,13 @@ class Session
         }
         return $default;
     }
-    
+
     /**
      * Return if $name is set
      *
-     * @param string $name
-     * @return bool
+     * @param   string  $name
+     *
+     * @return  bool
      */
     public function issetKey($name)
     {
@@ -287,7 +289,7 @@ class Session
      * Session::delete('array.varC');
      * @endcode
      *
-     * @param string $name name of the variable to delete
+     * @param   string  $name       name of the variable to delete
      */
     public function delete($name)
     {

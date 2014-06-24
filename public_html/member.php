@@ -323,7 +323,7 @@ function uploadProfilePicture()
     if (!$returnedValue) {
         return 'ERROR';
     }
-    
+
     $userId = $session->get('member.id');
 
     // Deletes previous profile picture file

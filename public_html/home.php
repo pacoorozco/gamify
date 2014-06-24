@@ -34,9 +34,29 @@ require_once TEMPLATES_PATH . '/tpl_header.inc';
 
 if (userIsLoggedIn()) {
     // Home for members!
+    $htmlMonthTop = getHTMLRankingTable(
+        $db->getAll(
+            "SELECT * FROM vmembers "
+            . "ORDER BY month_points DESC, badges DESC, username ASC",
+            'month_points'
+        )
+    );
+    $htmlTop = getHTMLRankingTable(
+        $db->getAll(
+            "SELECT * FROM vmembers "
+            . "ORDER BY total_points DESC, badges DESC, username ASC",
+            'total_points'
+        )
+    );
     require_once TEMPLATES_PATH . '/tpl_home_member.inc';
 } else {
     // Home for anonymous
+    $usertext = 'usuari';
+    $logintext = 'Accedir';
+    if ('LDAP' == $CONFIG['authentication']['type']) {
+        $usertext = 'usuari LDAP';
+        $logintext = 'Accedir amb LDAP';
+    }
     require_once TEMPLATES_PATH . '/tpl_home_anonymous.inc';
 }
 
@@ -44,27 +64,15 @@ require_once TEMPLATES_PATH . '/tpl_footer.inc';
 exit();
 
 /*** FUNCTIONS ***/
-function printHTMLRankingTable($users = array(), $show = 'total_points')
+function getHTMLRankingTable($users = array(), $show = 'total_points')
 {
     global $db, $session;
 
     $htmlCode = array();
+    $htmlReturn = array();
     $top3 = 3;
     $top10 = 10;
 
-    ?>
-    <table class="table table-hover" >
-    <thead>
-        <tr>
-            <th class="text-center">Posició</th>
-            <th>Usuari</th>
-            <th>Experiència</th>
-            <th>Nivell</th>
-            <th class="text-center">Insígnies</th>
-        </tr>
-    </thead>
-    <tbody>
-    <?php
     $position = 1;
     $currentranking = 0;
     $toprest = $top10 - $top3;
@@ -107,14 +115,14 @@ function printHTMLRankingTable($users = array(), $show = 'total_points')
 
     if ($currentranking > 0 && $currentranking <= $top3) {
         for ($i = 1; $i <= $top10; $i++) {
-            echo $ranking[$i];
+            $htmlReturn[] = $ranking[$i];
         }
     } else {
         for ($i = 1; $i <= $top3; $i++) {
-            echo $ranking[$i];
+            $htmlReturn[] = $ranking[$i];
         }
 
-        echo '<tr><td colspan="5" class="text-center">...</td></tr>';
+        $htmlReturn[] = '<tr><td colspan="5" class="text-center">...</td></tr>';
 
         if ($currentranking + $toprest < $position) {
             $init = $currentranking - 1;
@@ -124,11 +132,8 @@ function printHTMLRankingTable($users = array(), $show = 'total_points')
             $end = $position;
         }
         for ($i = $init; $i <= $end; $i++) {
-            echo $ranking[$i];
+            $htmlReturn[] = $ranking[$i];
         }
     }
-    ?>
-        </tbody>
-    </table>
-    <?php
+    return $htmlReturn;
 }
