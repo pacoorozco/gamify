@@ -93,7 +93,7 @@
                 </div>
             </div>
         </div>
-        <h3>Insígnies (<?= $badges; ?>)</h3>'
+        <h3>Insígnies (<?= $badges; ?>)</h3>
         <?= implode(PHP_EOL, $htmlBadgesCode); ?>
     </div>
 </div>

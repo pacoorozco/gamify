@@ -221,7 +221,7 @@ function getHTMLBadges($userId)
         $htmlCode[] = '</a>';
     }
 
-    return implode(PHP_EOL, $htmlCode);
+    return $htmlCode;
 }
 
 function uploadProfilePicture()
