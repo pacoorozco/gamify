@@ -872,6 +872,27 @@ function createLevel($data = array())
 
 function printLevelForm($form = '', $data = array(), $msg = array())
 {
+    $hiddenFields = array();
+    $htmlHiddenFields = array();
+
+    if ('edit' == $form) {
+        $title = 'Editar nivell';
+        $hiddenFields['item'] = $data['id'];
+        $hiddenFields['a'] = 'savelevel';
+    } else {
+        $title = 'Nou nivell';
+        $hiddenFields['a'] = 'createlevel';
+    }
+
+    // Prepare $data before HTML, if a value doesn't exist give a defaults one
+    $required = array('name', 'image', 'experience_needed');
+    $data = getVarDefaults($data, $required);
+
+    foreach ($hiddenFields as $name => $value) {
+        $htmlHiddenFields[] = '<input type="hidden" id="' . $name . '" name="'
+            . $name . '" value="' . $value . '">';
+    }
+
     // Call HTML template, where $form and $data will be used
     include TEMPLATES_PATH . '/tpl_adm_level_form.inc';
 
@@ -1062,6 +1083,26 @@ function createBadge($data = array())
 
 function printBadgeForm($form = '', $data = array(), $msg = array())
 {
+    $hiddenFields = array();
+    $htmlHiddenFields = array();
+
+    if ('edit' == $form) {
+        $title = 'Editar insígnia';
+        $hiddenFields['item'] = $data['id'];
+        $hiddenFields['a'] = 'savebadge';
+    } else {
+        $title = 'Nova insígnia';
+        $hiddenFields['a'] = 'createbadge';
+    }
+
+    // Prepare $data before HTML, if a value doesn't exist give a defaults one
+    $required = array('name', 'image', 'description', 'amount_needed');
+    $data = getVarDefaults($data, $required);
+
+    foreach ($hiddenFields as $name => $value) {
+        $htmlHiddenFields[] = '<input type="hidden" id="' . $name . '" name="'
+            . $name . '" value="'. $value . '">';
+    }
     // Call HTML template, where $form and $data will be used
     include TEMPLATES_PATH . '/tpl_adm_badge_form.inc';
 

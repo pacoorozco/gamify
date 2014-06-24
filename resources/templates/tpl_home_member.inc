@@ -33,7 +33,7 @@
         <h1>Juguem?</h1>
         <p class="lead">Benvinguts a <strong>GoW - Game of Work!</strong></p>
         <div class="video-container">
-        <iframe width="320" height="240" src="//www.youtube.com/embed/eH2A0k1um3A" frameborder="0" allowfullscreen></iframe>
+            <iframe width="320" height="240" src="//www.youtube.com/embed/eH2A0k1um3A" frameborder="0" allowfullscreen></iframe>
         </div>
 
         <h1>Contacta'ns</h1>
@@ -56,7 +56,7 @@
                         <span class="glyphicon glyphicon-search"></span>
                     </button>
                 </span>
-             </div>
+            </div>
         </form>
 
         <h1>Hall of fame</h1>
@@ -69,28 +69,38 @@
         <div class="tab-content">
             <!-- month top -->
             <div class="table-responsive tab-pane fade in active" id="month_top">
-            <?php
-            printHTMLRankingTable(
-                $db->getAll(
-                    "SELECT * FROM vmembers "
-                    . "ORDER BY month_points DESC, badges DESC, username ASC",
-                    'month_points'
-                )
-            );
-            ?>
+                <table class="table table-hover" >
+                    <thead>
+                        <tr>
+                            <th class="text-center">Posició</th>
+                            <th>Usuari</th>
+                            <th>Experiència</th>
+                            <th>Nivell</th>
+                            <th class="text-center">Insígnies</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?= implode(PHP_EOL, $htmlMonthTop); ?>
+                    </tbody>
+                </table>
             </div>
 
             <!-- top -->
             <div class="table-responsive tab-pane fade active" id="top">
-            <?php
-            printHTMLRankingTable(
-                $db->getAll(
-                    "SELECT * FROM vmembers "
-                    . "ORDER BY total_points DESC, badges DESC, username ASC",
-                    'total_points'
-                )
-            );
-            ?>
+                <table class="table table-hover" >
+                    <thead>
+                        <tr>
+                            <th class="text-center">Posició</th>
+                            <th>Usuari</th>
+                            <th>Experiència</th>
+                            <th>Nivell</th>
+                            <th class="text-center">Insígnies</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?= implode(PHP_EOL, $htmlTop); ?>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>

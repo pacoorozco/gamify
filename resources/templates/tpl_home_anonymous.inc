@@ -27,14 +27,14 @@
  * @link       https://github.com/pacoorozco/gamify
  */
 ?>
-   <div class="row">
+<div class="row">
     <div class="col-md-6">
         <h1>Benvinguts!</h1>
         <p class="text-justify">Una de les tendències actuals és la <a href="http://es.wikipedia.org/wiki/Ludificaci%C3%B3n" target="_blank">gamificació</a>, l'ús de mecàniques de joc en entorns i aplicacions no lúdiques amb la finalitat de potenciar la motivació, la concentració, l'esforç, la fidelització i altres valors positius comuns entre els jocs.</p>
 
         <blockquote>
-        <p>El trabajo es todo lo que se está obligado a hacer; el juego es lo que se hace sin estar obligado a ello.</p>
-        <footer>Mark Twain</footer>
+            <p>El trabajo es todo lo que se está obligado a hacer; el juego es lo que se hace sin estar obligado a ello.</p>
+            <footer>Mark Twain</footer>
         </blockquote>
 
         <p class="text-justify">Per aquest motiu hem creat <strong><abbr title="Game of Work">GoW!</abbr></strong>, una plataforma de gamificació a UPCnet amb la que us volem convidar a jugar tot aprenent i descobrint els desafiaments proposats.<p>
@@ -46,54 +46,43 @@
         <h1>Juguem?</h1>
         <div id="loginbox">
             <div class="panel panel-info">
-                    <div class="panel-heading">
-                        <div class="panel-title">Accedir</div>
-                        <div style="float:right; position: relative; top:-10px"><a href="http://www.upcnet.es/CanviContrasenyaUPC" target="_blank">Has oblidat la contrasenya?</a></div>
-                    </div>
+                <div class="panel-heading">
+                    <div class="panel-title">Accedir</div>
+                    <div style="float:right; position: relative; top:-10px"><a href="http://www.upcnet.es/CanviContrasenyaUPC" target="_blank">Has oblidat la contrasenya?</a></div>
+                </div>
 
-                    <div style="padding-top:30px" class="panel-body" >
+                <div style="padding-top:30px" class="panel-body" >
+                    <form action="login.php" method="post" class="form-horizontal" role="form">
 
-    <?php
-    $usertext = 'usuari';
-    $logintext = 'Accedir';
+                        <div style="margin-bottom: 25px" class="input-group">
+                            <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+                            <input type="text" name="username" class="form-control" placeholder="<?= $usertext; ?>" required>
+                        </div>
 
-    if ('LDAP' == $CONFIG['authentication']['type']) {
-        $usertext = 'usuari LDAP';
-        $logintext = 'Accedir amb LDAP';
-    }
-    ?>
+                        <div style="margin-bottom: 25px" class="input-group">
+                            <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+                            <input type="password" name="password" class="form-control" placeholder="contrasenya" required>
+                        </div>
 
-                        <form action="login.php" method="post" class="form-horizontal" role="form">
-
-                            <div style="margin-bottom: 25px" class="input-group">
-                                <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
-                                <input type="text" name="username" class="form-control" placeholder="<?= $usertext; ?>" required>
+                        <div style="margin-top:10px" class="form-group">
+                            <div class="col-md-12">
+                                <input type="hidden" id="a" name="a" value="login">
+                                <button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-log-in"></span> <?= $logintext; ?></button>
                             </div>
+                        </div>
 
-                            <div style="margin-bottom: 25px" class="input-group">
-                                <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
-                                <input type="password" name="password" class="form-control" placeholder="contrasenya" required>
-                            </div>
-
-                            <div style="margin-top:10px" class="form-group">
-                                <div class="col-md-12">
-                                    <input type="hidden" id="a" name="a" value="login">
-                                    <button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-log-in"></span> <?= $logintext; ?></button>
+                        <div class="form-group">
+                            <div class="col-md-12 control">
+                                <div style="border-top: 1px solid#888; padding-top:15px;">
+                                    No has accedit mai?
+                                    <a href="#" onClick="$('#loginbox').hide(); $('#signupbox').show()">
+                                        Registra't ara!
+                                    </a>
                                 </div>
                             </div>
-
-                            <div class="form-group">
-                                <div class="col-md-12 control">
-                                    <div style="border-top: 1px solid#888; padding-top:15px;">
-                                        No has accedit mai?
-                                        <a href="#" onClick="$('#loginbox').hide(); $('#signupbox').show()">
-                                            Registra't ara!
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
         <div id="signupbox" style="display:none;">
@@ -110,15 +99,7 @@
                         <div id="signupalert" style="display:none" class="alert alert-danger">
                             <p>Error:</p>
                             <span></span>
-                        </div>
-
-    <?php
-    $usertext = 'usuari';
-
-    if ('LDAP' == $CONFIG['authentication']['type']) {
-        $usertext = 'usuari LDAP';
-    }
-    ?>                        
+                        </div>                    
                         <div style="margin-bottom: 25px" class="input-group">
                             <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
                             <input type="text" name="username" class="form-control" placeholder="<?= $usertext; ?>" required>
@@ -142,6 +123,6 @@
                     </form>
                 </div>
             </div>
-         </div>
         </div>
     </div>
+</div>

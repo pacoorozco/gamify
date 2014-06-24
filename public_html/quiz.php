@@ -292,7 +292,7 @@ function printAnswerQuestionForm($questionUUID, $msg = array())
         $htmlCode[] = '</label></li>';
     }
     printQuestionHeader('question');
-    require_once TEMPLATES_PATH . '/tpl_quiz_answer.inc';
+    require_once TEMPLATES_PATH . '/tpl_quiz_answer_form.inc';
 }
 
 function printQuestionHeader($a = 'list')
