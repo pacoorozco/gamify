@@ -134,8 +134,14 @@ function printProfile($userUUID)
     $row['profile_image'] = $db->getOne(
         sprintf("SELECT profile_image FROM members WHERE id='%d' LIMIT 1", $userId)
     );
+    
+    if (empty($row['profile_image'])) {
+        $row['profile_image'] = 'images/default_profile_pic.png';
+    }
 
-    if (!$admin) {
+    if ($admin) {
+        require_once TEMPLATES_PATH . '/tpl_profile_admin.inc';
+    } else {
         $row2 = $db->getRow(
             sprintf(
                 "SELECT * FROM levels WHERE experience_needed >= '%d' LIMIT 1",
@@ -144,68 +150,7 @@ function printProfile($userUUID)
         );
 
         $levelper= round($row['total_points'] / $row2['experience_needed'] * 100);
-    }
-
-    ?>
-        <div class="row" style="margin-top:50px;">
-            <div class="col-md-7">
-                <div class="row">
-                    <div class="col-md-4">
-    <?php
-    if (empty($row['profile_image'])) {
-        $row['profile_image'] = 'images/default_profile_pic.png';
-    }
-    ?>
-                        <img src="<?= $row['profile_image']; ?>" class="img-thumbnail" id="profileImage">
-    <?php
-    if ($userId == $session->get('member.id')) {
-        // L'usuari por editar la seva imatge.
-        ?>
-                        <p class="text-center">
-                            <a href="#" id="uploadFile" title="Upload">
-                                <span class="glyphicon glyphicon-open"></span> Canviar imatge
-                            </a>
-                        </p>
-                        <p id="messageBox"></p>
-                        <script>
-                            var uploadURL = "<?= $_SERVER['PHP_SELF']; ?>?a=upload";
-                            head(function () {
-                                $(document).ready(function () {
-                                    $('a#uploadFile').file();
-                                    $('input#uploadFile').file().choose(function (e, input) {
-                                        input.upload(uploadURL, function (res) {
-                                            if (res=="ERROR") {
-                                                $('p#messageBox').attr("class","text-danger");
-                                                $('p#messageBox').html("Invalid extension !");
-                                            } else {
-                                                 $('img#profileImage').attr("src",res);
-                                                $('input#profileImageFile').val(res);
-                                                $(this).remove();
-                                            }
-                                        }, '');
-                                    } );
-                                } );
-                            } );
-                        </script>
-
-    <?php
-    }
-    ?>
-                    </div>
-                    <div class="col-md-8">
-                        <p class="h1"><?php echo $row['username']; ?></p>
-                        <p class="lead"><?php echo $row['level_name']; ?></p>
-                        <p class="small">
-                            Darrera connexió el <?= strftime('%A %d de %B', strtotime($row['last_access'])); ?>
-                        </p>
-                    </div>
-                </div>
-    <?php
-    if (!$admin) {
-        ?>
-                <h3>Activitat <small>darrers 10 events</small></h3>
-        <?php
-        $htmlCode = array();
+        $htmlEventsCode = array();
         $events = $db->getAll(
             sprintf(
                 "SELECT * FROM points WHERE id_member='%d' ORDER BY creation_time DESC LIMIT 10",
@@ -214,41 +159,13 @@ function printProfile($userUUID)
         );
 
         foreach ($events as $row3) {
-            $htmlCode[] = sprintf(
+            $htmlEventsCode[] = sprintf(
                 "<p>%s va rebre <strong>%d punts</strong> d'experiència per <em>%s</em></p>",
                 getElapsedTimeString($row3['creation_time']),
                 $row3['points'],
                 $row3['memo']
             );
         }
-        echo implode(PHP_EOL, $htmlCode);
-    }
-    ?>
-            </div>
-
-            <div class="col-md-offset-1 col-md-4">
-                <h3>Experiència</h3>
-                <div class="media">
-                    <img src="<?= getLevelImageById($row['level_id']); ?>" width="100" alt="<?= $row['level_name']; ?>" class="img-thumbnail media-object pull-left">
-                    <div class="media-body">
-                        <p class="lead media-heading"><?= $row['level_name']; ?></p>
-    <?php
-    if (!$admin) {
-        ?>
-                        <p>Nivell següent</p>
-                        <div class="progress">
-                            <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="<?= $row['total_points']; ?>" aria-valuemin="0" aria-valuemax="<?= $row2['experience_needed']; ?>" style="width: <?= $levelper; ?>%">
-                            <span><?= $row['total_points'] . '/' . $row2['experience_needed']; ?></span>
-                            </div>
-                        </div>
-    <?php
-    }
-    ?>
-                    </div>
-                </div>
-
-    <?php
-    if (!$admin) {
         $badges = $db->getOne(
             sprintf(
                 "SELECT COUNT(*) AS completed FROM members_badges "
@@ -256,14 +173,9 @@ function printProfile($userUUID)
                 $userId
             )
         );
-
-        echo '<h3>Insígnies ('. $badges .')</h3>';
-        echo getHTMLBadges($userId);
+        $htmlBadgesCode = getHTMLBadges($userId);
+        require_once TEMPLATES_PATH . '/tpl_profile_member.inc';
     }
-    ?>
-            </div>
-        </div>
-    <?php
 }
 
 /**
