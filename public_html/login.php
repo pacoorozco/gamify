@@ -39,18 +39,12 @@ switch ($action) {
         doLogout();
         break;
     case 'login':
-        $username = getPOSTVar('username');
-        $password = getPOSTVar('password');
-        $errors = array();
-
-        if (doLogin($username, $password)) {
+        if (doLogin(getPOSTVar('username'), getPOSTVar('password'))) {
             // go to previous referrer, if exists
-            $nav = getPOSTVar('nav');
-            // $nav is always urlencode()
-            $nav = (!empty($nav)) ? urldecode($nav) : 'index.php';
+            $nav = !empty(getPOSTVar('nav')) ? urldecode($nav) : 'index.php';
             redirect($nav);
         } else {
-            $errors[] = array(
+            $errors = array(
                 'type' => "error",
                 'msg' => "Usuari o contrasenya incorrectes."
             );
@@ -74,7 +68,6 @@ switch ($action) {
         printRegisterForm();
         break;
     case 'do_register':
-        $data = array();
         $data['username'] = getPOSTVar('username');
         $data['password'] = getPOSTVar('password');
         $data['email'] = getPOSTVar('email');
@@ -229,7 +222,6 @@ function doRegister($data = array())
                     'msg' => "No hem pogut comprovar les credencials al LDAP. Revisa-les si us plau"
                 );
                 printRegisterForm($missatges);
-
                 return false;
             }
             break;

@@ -43,8 +43,7 @@ $action = getREQUESTVar('a');
 switch ($action) {
     case 'search':
         // Que hem de buscar?
-        $searchterm = getGETVar('q');
-        echo getSearchResults($searchterm);
+        echo getSearchResults(getGETVar('q'));
         exit();
         break;
     case 'upload':
@@ -58,11 +57,10 @@ require_once TEMPLATES_PATH . '/tpl_header.inc';
 switch ($action) {
     case 'viewuser':
     default:
-        $userUUID = getREQUESTVar('item');
-        if (empty($userUUID)) {
-            // if not suply any user to show, show the own ones
-            $userUUID = getUserUUIDById($session->get('member.id'));
-        }
+        // if not suply any user to show, show the own ones
+        $userUUID = empty(getREQUESTVar('item'))
+            ? getUserUUIDById($session->get('member.id'))
+            : getREQUESTVar('item');
         printProfile($userUUID);
 }
 

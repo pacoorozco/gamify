@@ -337,18 +337,25 @@ function printQuestionList()
         );
     } else {
         $htmlCode[] = '<div class="list-group">';
-        foreach ($questions as $row) {
-            $htmlCode[] = '<a href="'. $_SERVER['PHP_SELF'] . '?a=answerqz&item='
-                . $row['uuid'] . '" class="list-group-item">';
-            $htmlCode[] = '<img src="'. $row['image'] .'" width="120" '
-                . 'class="img-rounded" alt="'. $row['name'] .'">';
-            $htmlCode[] = '<span class="h3">'. $row['name'] .'</span>';
-            $htmlCode[] = '</a>';
-        }
+        $htmlCode[] = getHTMLQuestionLink($questions, 'answerqz');
         $htmlCode[] = '</div>';
     }
     printQuestionHeader('list');
     require_once TEMPLATES_PATH . '/tpl_quiz_list.inc';
+}
+
+function getHTMLQuestionLink($questionsList, $action)
+{
+    $htmlCode = array();
+    foreach ($questionsList as $row) {
+        $htmlCode[] = '<a href="'. $_SERVER['PHP_SELF'] . '?a=' . $action .'&item='
+            . $row['uuid'] . '" class="list-group-item">';
+        $htmlCode[] = '<img src="'. $row['image'] .'" width="120" '
+            . 'class="img-rounded" alt="'. $row['name'] .'">';
+        $htmlCode[] = '<span class="h3">'. $row['name'] .'</span>';
+        $htmlCode[] = '</a>';
+    }
+    return implode(PHP_EOL, $htmlCode);
 }
 
 function printHistoricQuestionList()
@@ -374,14 +381,7 @@ function printHistoricQuestionList()
         );
     } else {
         $htmlCode[] = '<div class="list-group">';
-        foreach ($questions as $row) {
-            $htmlCode[] = '<a href="'. $_SERVER['PHP_SELF'] . '?a=seeqz&item='
-                . $row['uuid'] .'" class="list-group-item">';
-            $htmlCode[] = '<img src="'. $row['image'] .'" width="120" '
-                . 'class="img-rounded" alt="'. $row['name'] .'">';
-            $htmlCode[] = '<span class="h3">'. $row['name'] .'</span>';
-            $htmlCode[] = '</a>';
-        }
+        $htmlCode[] = getHTMLQuestionLink($questions, 'seeqz');
         $htmlCode[] = '</div>';
     }
     printQuestionHeader('historic');

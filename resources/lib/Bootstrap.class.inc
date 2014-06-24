@@ -94,7 +94,7 @@ define("TEMPLATES_PATH", realpath(dirname(__FILE__) . '/../templates'));
 class Bootstrap
 {
 
-    public static function init($phase = null, $new_phase = true)
+    public static function init($phase = null, $newPhase = true)
     {
         static $phases = array(
             APP_BOOTSTRAP_CONFIGURATION,
@@ -103,27 +103,27 @@ class Bootstrap
             APP_BOOTSTRAP_FULL
         );
 
-        static $final_phase = 0;
-        static $stored_phase = -1;
+        static $finalPhase = 0;
+        static $storedPhase = -1;
 
         // When not recursing, store the phase name so it's not forgotten while
         // recursing.
-        if ($new_phase) {
-            $final_phase = $phase;
+        if ($newPhase) {
+            $finalPhase = $phase;
         }
         if (isset($phase)) {
             // Call a phase if it has not been called before and is below the requested
             // phase.
-            while ($phases && $phase > $stored_phase && $final_phase > $stored_phase) {
-                $current_phase = array_shift($phases);
+            while ($phases && $phase > $storedPhase && $finalPhase > $storedPhase) {
+                $currentPhase = array_shift($phases);
 
                 // This function is re-entrant. Only update the completed phase when the
                 // current call actually resulted in a progress in the bootstrap process.
-                if ($current_phase > $stored_phase) {
-                    $stored_phase = $current_phase;
+                if ($currentPhase > $storedPhase) {
+                    $storedPhase = $currentPhase;
                 }
 
-                switch ($current_phase) {
+                switch ($currentPhase) {
                     case APP_BOOTSTRAP_CONFIGURATION:
                         self::bootstrapConfiguration();
                         break;
@@ -139,7 +139,7 @@ class Bootstrap
                 }
             }
         }
-        return $stored_phase;
+        return $storedPhase;
     }
 
     /**

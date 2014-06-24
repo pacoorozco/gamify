@@ -1165,7 +1165,7 @@ function validateBadgeData($data, &$msg)
 
     if (!is_null($badgeName)) {
         // A badge exists with the same name or with de same experience_needed.
-        $missatges[] = array(
+        $error[] = array(
             'type' => "error",
             'msg' => "Ja existeix una insígnia amb el mateix nom."
         );
@@ -1632,14 +1632,14 @@ function createQuestion($data = array())
 function setQuestionPublishTime($questionId)
 {
     global $db;
-    $publish_date = $db->getOne(
+    $publishDate = $db->getOne(
         sprintf(
             "SELECT `publish_time` FROM `questions` "
             . "WHERE `id`='%d' AND `publish_time` != 0 LIMIT 1",
             $questionId
         )
     );
-    if (is_null($publish_date)) {
+    if (is_null($publishDate)) {
         $db->update(
             'questions',
             array(
@@ -1988,7 +1988,7 @@ function printPreviewQuestion($questionId)
             'type' => "error",
             'msg' => "No he trobat informaci&oacute; per aquesta pregunta."
         );
-        printQuestionManagement();
+        printQuestionManagement($missatges);
 
         return false;
     }
