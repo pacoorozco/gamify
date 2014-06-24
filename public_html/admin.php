@@ -37,7 +37,7 @@ if (!userIsLoggedIn()) {
 }
 
 // Check if user has privileges
-if (! userHasPrivileges($session->get('member.id'), 'administrator')) {
+if (!userHasPrivileges($session->get('member.id'), 'administrator')) {
     // User has no privileges
     require_once TEMPLATES_PATH . '/tpl_header.inc';
     printAccessDenied();
@@ -134,9 +134,9 @@ switch ($action) {
     case 'deletelevel':
         $levelId = getREQUESTVar('item');
         if (deleteLevel($levelId)) {
-           $missatges[] = array('type' => "success", 'msg' => "El n&iacute;vell s'ha el&middot;liminat correctament.");
+            $missatges[] = array('type' => "success", 'msg' => "El n&iacute;vell s'ha el&middot;liminat correctament.");
         } else {
-           $missatges[] = array('type' => "error", 'msg' => "No s'ha pogut el&middot;liminar el n&iacute;vell.");
+            $missatges[] = array('type' => "error", 'msg' => "No s'ha pogut el&middot;liminar el n&iacute;vell.");
         }
         printLevelManagement($missatges);
         break;
@@ -173,9 +173,9 @@ switch ($action) {
         $badgeId = getREQUESTVar('item');
 
         if (deleteBadge($badgeId)) {
-           $missatges[] = array('type' => "success", 'msg' => "La insígnia s'ha el&middot;liminat correctament.");
+            $missatges[] = array('type' => "success", 'msg' => "La insígnia s'ha el&middot;liminat correctament.");
         } else {
-           $missatges[] = array('type' => "error", 'msg' => "No s'ha pogut el&middot;liminar la insígnia.");
+            $missatges[] = array('type' => "error", 'msg' => "No s'ha pogut el&middot;liminar la insígnia.");
         }
         printBadgeManagement($missatges);
         break;
@@ -189,9 +189,9 @@ switch ($action) {
         $missatge = getPOSTVar('missatge');
 
         if (sendMessage($subject, $missatge)) {
-           $missatges[] = array('type' => "success", 'msg' => "El missatge s'ha enviat correctament.");
+            $missatges[] = array('type' => "success", 'msg' => "El missatge s'ha enviat correctament.");
         } else {
-           $missatges[] = array('type' => "error", 'msg' => "No s'ha pogut enviar el missatge.");
+            $missatges[] = array('type' => "error", 'msg' => "No s'ha pogut enviar el missatge.");
         }
         printSendMessage($missatges);
         break;
@@ -248,9 +248,9 @@ switch ($action) {
         $questionId = getREQUESTVar('item');
 
         if (deleteQuestion($questionId)) {
-           $missatges[] = array('type' => "success", 'msg' => "La pregunta s'ha el&middot;liminat correctament.");
+            $missatges[] = array('type' => "success", 'msg' => "La pregunta s'ha el&middot;liminat correctament.");
         } else {
-           $missatges[] = array('type' => "error", 'msg' => "No s'ha pogut el&middot;liminar la pregunta.");
+            $missatges[] = array('type' => "error", 'msg' => "No s'ha pogut el&middot;liminar la pregunta.");
         }
         printQuestionManagement($missatges);
         break;
@@ -273,12 +273,24 @@ function printAdminHeader($a = 'users', $msg = array())
             <p><?= getHTMLMessages($msg); ?></p>
 
             <ul class="nav nav-tabs">
-                <li<?= ( $a == 'actions' ) ? ' class="active"' : ''; ?>><a href="admin.php?a=actions"><span class="glyphicon glyphicon-dashboard"></span> Accions</a></li>
-                <li<?= ( $a == 'users' ) ? ' class="active"' : ''; ?>><a href="admin.php?a=users"><span class="glyphicon glyphicon-user"></span>  Usuaris</a></li>
-                <li<?= ( $a == 'levels' ) ? ' class="active"' : ''; ?>><a href="admin.php?a=levels"><span class="glyphicon glyphicon-list-alt"></span> Nivells</a></li>
-                <li<?= ( $a == 'badges' ) ? ' class="active"' : ''; ?>><a href="admin.php?a=badges"><span class="glyphicon glyphicon-certificate"></span> Insígnies</a></li>
-                <li<?= ( $a == 'quiz' ) ? ' class="active"' : ''; ?>><a href="admin.php?a=quiz"><span class="glyphicon glyphicon-comment"></span> Preguntes</a></li>
-                <li<?= ( $a == 'messages' ) ? ' class="active"' : ''; ?>><a href="admin.php?a=messages"><span class="glyphicon glyphicon-envelope"></span> Missatges</a></li>
+                <li<?= ( $a == 'actions' ) ? ' class="active"' : ''; ?>>
+                    <a href="admin.php?a=actions"><span class="glyphicon glyphicon-dashboard"></span> Accions</a>
+                </li>
+                <li<?= ( $a == 'users' ) ? ' class="active"' : ''; ?>>
+                    <a href="admin.php?a=users"><span class="glyphicon glyphicon-user"></span>  Usuaris</a>
+                </li>
+                <li<?= ( $a == 'levels' ) ? ' class="active"' : ''; ?>>
+                    <a href="admin.php?a=levels"><span class="glyphicon glyphicon-list-alt"></span> Nivells</a>
+                </li>
+                <li<?= ( $a == 'badges' ) ? ' class="active"' : ''; ?>>
+                    <a href="admin.php?a=badges"><span class="glyphicon glyphicon-certificate"></span> Insígnies</a>
+                </li>
+                <li<?= ( $a == 'quiz' ) ? ' class="active"' : ''; ?>>
+                    <a href="admin.php?a=quiz"><span class="glyphicon glyphicon-comment"></span> Preguntes</a>
+                </li>
+                <li<?= ( $a == 'messages' ) ? ' class="active"' : ''; ?>>
+                    <a href="admin.php?a=messages"><span class="glyphicon glyphicon-envelope"></span> Missatges</a>
+                </li>
 
             </ul>
     <?php
@@ -293,106 +305,27 @@ function printActions ($msg = array())
 {
     global $db;
 
+    $userList = $db->getAll(
+        "SELECT id, username FROM members WHERE role = 'member' ORDER BY username"
+    );
+
+    // Per incrementar la velocitat, guardem tot el codi en una variable i fem nomes un echo.
+    $htmlUsersCode = array();
+    foreach ($userList as $row) {
+        $htmlUsersCode[] = '<option value="' . $row['id'] . '">' . $row['username'] . '</option>';
+    }
+
+    $badgeList = $db->getAll(
+        "SELECT id, name FROM badges WHERE status = 'active' ORDER BY name"
+    );
+
+    // Per incrementar la velocitat, guardem tot el codi en una variable i fem nomes un echo.
+    $htmlBadgesCode = array();
+    foreach ($badgeList as $row) {
+        $htmlBadgesCode[] = '<option value="' . $row['id'] . '">' . $row['name'] . '</option>';
+    }
     printAdminHeader('actions');
-    ?>
-               <div class="panel panel-default">
-                <div class="panel-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                    <h2>Donar experiència</h2>
-                    <p><?= getHTMLMessages($msg); ?></p>
-                    <form action="admin.php" method="post" class="form-horizontal" role="form">
-                        <div class="form-group">
-                            <label for="username" class="col-sm-2 control-label">Usuari</label>
-                            <div class="col-sm-10">
-                                <select data-placeholder="escull un usuari..." name="item" id="username" class="form-control chosen-select">
-                                    <option value=""></option>
-    <?php
-    $query = "SELECT id, username FROM members WHERE role = 'member' ORDER BY username";
-    $result = $db->query($query);
-
-    // Per incrementar la velocitat, guardem tot el codi en una variable i fem nomes un echo.
-    $htmlCode = array();
-    while ($row = $result->fetch_assoc()) {
-        $htmlCode[] = '<option value="' . $row['id'] . '">' . $row['username'] . '</option>';
-    }
-    echo implode(PHP_EOL, $htmlCode);
-    ?>
-
-                                </select>
-                                </div>
-                            </div>
-                        <div class="form-group">
-                            <label for="experience" class="col-sm-2 control-label">Experiència</label>
-                            <div class="col-sm-10">
-                                <select name="experience" id="experience" class="form-control">
-                                    <option value="1">1 punt</value>
-                                    <option value="5">5 punts</value>
-                                    <option value="10">10 punts</value>
-                                </select>
-                            </div>
-                        </div>
-
-                            <div class="form-group">
-                                <label for="memo" class="col-sm-2 control-label">Motiu</label>
-                                <div class="col-sm-10">
-                                    <input type="text" name="memo" id="memo" class="form-control" placeholder="per què rep els punts? (opcional)">
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <div class="col-sm-offset-2 col-sm-10">
-                                    <input type="hidden" id="a" name="a" value="giveexperience">
-                                    <button type="submit" class="btn btn-default">Donar experiència</button>
-                                </div>
-                            </div>
-                    </form>
-                        </div>
-                        <div class="col-md-6">
-            <h2>Donar insígnies</h2>
-                    <form action="admin.php" method="post" class="form-horizontal" role="form">
-                        <div class="form-group">
-                            <label for="username" class="col-sm-2 control-label">Usuari</label>
-                            <div class="col-sm-10">
-                                <select data-placeholder="escull un usuari..." name="item" id="username" class="form-control chosen-select">
-                                    <option value=""></option>
-                                    <?= implode(PHP_EOL, $htmlCode); ?>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="badge" class="col-sm-2 control-label">Assoliment</label>
-                            <div class="col-sm-10">
-                                <select data-placeholder="escull un badge..." name="achievement" id="badge" class="form-control chosen-select">
-                                    <option value=""></option>
-    <?php
-    $query = "SELECT id, name FROM badges WHERE status = 'active' ORDER BY name";
-    $result = $db->query($query);
-
-    // Per incrementar la velocitat, guardem tot el codi en una variable i fem nomes un echo.
-    unset($htmlCode);
-    $htmlCode = array();
-    while ($row = $result->fetch_assoc()) {
-        $htmlCode[] = '<option value="' . $row['id'] . '">' . $row['name'] . '</option>';
-    }
-    echo implode(PHP_EOL, $htmlCode);
-    ?>
-                                </select>
-                            </div>
-                        </div>
-                          <div class="form-group">
-                                <div class="col-sm-offset-2 col-sm-10">
-                                    <input type="hidden" id="amount" name="amount" value="1">
-                                    <input type="hidden" id="a" name="a" value="givebadge">
-                                    <button type="submit" class="btn btn-default">Executar acció</button>
-                                </div>
-                            </div>
-
-                </div>
-            </div>
-                </div>
-               </div>
-    <?php
+    require_once TEMPLATES_PATH . '/tpl_adm_actions_form.inc';
 }
 
 function printUserManagement ($msg = array())
@@ -401,28 +334,28 @@ function printUserManagement ($msg = array())
 
     printAdminHeader('users', $msg);
     ?>
-                        <div class="panel panel-default">
-                            <div class="panel-body">
-                                <p class="text-right">
-                                    <a href="admin.php?a=newuser" class="btn btn-success" role="button"><span class="glyphicon glyphicon-plus"></span> Nou usuari</a>
-                                </p>
-
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <p class="text-right">
+                    <a href="admin.php?a=newuser" class="btn btn-success" role="button"><span class="glyphicon glyphicon-plus"></span> Nou usuari</a>
+                </p>
                 <table class="table table-hover" id="users">
                     <thead>
-                    <tr>
-                        <th>Usuari</th>
-                        <th>Rol</th>
-                        <th>Accions</th>
-                    </tr>
+                        <tr>
+                            <th>Usuari</th>
+                            <th>Rol</th>
+                            <th>Accions</th>
+                        </tr>
                     </thead>
                     <tbody>
     <?php
-    $query = "SELECT id, username, role FROM members ORDER BY username";
-    $result = $db->query($query);
+    $userList = $db->getAll(
+        "SELECT id, username, role FROM members ORDER BY username"
+    );
 
     // Per incrementar la velocitat, guardem tot el codi en una variable i fem nomes un echo.
     $htmlCode = array();
-    while ($row = $result->fetch_assoc()) {
+    foreach ($userList as $row) {
         $htmlCode[] = '<tr>';
         $htmlCode[] = '<td>';
         $htmlCode[] = '<a href="admin.php?a=edituser&item=' . $row['id'] . '">' . $row['username'] . '</a>';
@@ -439,8 +372,8 @@ function printUserManagement ($msg = array())
     ?>
                     </tbody>
                 </table>
-                            </div>
-                        </div>
+            </div>
+        </div>
     <?php
     echo getHTMLDataTable('#users');
 }
@@ -572,9 +505,9 @@ function printNewUserForm($data = array(), $msg = array())
                                     <input type="text" name="username" id="username" class="form-control" placeholder="Usuari" value="<?= (isset($data['username'])) ? $data['username'] : ''; ?>" required>
                                 </div>
                             </div>
-                            <?php
-                            if ($CONFIG['authentication']['type'] == 'LOCAL') {
-                            ?>
+    <?php
+    if ($CONFIG['authentication']['type'] == 'LOCAL') {
+        ?>
                             <div class="form-group">
                                 <label for="password" class="col-sm-2 control-label">Contrasenya</label>
                                 <div class="col-sm-10">
@@ -587,9 +520,9 @@ function printNewUserForm($data = array(), $msg = array())
                                     <input type="password" name="repeatpassword" id="repeatpassword" class="form-control" placeholder="Contrasenya" required>
                                 </div>
                             </div>
-                            <?php
-                            }
-                            ?>
+        <?php
+    }
+    ?>
                             <div class="form-group">
                                 <label for="email" class="col-sm-2 control-label">Adreça de correu</label>
                                 <div class="col-sm-10">
@@ -695,19 +628,21 @@ function createUser($data = array())
 
     if (!empty($missatges)) {
         printNewUserForm($data, $missatges);
+
         return false;
     }
 
     // User data is correct, now we can insert it to DB
-    $userId = $db->insert('members',
-            array (
-                'uuid' => getNewUUID(),
-                'username' => $data['username'],
-                'password' => md5($data['password']),
-                'email' => $data['email'],
-                'role' => $data['role']
-            )
-        );
+    $userId = $db->insert(
+        'members',
+        array (
+            'uuid' => getNewUUID(),
+            'username' => $data['username'],
+            'password' => md5($data['password']),
+            'email' => $data['email'],
+            'role' => $data['role']
+        )
+    );
 
     if (0 == $userId) {
         $missatges[] = array(
@@ -715,6 +650,7 @@ function createUser($data = array())
             'msg' => "No s'ha pogut crear l'usuari."
         );
         printNewUserForm($data, $missatges);
+
         return false;
     }
     $missatges[] = array(
@@ -722,6 +658,7 @@ function createUser($data = array())
         'msg' => "L'usuari '<strong>". $data['username'] ."</strong>' s'ha creat correctament."
     );
     printUserManagement($missatges);
+
     return true;
 }
 
@@ -761,9 +698,9 @@ function printEditUserForm($userId, $msg = array())
                                     <p class="form-control-static"><?= $row['username']; ?></p>
                                 </div>
                             </div>
-                            <?php
-                            if ($CONFIG['authentication']['type'] == 'LOCAL') {
-                            ?>
+    <?php
+    if ($CONFIG['authentication']['type'] == 'LOCAL') {
+        ?>
                             <div class="form-group">
                                 <label for="password" class="col-sm-2 control-label">Contrasenya</label>
                                 <div class="col-sm-10">
@@ -776,9 +713,9 @@ function printEditUserForm($userId, $msg = array())
                                     <input type="password" name="repeatpassword" id="repeatpassword" class="form-control" placeholder="Contrasenya">
                                 </div>
                             </div>
-                            <?php
-                            }
-                            ?>
+        <?php
+    }
+    ?>
                             <div class="form-group">
                                 <label for="email" class="col-sm-2 control-label">Adreça de correu</label>
                                 <div class="col-sm-10">
@@ -789,16 +726,16 @@ function printEditUserForm($userId, $msg = array())
                                 <label for="role" class="col-sm-2 control-label">Rol</label>
                                 <div class="col-sm-10">
                                     <select name="role" id="role" class="form-control">
-                            <?php
-                            $availableRoles = array('member', 'administrator');
-                            foreach ($availableRoles as $opt_key) {
-                                if ($opt_key == $row['role']) {
-                                    echo '<option value="' . $opt_key . '" selected="selected">' . $opt_key . '</option>';
-                                } else {
-                                    echo '<option value="' . $opt_key . '">' . $opt_key . '</option>';
-                                }
-                            }
-                            ?>
+    <?php
+    $availableRoles = array('member', 'administrator');
+    foreach ($availableRoles as $opt_key) {
+        if ($opt_key == $row['role']) {
+            echo '<option value="' . $opt_key . '" selected="selected">' . $opt_key . '</option>';
+        } else {
+            echo '<option value="' . $opt_key . '">' . $opt_key . '</option>';
+        }
+    }
+    ?>
                                     </select>
                                 </div>
                             </div>
@@ -823,18 +760,20 @@ function saveUserData($data = array())
 
     // Validate supplied data
     $data['id'] = intval($data['id']);
-      
+
     if (!getUserExists($data['id'])) {
         $missatges[] = array(
             'type' => "error",
             'msg' => "<strong>ATENCI&Oacute;</strong>: L'usuari suministrat per actualitzar no existeix."
         );
         printUserManagement($missatges);
+
         return false;
     }
 
     if (!validateUserData($data, $missatges)) {
         printEditUserForm($data['id'], $missatges);
+
         return false;
     }
 
@@ -848,7 +787,7 @@ function saveUserData($data = array())
             'password' => md5($data['password']),
         );
     }
-    
+
     if (!$db->upddate(
         'members',
         $dataToSave,
@@ -859,6 +798,7 @@ function saveUserData($data = array())
             'msg' => "No s'ha pogut actualitzar les dades de l'usuari."
         );
         printEditUserForm($data, $missatges);
+
         return false;
     }
     $missatges[] = array(
@@ -866,6 +806,7 @@ function saveUserData($data = array())
         'msg' => "Dades d'usuari '<strong>". getUserNameById($data['id']) ."</strong>' actualitzades."
     );
     printUserManagement($missatges);
+
     return true;
 }
 
@@ -880,6 +821,7 @@ function deleteUser($userId)
         'members',
         sprintf("id='%d' LIMIT 1", $userId)
     );
+
     return (!getUserExists($userId));
 }
 
@@ -896,6 +838,7 @@ function createLevel($data = array())
 
     if (!validateLevelData($data, $missatges)) {
         printNewLevelForm($data, $missatges);
+
         return false;
     }
 
@@ -914,6 +857,7 @@ function createLevel($data = array())
             'msg' => "No s'ha pogut crear el nivell."
         );
         printNewLevelForm($data, $missatges);
+
         return false;
     }
 
@@ -922,6 +866,7 @@ function createLevel($data = array())
         'msg' => "El nivell '<strong>". $data['name'] ."</strong>' s'ha creat correctament."
     );
     printLevelManagement($missatges);
+
     return true;
 }
 
@@ -929,6 +874,7 @@ function printLevelForm($form = '', $data = array(), $msg = array())
 {
     // Call HTML template, where $form and $data will be used
     include TEMPLATES_PATH . '/tpl_adm_level_form.inc';
+
     return true;
 }
 
@@ -947,8 +893,10 @@ function printEditLevelForm($levelId, $msg = array())
             'msg' => "No he trobat informaci&oacute; per aquest nivell."
         );
         printLevelManagement($missatges);
+
         return false;
     }
+
     return printLevelForm('edit', $data, $msg);
 }
 
@@ -975,7 +923,8 @@ function validateLevelData($data, &$msg)
     }
 
     $levelName = $db->getOne(
-        sprintf("SELECT name FROM levels "
+        sprintf(
+            "SELECT name FROM levels "
             . "WHERE (name='%s' OR experience_needed='%d') AND id != '%d'",
             $db->qstr($data['name']),
             $data['experience_needed'],
@@ -994,6 +943,7 @@ function validateLevelData($data, &$msg)
     if (!empty($error)) {
         // We have found some errors, returning ot origin call
         $msg = $error;
+
         return false;
     }
 
@@ -1033,12 +983,13 @@ function updateLevel($data = array())
             'image' => $data['image']
         ),
         sprintf("id = '%d' LIMIT 1", $data['id'])
-        )) {
+    )) {
         $missatges[] = array(
             'type' => "success",
             'msg' => "Dades del nivell '<strong>" . $data['name'] . "</strong>' actualitzades."
         );
         printLevelManagement($missatges);
+
         return true;
     }
 
@@ -1047,6 +998,7 @@ function updateLevel($data = array())
         'msg' => "No s'ha pogut actualitzar les dades del nivell."
     );
     printEditLevelForm($data, $missatges);
+
     return false;
 }
 
@@ -1058,6 +1010,7 @@ function deleteLevel($levelId)
         'levels',
         sprintf("id = '%d' LIMIT 1", intval($levelId))
     );
+
     return (!getLevelExists($levelId));
 }
 
@@ -1067,7 +1020,7 @@ function printNewBadgeForm($data = array(), $msg = array())
     return printBadgeForm('new', $data, $msg);
 }
 
-function createBadge( $data = array() )
+function createBadge($data = array())
 {
     global $db;
 
@@ -1095,6 +1048,7 @@ function createBadge( $data = array() )
             'msg' => "No s'ha pogut crear la insígnia."
         );
         printNewLevelForm($data, $missatges);
+
         return false;
     }
     $missatges[] = array(
@@ -1102,6 +1056,7 @@ function createBadge( $data = array() )
         'msg' => "La insígnia '<strong>". $data['name'] ."</strong>' s'ha creat correctament."
     );
     printBadgeManagement($missatges);
+
     return true;
 }
 
@@ -1109,6 +1064,7 @@ function printBadgeForm($form = '', $data = array(), $msg = array())
 {
     // Call HTML template, where $form and $data will be used
     include TEMPLATES_PATH . '/tpl_adm_badge_form.inc';
+
     return true;
 }
 
@@ -1127,8 +1083,10 @@ function printEditBadgeForm($badgeId, $msg = array())
             'msg' => "No he trobat informaci&oacute; per aquesta insígnia."
         );
         printBadgeManagement($missatges);
+
         return false;
     }
+
     return printBadgeForm('edit', $data, $msg);
 }
 
@@ -1156,7 +1114,8 @@ function validateBadgeData($data, &$msg)
     }
 
     $badgeName = $db->getOne(
-        sprintf("SELECT name FROM badges "
+        sprintf(
+            "SELECT name FROM badges "
             . "WHERE name='%s' AND id!='%d' LIMIT 1",
             $data['name'],
             $data['id']
@@ -1174,6 +1133,7 @@ function validateBadgeData($data, &$msg)
     if (!empty($error)) {
         // We have found some errors, returning ot origin call
         $msg = $error;
+
         return false;
     }
 
@@ -1204,6 +1164,7 @@ function updateBadge($data = array())
 
     if (!validateBadgeData($data, $missatges)) {
         printEditBadgeForm($data['badge_id'], $missatges);
+
         return false;
     }
 
@@ -1222,6 +1183,7 @@ function updateBadge($data = array())
             'msg' => "Dades de la insígia '<strong>". $data['name'] ."</strong>' actualitzades."
         );
         printBadgeManagement($missatges);
+
         return true;
     }
     $missatges[] = array(
@@ -1229,6 +1191,7 @@ function updateBadge($data = array())
         'msg' => "No s'ha pogut actualitzar les dades de la insígnia."
     );
     printEditBadgeForm($data, $missatges);
+
     return false;
 }
 
@@ -1240,6 +1203,7 @@ function deleteBadge($badgeId)
         'badges',
         sprintf("id = '%d' LIMIT 1", intval($badgeId))
     );
+
     return (!getBadgeExists($badgeId));
 }
 
@@ -1259,9 +1223,10 @@ function addExperience($data = array())
             'msg' => "Les dades subministrades són errónies."
         );
         printActions($missatges);
+
         return false;
     }
-    
+
     $username = getUserNameById($userId);
     if (!doSilentAddExperience($userId, $experience)) {
         $missatges[] = array(
@@ -1270,7 +1235,8 @@ function addExperience($data = array())
             . "'<strong>". $username ."</strong>."
         );
         printActions($missatges);
-        return false;              
+
+        return false;
     }
 
     $missatges[] = array(
@@ -1278,6 +1244,7 @@ function addExperience($data = array())
         'msg' => "Dades de l'usuari '<strong>" . $username . "</strong>' actualitzades."
     );
     printActions($missatges);
+
     return true;
 }
 
@@ -1290,7 +1257,7 @@ function action($data = array())
 
     // validate data
     if (!getUserExists($userId)
-        || !getBadgeExists($badgeId) 
+        || !getBadgeExists($badgeId)
         || empty($amount)) {
         // L'usuari o el badge que ens han passat no existeix.
         $missatges[] = array(
@@ -1298,6 +1265,7 @@ function action($data = array())
             'msg' => "Les dades subministrades són errónies."
         );
         printActions($missatges);
+
         return false;
     }
 
@@ -1309,7 +1277,8 @@ function action($data = array())
             . "'<strong>". $username ."</strong>."
         );
         printActions($missatges);
-        return false;       
+
+        return false;
     }
 
     $missatges[] = array(
@@ -1318,10 +1287,11 @@ function action($data = array())
         . "'<strong>" . $username . "</strong>' actualitzades."
     );
     printActions($missatges);
-    return true;    
+
+    return true;
 }
 
-function printSendMessage( $msg = array() )
+function printSendMessage($msg = array())
 {
     global $db;
 
@@ -1331,7 +1301,7 @@ function printSendMessage( $msg = array() )
     $result = $db->query($query);
 
     $bccRecipients = array();
-    while ( $row = $result->fetch_assoc() ) {
+    while ($row = $result->fetch_assoc()) {
         if (!empty($row['email'])) {
             $bccRecipients[] = $row['email'];
         }
@@ -1377,7 +1347,7 @@ function printSendMessage( $msg = array() )
     <?php
 }
 
-function printQuestionManagement( $msg = array() )
+function printQuestionManagement($msg = array())
 {
     global $db;
 
@@ -1449,7 +1419,7 @@ function printQuestionManagement( $msg = array() )
     echo getHTMLDataTable('#questions');
 }
 
-function printEditQuestionForm( $questionId, $msg = array() )
+function printEditQuestionForm($questionId, $msg = array())
 {
     global $db;
 
@@ -1480,19 +1450,19 @@ function printEditQuestionForm( $questionId, $msg = array() )
     $data['choices'] = array();
     $data['points'] = array();
     $data['correct'] = array();
-    while ( $row = $result->fetch_assoc() ) {
+    while ($row = $result->fetch_assoc()) {
         $data['choices'][] = $row['choice'];
         $data['points'][] = $row['points'];
         $data['correct'][] = $row['correct'];
     }
 
     // get all question_actions data from DB
-    $query = sprintf( "SELECT * FROM questions_badges WHERE question_id='%d'", $questionId );
+    $query = sprintf("SELECT * FROM questions_badges WHERE question_id='%d'", $questionId);
     $result = $db->query($query);
 
     $data['actions'] = array();
     $data['when'] = array();
-    while ( $row = $result->fetch_assoc() ) {
+    while ($row = $result->fetch_assoc()) {
         $data['actions'][] = $row['badge_id'];
         $data['when'][] = $row['type'];
     }
@@ -1515,7 +1485,7 @@ function printEditQuestionForm( $questionId, $msg = array() )
     <?php
 }
 
-function printNewQuestionForm( $data = array(), $msg = array() )
+function printNewQuestionForm($data = array(), $msg = array())
 {
     global $db;
     ?>
@@ -1545,24 +1515,27 @@ function createQuestion($data = array())
     // Validate supplied data
 
     // Question data is correct, now we can insert it to DB
-    $questionId = $db->insert('questions',
-            array(
-                'uuid' => getNewUUID(),
-                'name' => $data['name'],
-                'image' => $data['image'],
-                'question' => $data['question'],
-                'tip' => $data['tip'],
-                'solution' => $data['solution'],
-                'type' => $data['type'],
-                'status' => $data['status']
-            ));
+    $questionId = $db->insert(
+        'questions',
+        array(
+            'uuid' => getNewUUID(),
+            'name' => $data['name'],
+            'image' => $data['image'],
+            'question' => $data['question'],
+            'tip' => $data['tip'],
+            'solution' => $data['solution'],
+            'type' => $data['type'],
+            'status' => $data['status']
+        )
+    );
 
     if (0 == $questionId) {
             $missatges[] = array('type' => "error", 'msg' => "No s'ha pogut crear la pregunta.");
             printNewQuestionForm($data, $missatges);
+
             return false;
     }
-    
+
     if ('active' == $data['status'] || 'hidden' == $data['status']) {
         setQuestionPublishTime($questionId);
     }
@@ -1606,6 +1579,7 @@ function createQuestion($data = array())
         'msg' => "La pregunta s'ha creat correctament."
     );
     printQuestionManagement($missatges);
+
     return true;
 }
 
@@ -1635,7 +1609,7 @@ function setQuestionPublishTime($questionId)
     }
 }
 
-function saveQuestionData( $data = array() )
+function saveQuestionData($data = array())
 {
     global $db;
 
@@ -1645,63 +1619,77 @@ function saveQuestionData( $data = array() )
     $data['id'] = intval($data['id']);
 
     // delete all choices and insert it again
-    $query = sprintf( "DELETE FROM questions_choices WHERE question_id='%d'", $data['id'] );
-    $db->query($query);
+    $db->delete(
+        'questions_choices',
+        sprintf("question_id='%d'", $data['id'])
+    );
 
     // put choices into its table
     foreach ($data['choices'] as $key => $value) {
 
         // validate supplied data
-        if ( empty($value) ) continue;
+        if (empty($value)) {
+            continue;
+        }
 
-        $query = sprintf( "INSERT INTO questions_choices SET question_id='%d', choice='%s', correct='%s', points='%d'",
-                $data['id'],
-                $db->real_escape_string($value),
-                $data['correct'][$key],
-                intval($data['points'][$key])
-                );
-        $db->query($query);
+        $db->insert(
+            'questions_choices',
+            array(
+                'question_id' => $data['id'],
+                'choice' => $value,
+                'correct' => $data['correct'][$key],
+                'points' => intval($data['points'][$key])
+            )
+        );
     }
 
     // delete all actions and insert it again
-    $query = sprintf( "DELETE FROM questions_badges WHERE question_id='%d'", $data['id'] );
-    $db->query($query);
+    $db->delete(
+        'questions_badges',
+        sprintf("question_id='%d'", $data['id'])
+    );
 
     // put actions into its table
     foreach ($data['actions'] as $key => $value) {
 
         // validate supplied data
         $value = intval($value);
-        if ( empty($value) ) continue;
+        if (empty($value)) {
+            continue;
+        }
 
-        $query = sprintf( "INSERT INTO questions_badges SET question_id='%d', badge_id='%d', type='%s'",
-                $data['id'],
-                $value,
-                $data['when'][$key]
-                );
-        $db->query($query);
+        $db->insert(
+            'questions_badges',
+            array(
+                'question_id' => $data['id'],
+                'badge_id' => $value,
+                'type' => $data['when'][$key]
+            )
+        );
     }
 
     // Question data is correct, now we can insert it to DB
-    $query = sprintf( "UPDATE questions SET name='%s', image='%s', question='%s', tip='%s', solution='%s', type='%s', status='%s' WHERE id='%d' LIMIT 1",
-            $db->real_escape_string($data['name']),
-            $db->real_escape_string($data['image']),
-            $db->real_escape_string($data['question']),
-            $db->real_escape_string($data['tip']),
-            $db->real_escape_string($data['solution']),
-            $db->real_escape_string($data['type']),
-            $db->real_escape_string($data['status']),
-            $data['id']
-            );
-    
+    $result = $db->update(
+        'questions',
+        array(
+            'name' => $data['name'],
+            'image' => $data['image'],
+            'question' => $data['question'],
+            'tip' => $data['tip'],
+            'solution' => $data['solution'],
+            'type' => $data['type'],
+            'status' => $data['status']
+        ),
+        sprintf("id='%d' LIMIT 1", $data['id'])
+    );
+
     if ('active' == $data['status'] || 'hidden' == $data['status']) {
         setQuestionPublishTime($data['id']);
-    }   
-   
-    if ( $db->query($query) ) {
+    }
+
+    if ($result) {
         $missatges[] = array('type' => "success", 'msg' => "Dades actualitzades.");
         printQuestionManagement($missatges);
-
     } else {
         $missatges[] = array('type' => "error", 'msg' => "No s'ha pogut actualitzar les dades.");
         printEditQuestionForm($data, $missatges);
@@ -1969,7 +1957,7 @@ function printPreviewQuestion($questionId)
         sprintf("SELECT * FROM questions_choices WHERE question_id='%d'", $questionId)
     );
 
-    if ( empty($question['image']) ) {
+    if (empty($question['image'])) {
         $question['image'] = 'images/question_default.jpg';
     }
 
@@ -1987,29 +1975,28 @@ function printPreviewQuestion($questionId)
             <img src="<?= $question['image']; ?>" width="120" class="img-rounded">
             <h4><?= $question['question']; ?></h4>
                 <ul class="list-group">
-                    <?php
-                        $htmlCode = array();
-                        foreach ($question['choices'] as $choice) {
-                            $htmlCode[] = '<li class="list-group-item">';
-                                if ('yes' == $choice['correct']) {
-                                    $htmlCode[] = '<span class="glyphicon glyphicon-ok"></span>';
-                                } else {
-                                    $htmlCode[] = '<span class="glyphicon glyphicon-remove"></span>';
-                                }
-                            $htmlCode[] = $choice['choice'];
-                            $htmlCode[] = '<span class="badge pull-right">' . $choice['points'] .'</span>';
-                            $htmlCode[] = '</li>';
-
-                        }
-                        echo implode(PHP_EOL, $htmlCode);
-                    ?>
+    <?php
+    $htmlCode = array();
+    foreach ($question['choices'] as $choice) {
+        $htmlCode[] = '<li class="list-group-item">';
+        if ('yes' == $choice['correct']) {
+            $htmlCode[] = '<span class="glyphicon glyphicon-ok"></span>';
+        } else {
+            $htmlCode[] = '<span class="glyphicon glyphicon-remove"></span>';
+        }
+        $htmlCode[] = $choice['choice'];
+        $htmlCode[] = '<span class="badge pull-right">' . $choice['points'] .'</span>';
+        $htmlCode[] = '</li>';
+    }
+    echo implode(PHP_EOL, $htmlCode);
+    ?>
                 </ul>
-            <?php
-                if ( !empty($question['solution']) ) {
-                // nomes mostrem la resposta si l'usuari ha respost la pregunta
-                echo '<div class="alert alert-info"><p><strong>La resposta correcta és: </strong></p><p>'. $question['solution'] .'</p></div>';
-                }
-            ?>
+    <?php
+    if (!empty($question['solution'])) {
+        // nomes mostrem la resposta si l'usuari ha respost la pregunta
+        echo '<div class="alert alert-info"><p><strong>La resposta correcta és: </strong></p><p>'. $question['solution'] .'</p></div>';
+    }
+    ?>
         </div>
     </div>
     <?php

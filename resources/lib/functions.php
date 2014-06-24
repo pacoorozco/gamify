@@ -37,8 +37,7 @@ function userIsLoggedIn()
     global $db, $session;
 
     // Check if all session variables are set
-    if (
-        $session->issetKey('member.uuid')
+    if ($session->issetKey('member.uuid')
         && $session->issetKey('member.username')
         && $session->issetKey('member.login_string')
     ) {
@@ -506,7 +505,7 @@ function getBaseUrl()
         $isSecure = true;
     } elseif ((!empty ($_SERVER['HTTP_X_FORWARDED_PROTO'])
         && ($_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https'))
-        || ((!empty ($_SERVER['HTTP_X_FORWARDED_SSL']) 
+        || ((!empty ($_SERVER['HTTP_X_FORWARDED_SSL'])
         && $_SERVER['HTTP_X_FORWARDED_SSL'] == 'on'))) {
         $isSecure = true;
     }

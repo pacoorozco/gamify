@@ -37,7 +37,7 @@ define('APP_NAME', 'gamify_GoW');
 /**
  * The current system version.
  */
-define('APP_VERSION', '2.11');
+define('APP_VERSION', '2.12-dev');
 
 /**
  * First bootstrap phase: initialize configuration.
@@ -152,16 +152,16 @@ class Bootstrap
         // Where configuration in located
         $configFile = realpath(dirname(__FILE__) . '/../gamify.conf');
 
+        if (!file_exists($configFile)) {
+            $this->handleError('Configuration file missing on: ' . $configFile);
+        }
         // Reads configuration file, creates an array with values
         $CONFIG = parse_ini_file($configFile, true, INI_SCANNER_RAW);
 
-        // Sets DEBUG mode based on parsed configuration
-        $CONFIG['site']['debug'] = isset($CONFIG['site']['debug']) ? true : false;
-               
-        // Include some libraries
+        // Include some needed libraries
         require_once LIBRARY_PATH . '/AltoRouter/AltoRouter.php';
         require_once LIBRARY_PATH . '/Swift/swift_required.php';
-        require_once LIBRARY_PATH . '/functions.php';        
+        require_once LIBRARY_PATH . '/functions.php';
     }
 
     /**
@@ -203,5 +203,17 @@ class Bootstrap
     {
         // We need some libraries, we require all here.
         require_once LIBRARY_PATH . '/gamify.php';
+    }
+
+    /**
+     * Class Error Handler
+     *
+     * This function is used to handle the error for this class.
+     *
+     * @param   string      $string     The error message.
+     */
+    private static function handleError($string)
+    {
+        die('<h2 class="color:red">Fatal Error: ' . $string . '</h2>');
     }
 }

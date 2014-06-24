@@ -101,20 +101,6 @@ function printLoginForm($username = '', $missatges = array())
     } else {
         $nav = getPOSTVar('nav');
     }
-    ?>
-        <div id="loginbox" style="margin-top:50px;" class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
-            <div class="panel panel-info">
-                    <div class="panel-heading">
-                        <div class="panel-title">Accedir</div>
-                        <div style="float:right; position: relative; top:-10px"><a href="http://www.upcnet.es/CanviContrasenyaUPC" target="_blank">Has oblidat la contrasenya?</a></div>
-                    </div>
-
-                    <div style="padding-top:30px" class="panel-body" >
-
-                        <p><?php echo getHTMLMessages($missatges); ?></p>
-
-                        <form action="<?= $_SERVER['PHP_SELF']; ?>" method="post" class="form-horizontal" role="form">
-    <?php
     $usertext = 'usuari';
     $logintext = 'Accedir';
 
@@ -122,40 +108,7 @@ function printLoginForm($username = '', $missatges = array())
         $usertext = 'usuari LDAP';
         $logintext = 'Accedir amb LDAP';
     }
-    ?>
-                            <div style="margin-bottom: 25px" class="input-group">
-                                <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
-                                <input type="text" name="username" class="form-control" value="<?= $username; ?>" placeholder="<?= $usertext; ?>" required>
-                            </div>
-
-                            <div style="margin-bottom: 25px" class="input-group">
-                                <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
-                                <input type="password" name="password" class="form-control" placeholder="contrasenya" required>
-                            </div>
-
-                            <div style="margin-top:10px" class="form-group">
-                                <div class="col-md-12">
-                                    <input type="hidden" id="a" name="a" value="login">
-                                    <input type="hidden" name="nav" value="<?= $nav; ?>">
-                                    <button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-log-in"></span> <?= $logintext; ?></button>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <div class="col-md-12 control">
-                                    <div style="border-top: 1px solid#888; padding-top:15px;">
-                                        No has accedit mai?
-                                        <a href="<?= $_SERVER['PHP_SELF']; ?>?a=register">
-                                            Registra't ara!
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-            </div>
-        </div>
-    <?php
+    require_once TEMPLATES_PATH . '/tpl_login_form.inc';
 }
 
 function doLogout()
@@ -212,7 +165,7 @@ function doLogin($username, $password)
 
         $session->set('member', $usuari);
         $session->set(
-            'member.login_string', 
+            'member.login_string',
             hash(
                 'sha512',
                 $randomString . $userBrowser
@@ -235,50 +188,12 @@ function doLogin($username, $password)
 
 function printRegisterForm($missatges = array())
 {
-    ?>
-        <div id="signupbox" style="margin-top:50px;" class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
-            <div class="panel panel-info">
-                <div class="panel-heading">
-                    <div class="panel-title">Registre</div>
-                    <div style="float:right; position: relative; top:-10px">
-                        <a href="<?php echo $_SERVER['PHP_SELF']; ?>">Ja tens usuari? Accedeix!</a>
-                    </div>
-                </div>
-                <div class="panel-body">
-                    <form action="<?= $_SERVER['PHP_SELF']; ?>" method="post" class="form-horizontal" role="form">
-                            <p><?= getHTMLMessages($missatges); ?></p>
-    <?php
     $usertext = 'usuari';
 
     if ('LDAP' == $CONFIG['authentication']['type']) {
         $usertext = 'usuari LDAP';
     }
-    ?>
-                        <div style="margin-bottom: 25px" class="input-group">
-                            <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
-                            <input type="text" name="username" class="form-control" placeholder="<?= $usertext; ?>" required>
-                        </div>
-                        <div style="margin-bottom: 25px" class="input-group">
-                            <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
-                            <input type="password" name="password" class="form-control" placeholder="contrasenya" required>
-                        </div>
-                        <div style="margin-bottom: 25px" class="input-group">
-                            <span class="input-group-addon"><i class="glyphicon glyphicon-envelope"></i></span>
-                            <input type="text" name="email" id="email" class="form-control" placeholder="adreça correu electrònic" required>
-                        </div>
-
-                        <div class="form-group">
-                            <div class="col-md-offset-3 col-md-9">
-                                <input type="hidden" id="a" name="a" value="do_register">
-                                <button type="submit" class="btn btn-info"><span class="glyphicon glyphicon-hand-right"></span> &nbsp Registrar</button>
-                            </div>
-                        </div>
-
-                    </form>
-                </div>
-            </div>
-         </div>
-    <?php
+    require_once TEMPLATES_PATH . '/tpl_register_form.inc';
 }
 
 function doRegister($data = array())
