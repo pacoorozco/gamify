@@ -41,8 +41,9 @@ switch ($action) {
     case 'login':
         if (doLogin(getPOSTVar('username'), getPOSTVar('password'))) {
             // go to previous referrer, if exists
-            $nav = !empty(getPOSTVar('nav'))
-                ? urldecode(getPOSTVar('nav'))
+            $nav = getPOSTVar('nav');
+            $nav = !empty($nav)
+                ? urldecode($nav)
                 : 'index.php';
             redirect($nav);
         } else {
