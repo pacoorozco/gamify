@@ -58,7 +58,8 @@ switch ($action) {
     case 'viewuser':
     default:
         // if not suply any user to show, show the own ones
-        $userUUID = empty(getREQUESTVar('item'))
+        $userUUID = getREQUESTVar('item');
+        $userUUID = empty($userUUID)
             ? getUserUUIDById($session->get('member.id'))
             : getREQUESTVar('item');
         printProfile($userUUID);
