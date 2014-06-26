@@ -285,6 +285,8 @@ function printAnswerQuestionForm($questionUUID, $msg = array())
         $option = '<input type="checkbox" name="choices[]" value="%d">';
     }
     $htmlCode = array();
+    // randomize answers to display
+    shuffle($question['choices']);
     foreach ($question['choices'] as $choice) {
         $htmlCode[] = '<li class="list-group-item"><label>';
         $htmlCode[] = sprintf($option, $choice['id']);
