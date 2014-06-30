@@ -37,16 +37,16 @@ if (userIsLoggedIn()) {
     $htmlMonthTop = getHTMLRankingTable(
         $db->getAll(
             "SELECT * FROM vmembers "
-            . "ORDER BY month_points DESC, badges DESC, username ASC",
-            'month_points'
-        )
+            . "ORDER BY month_points DESC, badges DESC, username ASC"
+        ),
+        'month_points'
     );
     $htmlTop = getHTMLRankingTable(
         $db->getAll(
             "SELECT * FROM vmembers "
-            . "ORDER BY total_points DESC, badges DESC, username ASC",
-            'total_points'
-        )
+            . "ORDER BY total_points DESC, badges DESC, username ASC"
+        ),
+        'total_points'
     );
     require_once TEMPLATES_PATH . '/tpl_home_member.inc';
 } else {
