@@ -220,7 +220,8 @@ function printAccessDenied()
 /**
  * Return html code for formatted messages.
  *
- * @param array $messages (contains 'type' and 'msg')
+ * @param   array   $messages   Is an array with two keys 'type' and 'msg'
+ *                              If pass an array of arrays recursive call is done
  */
 function getHTMLMessages($messages)
 {
@@ -232,15 +233,19 @@ function getHTMLMessages($messages)
         'success' => 'alert alert-success',
         'info' => 'alert alert-info',
         'warning' => 'alert alert-warning'
-        );
-
-    foreach ($messages as $msg) {
-        $htmlCode[] = '<div class="alert alert-'. $cssClasses[$msg['type']] .' alert-dismissable">';
+    );
+    
+    if (array_key_exists('type', $messages) 
+        && array_key_exists('msg', $messages)) {
+        $htmlCode[] = '<div class="alert alert-'. $cssClasses[$messages['type']] .' alert-dismissable">';
         $htmlCode[] = '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>';
-        $htmlCode[] = $msg['msg'];
-        $htmlCode[] = '</div>';
-
-    }
+        $htmlCode[] = $messages['msg'];
+        $htmlCode[] = '</div>';        
+    } elseif (is_array($messages)) {
+        foreach ($messages as $msg) {
+            $htmlCode[] = getHTMLMessages($msg);
+        }
+    } 
 
     // Use PHP_EOL constant for insert \n after every line
     return implode(PHP_EOL, $htmlCode);
