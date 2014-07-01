@@ -53,17 +53,14 @@ function doSilentAddExperience($userId, $experience, $memo = '')
     $oldLevel = getUserLevelById($userId);
 
     // adds experience to user
-    if (!$db->insert(
+    $db->insert(
         'points',
         array(
             'id_member' => $userId,
             'points' => $experience,
             'memo' => $memo
         )
-    )) {
-        // There was a problem trying to update
-        return false;
-    }
+    );
 
     // get the current level, after adding points
     $newLevel = getUserLevelById($userId);
