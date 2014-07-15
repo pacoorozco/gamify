@@ -117,6 +117,7 @@ function doSilentAction($userId, $badgeId, $amount = 1)
     );
 
     if (is_null($badgeAmountCompleted)) {
+        $badgeAmountCompleted = 0;
         // this action has not been initiated to this user
         if (!$db->insert(
             'members_badges',
@@ -133,7 +134,7 @@ function doSilentAction($userId, $badgeId, $amount = 1)
     // At this point action is initiated for user
     $badgeAmountCompleted = intval($badgeAmountCompleted);
     $oldStatus = ($badgeAmountCompleted >= $badgeAmountNeeded) ? 'completed' : 'active';
-    $badgeAmountCompleted = $badgeAmountCompleted + intval($amount);
+    $badgeAmountCompleted += intval($amount);
     $newStatus = ($badgeAmountCompleted >= $badgeAmountNeeded) ? 'completed' : 'active';
 
     if (!$db->update(
@@ -156,6 +157,7 @@ function doSilentAction($userId, $badgeId, $amount = 1)
         );
         doSilentAddExperience($userId, 5, $memo);
         notifyBadgeToUser($userId, $badgeId);
+        return $badgeId;
     }
     return true;
 }
@@ -386,7 +388,7 @@ function getPendingQuizs($userId)
  */
 function getUserExists($user)
 {
-    if (is_int($user)) {
+    if (is_numeric($user)) {
         return getUserNameById($user) ? true : false;
     } else {
         return getUserIdByName($user) ? true : false;
