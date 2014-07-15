@@ -36,6 +36,10 @@
             <iframe width="320" height="240" src="//www.youtube.com/embed/eH2A0k1um3A" frameborder="0" allowfullscreen></iframe>
         </div>
 
+        <h1>Novetats</h1>
+        <p class="lead">Hem fet les <a href="http://bit.ly/gow-50" target="_blank">50 preguntes a GoW!</a>, fes clic <a  href="http://bit.ly/gow-50" ta
+rget="_blank">aquí</a>
+
         <h1>Contacta'ns</h1>
         <p class="lead">Tens alguna suggerència? Has trobat un error?</p>
         <p>Escriu-nos a:</p>
