@@ -29,7 +29,7 @@
  * @link       https://github.com/pacoorozco/gamify
  */
 
-namespace Pakus\Application;
+namespace Pakus\Core;
 
 /**
  * This Session class starts the PHP session (regardless of which handler is set)
@@ -37,9 +37,9 @@ namespace Pakus\Application;
  * specific host and browser, and regenerating the ID.
  *
  * @code
- * $sess = new \Pakus\Application\Session('MyName');
- * $sess = new \Pakus\Application\Session('MyBlog_Admin', 0, '/myBlog/', 'www.example.com');
- * $sess = new \Pakus\Application\Session('My_Accounts_Bank', 0, '/', 'accounts.bank.com', true);
+ * $sess = new \Pakus\Core\Session('MyName');
+ * $sess = new \Pakus\Core\Session('MyBlog_Admin', 0, '/myBlog/', 'www.example.com');
+ * $sess = new \Pakus\Core\Session('My_Accounts_Bank', 0, '/', 'accounts.bank.com', true);
  * @endcode
  *
  */

@@ -28,7 +28,7 @@
  * @link       https://github.com/pacoorozco/gamify
  */
 
-namespace Pakus\Database;
+namespace Pakus\Core;
 
 /**
  * Database Abstraction Layer Class

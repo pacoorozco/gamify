@@ -27,7 +27,7 @@
  * @link       https://github.com/pacoorozco/gamify
  */
 
-namespace Pakus\Application;
+namespace Pakus\Core;
 
 /**
  * The current system version.
@@ -173,7 +173,7 @@ class Bootstrap
         require_once LIBRARY_PATH . '/DB.class.inc';
 
         // Connects to DB and set a descriptor, this will be used later
-        $db = new \Pakus\Database\DB(
+        $db = new \Pakus\Core\DB(
             $CONFIG['mysql']['host'],
             $CONFIG['mysql']['user'],
             $CONFIG['mysql']['passwd'],
@@ -192,7 +192,7 @@ class Bootstrap
         global $session;
 
         require_once LIBRARY_PATH . '/Session.class.inc';
-        $session = new \Pakus\Application\Session(APP_NAME);
+        $session = new \Pakus\Core\Session(APP_NAME);
     }
 
     /**
