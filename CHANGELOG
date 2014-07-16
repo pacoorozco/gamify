@@ -4,6 +4,7 @@ Version 2.xx (developement version)
 * Solves bug whe apply actions to an user
 * Changes is_int() to is_numeric() on some tests
 * Change DB.class license to GPLv2
+* AltoRouter is not longer included. It was never used.
 
 Version 2.11
 ------------

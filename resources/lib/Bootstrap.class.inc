@@ -159,7 +159,6 @@ class Bootstrap
         $CONFIG = parse_ini_file($configFile, true, INI_SCANNER_RAW);
 
         // Include some needed libraries
-        require_once LIBRARY_PATH . '/AltoRouter/AltoRouter.php';
         require_once LIBRARY_PATH . '/Swift/swift_required.php';
         require_once LIBRARY_PATH . '/functions.php';
     }
