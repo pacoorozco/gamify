@@ -153,7 +153,8 @@ class Bootstrap
         $configFile = realpath(dirname(__FILE__) . '/../gamify.conf');
 
         if (!file_exists($configFile)) {
-            $this->handleError('Configuration file missing on: ' . $configFile);
+            self::handleError('Configuration file missing on: ' .
+                    realpath(dirname(__FILE__) . '/..'));
         }
         // Reads configuration file, creates an array with values
         $CONFIG = parse_ini_file($configFile, true, INI_SCANNER_RAW);
