@@ -8,6 +8,8 @@ Version 2.xx (developement version)
 * Change DB.class namespace to \Pakus\Core
 * Change Session.class namespace to \Pakus\Core
 * Change Bootstrap.call namespace to \Pakus\Core
+* [BUG] 'On database schema creation, some fields ara used before definition'
+* [BUG] 'No error message is printed when config file is missing'
 
 Version 2.11
 ------------
