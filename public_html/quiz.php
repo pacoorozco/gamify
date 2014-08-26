@@ -28,7 +28,7 @@
  */
 
 require_once realpath(dirname(__FILE__) . '/../resources/lib/Bootstrap.class.inc');
-\Pakus\Application\Bootstrap::init(APP_BOOTSTRAP_FULL);
+\Pakus\Core\Bootstrap::init(APP_BOOTSTRAP_FULL);
 
 // Page only for members
 if (!userIsLoggedIn()) {
@@ -207,10 +207,9 @@ function answerQuestion($questionUUID, $answers)
     if ($result->num_rows > 0) {
         // hi ha accions a realitzar
         while ($row = $result->fetch_assoc()) {
-            if (doSilentAction($userId, $row['badge_id']) == $row['badge_id']) {
-                $badgeName = $db->getOne(
-                    sprintf("SELECT name FROM badges WHERE id='%d'", $row['badge_id'])
-                );
+            $actionResult = doSilentAction($userId, $row['badge_id']);
+            if ( intval($actionResult) === intval($row['badge_id'])) {
+                $badgeName = getBadgeNameById($row['badge_id']);
                 $missatges[] = array(
                     'type' => "success",
                     'msg' => sprintf(

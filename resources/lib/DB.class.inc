@@ -28,7 +28,7 @@
  * @link       https://github.com/pacoorozco/gamify
  */
 
-namespace Pakus\Database;
+namespace Pakus\Core;
 
 /**
  * Database Abstraction Layer Class
@@ -42,13 +42,13 @@ namespace Pakus\Database;
  * @category   Pakus
  * @package    Database
  * @author     Paco Orozco <paco@pacoorozco.info>
- * @license    http://creativecommons.org/licenses/by-sa/3.0/deed.en (CC BY-SA 3.0)
  * @version    1.2
- * @link       https://git.upcnet.es/bo/gamify
+ * @license    http://www.gnu.org/licenses/gpl-2.0.html (GPL v2)
+ * @link       https://github.com/pacoorozco/gamify
  */
 class DB extends \mysqli
 {
-    public $debug = true;
+    public $debug = false;
 
     /**
      * Returns the first row from database result and returns a PHP array

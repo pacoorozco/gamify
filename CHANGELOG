@@ -1,6 +1,15 @@
 Version 2.xx (developement version)
 ------------
 * Move some HTML code to templates files
+* Solves bug whe apply actions to an user
+* Changes is_int() to is_numeric() on some tests
+* Change DB.class license to GPLv2
+* AltoRouter is not longer included. It was never used.
+* Change DB.class namespace to \Pakus\Core
+* Change Session.class namespace to \Pakus\Core
+* Change Bootstrap.call namespace to \Pakus\Core
+* [BUG] 'On database schema creation, some fields ara used before definition'
+* [BUG] 'No error message is printed when config file is missing'
 
 Version 2.11
 ------------

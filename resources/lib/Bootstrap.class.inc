@@ -27,7 +27,7 @@
  * @link       https://github.com/pacoorozco/gamify
  */
 
-namespace Pakus\Application;
+namespace Pakus\Core;
 
 /**
  * The current system version.
@@ -153,13 +153,13 @@ class Bootstrap
         $configFile = realpath(dirname(__FILE__) . '/../gamify.conf');
 
         if (!file_exists($configFile)) {
-            $this->handleError('Configuration file missing on: ' . $configFile);
+            self::handleError('Configuration file missing on: ' .
+                    realpath(dirname(__FILE__) . '/..'));
         }
         // Reads configuration file, creates an array with values
         $CONFIG = parse_ini_file($configFile, true, INI_SCANNER_RAW);
 
         // Include some needed libraries
-        require_once LIBRARY_PATH . '/AltoRouter/AltoRouter.php';
         require_once LIBRARY_PATH . '/Swift/swift_required.php';
         require_once LIBRARY_PATH . '/functions.php';
     }
@@ -174,7 +174,7 @@ class Bootstrap
         require_once LIBRARY_PATH . '/DB.class.inc';
 
         // Connects to DB and set a descriptor, this will be used later
-        $db = new \Pakus\Database\DB(
+        $db = new \Pakus\Core\DB(
             $CONFIG['mysql']['host'],
             $CONFIG['mysql']['user'],
             $CONFIG['mysql']['passwd'],
@@ -193,7 +193,7 @@ class Bootstrap
         global $session;
 
         require_once LIBRARY_PATH . '/Session.class.inc';
-        $session = new \Pakus\Application\Session(APP_NAME);
+        $session = new \Pakus\Core\Session(APP_NAME);
     }
 
     /**

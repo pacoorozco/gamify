@@ -28,37 +28,4 @@
  */
 
 require_once 'home.php';
-
 exit();
-require_once realpath(dirname(__FILE__) . '/../resources/lib/Bootstrap.class.inc');
-\Pakus\Application\Bootstrap::init(APP_BOOTSTRAP_FULL);
-
-$router = new AltoRouter();
-$router->setBasePath('/test/paco');
-/* Setup the URL routing. This is production ready. */
- 
-// Main routes that non-customers see
-$router->map('GET','/', 'home.php', 'home');
-$router->map('GET','/home/', 'home.php', 'home-home');
-$router->map('GET','/quizs/', 'quiz.php', 'quiz');
-$router->map('GET','/members/', 'member.php', 'member');
-$router->map('GET','/admin/', 'admin.php', 'admin');
- 
-// Special (payments, ajax processing, etc)
-//$router->map('GET','/charge/[*:customer_id]/','charge.php','charge');
-//$router->map('GET','/pay/[*:status]/','payment_results.php','payment-results');
- 
-// API Routes
-//$router->map('GET','/api/[*:key]/[*:name]/', 'json.php', 'api');
- 
-/* Match the current request */
-$match = $router->match();
-if($match) {
-  require $match['target'];
-}
-else {
-  header("HTTP/1.0 404 Not Found");
-  require_once TEMPLATES_PATH . '/tpl_error404.inc';
-}
-?>
-

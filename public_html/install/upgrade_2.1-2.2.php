@@ -28,7 +28,7 @@
  */
 
 require_once realpath(dirname(__FILE__) . '/../../resources/lib/Bootstrap.class.inc');
-\Pakus\Application\Bootstrap::init(APP_BOOTSTRAP_DATABASE);
+\Pakus\Core\Bootstrap::init(APP_BOOTSTRAP_DATABASE);
 
 printf("<h1>Migrant a la versio: 2.2</h1>\n");
 
