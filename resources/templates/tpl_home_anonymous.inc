@@ -61,7 +61,7 @@
 
                         <div style="margin-bottom: 25px" class="input-group">
                             <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
-                            <input type="password" name="password" class="form-control" placeholder="contrasenya" required>
+                            <input type="password" name="password" class="form-control" placeholder="contrasenya" autocomplete="off" required>
                         </div>
 
                         <div style="margin-top:10px" class="form-group">
@@ -106,7 +106,7 @@
                         </div>
                         <div style="margin-bottom: 25px" class="input-group">
                             <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
-                            <input type="password" name="password" class="form-control" placeholder="contrasenya" required>
+                            <input type="password" name="password" class="form-control" placeholder="contrasenya" autocomplete="off" required>
                         </div>
                         <div style="margin-bottom: 25px" class="input-group">
                             <span class="input-group-addon"><i class="glyphicon glyphicon-envelope"></i></span>
