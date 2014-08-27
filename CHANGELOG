@@ -7,7 +7,10 @@ Version 2.xx (developement version)
 * AltoRouter is not longer included. It was never used.
 * Change DB.class namespace to \Pakus\Core
 * Change Session.class namespace to \Pakus\Core
-* Change Bootstrap.call namespace to \Pakus\Core
+* Change Bootstrap.class namespace to \Pakus\Core
+* Move \Pakus\Core classes to its own folder
+* Changes at Bootstrap.class to address to new folder classes
+* Improve Session.class security following OWASP best practices
 
 Version 2.11
 ------------

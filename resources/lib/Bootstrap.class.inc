@@ -170,7 +170,7 @@ class Bootstrap
     {
         global $db, $CONFIG;
 
-        require_once LIBRARY_PATH . '/DB.class.inc';
+        require_once LIBRARY_PATH . '/Pakus/DB.class.inc';
 
         // Connects to DB and set a descriptor, this will be used later
         $db = new \Pakus\Core\DB(
@@ -191,7 +191,7 @@ class Bootstrap
     {
         global $session;
 
-        require_once LIBRARY_PATH . '/Session.class.inc';
+        require_once LIBRARY_PATH . '/Pakus/Session.class.inc';
         $session = new \Pakus\Core\Session(APP_NAME);
     }
 
