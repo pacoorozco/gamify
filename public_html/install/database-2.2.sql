@@ -139,6 +139,18 @@ CREATE TABLE IF NOT EXISTS `members_questions` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- -----------------------------------------------------
+-- Changes from DB 2.1
+-- -----------------------------------------------------
+ALTER TABLE `badges` ADD `creation_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;
+ALTER TABLE `members` ADD `register_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP; 
+ALTER TABLE `members` CHANGE `last_access` `last_access` TIMESTAMP NULL;
+ALTER TABLE `members_badges` CHANGE `last_time` `last_time` TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;
+ALTER TABLE `members_questions` CHANGE `last_time` `last_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;
+ALTER TABLE `points` CHANGE `date` `creation_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;
+ALTER TABLE `questions` ADD `creation_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;
+ALTER TABLE `questions` ADD `publish_time` TIMESTAMP NULL;
+
+-- -----------------------------------------------------
 -- View `vtop`
 -- -----------------------------------------------------
 DROP VIEW IF EXISTS `vtop`;
@@ -186,17 +198,6 @@ ALTER TABLE `members_questions`
   ADD CONSTRAINT `members_questions_ibfk_1` FOREIGN KEY (`id_member`) REFERENCES `members` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `members_questions_ibfk_2` FOREIGN KEY (`id_question`) REFERENCES `questions` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
--- -----------------------------------------------------
--- Changes from DB 2.1
--- -----------------------------------------------------
-ALTER TABLE `badges` ADD `creation_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;
-ALTER TABLE `members` ADD `register_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP; 
-ALTER TABLE `members` CHANGE `last_access` `last_access` TIMESTAMP NULL;
-ALTER TABLE `members_badges` CHANGE `last_time` `last_time` TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;
-ALTER TABLE `members_questions` CHANGE `last_time` `last_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;
-ALTER TABLE `points` CHANGE `date` `creation_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;
-ALTER TABLE `questions` ADD `creation_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;
-ALTER TABLE `questions` ADD `publish_time` TIMESTAMP NULL;
 
 -- -----------------------------------------------------
 -- Create first member 'admin' as an administrator

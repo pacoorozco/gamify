@@ -8,6 +8,8 @@ Version 2.xx (developement version)
 * Change DB.class namespace to \Pakus\Core
 * Change Session.class namespace to \Pakus\Core
 * Change Bootstrap.class namespace to \Pakus\Core
+* [BUG] 'On database schema creation, some fields ara used before definition'
+* [BUG] 'No error message is printed when config file is missing'
 * Move \Pakus\Core classes to its own folder
 * Changes at Bootstrap.class to address to new folder classes
 * Improve Session.class security following OWASP best practices
