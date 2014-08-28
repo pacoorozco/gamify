@@ -39,7 +39,8 @@ switch ($action) {
         doLogout();
         break;
     case 'login':
-        if (doLogin(getPOSTVar('username'), getPOSTVar('password'))) {
+        $username = getPOSTVar('username');
+        if (doLogin($username, getPOSTVar('password'))) {
             // go to previous referrer, if exists
             $nav = $session->get('nav');
             $nav = !is_null($nav)

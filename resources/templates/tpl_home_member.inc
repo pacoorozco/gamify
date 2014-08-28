@@ -32,9 +32,27 @@
     <div class="col-md-6">
         <h1>Juguem?</h1>
         <p class="lead">Benvinguts a <strong>GoW - Game of Work!</strong></p>
-        <div class="video-container">
-            <iframe width="320" height="240" src="//www.youtube.com/embed/eH2A0k1um3A" frameborder="0" allowfullscreen></iframe>
+        
+        <ul class="nav nav-pills" role="tablist">
+                <li class="active"><a href="#gow50" role="tab" data-toggle="tab">50 preguntes GoW!</a></li>
+                <li><a href="#gow" role="tab" data-toggle="tab">Que &eacute;s GoW!?</a></li>
+        </ul>
+
+        <p>&nbsp;</p>
+
+        <div class="tab-content">
+                <div class="tab-pane active" id="gow50">
+                        <div class="video-container">
+                                <iframe width="320" height="240" src="//www.youtube.com/embed/UpLxb4ZUg9A" allowfullscreen></iframe>
+                        </div>
+                </div>
+                <div class="tab-pane" id="gow">
+                        <div class="video-container"> 
+                                <iframe width="320" height="240" src="//www.youtube.com/embed/eH2A0k1um3A" allowfullscreen></iframe>
+                        </div>
+                </div>
         </div>
+
 
         <h1>Novetats</h1>
         <p class="lead">Hem fet les <a href="http://bit.ly/gow-50" target="_blank">50 preguntes a GoW!</a>, fes clic <a  href="http://bit.ly/gow-50" ta
