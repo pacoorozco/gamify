@@ -53,7 +53,6 @@
                 <div style="margin-top:10px" class="form-group">
                     <div class="col-md-12">
                         <input type="hidden" id="a" name="a" value="login">
-                        <input type="hidden" name="nav" value="<?= $nav; ?>">
                         <button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-log-in"></span> <?= $logintext; ?></button>
                     </div>
                 </div>

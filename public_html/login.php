@@ -41,8 +41,8 @@ switch ($action) {
     case 'login':
         if (doLogin(getPOSTVar('username'), getPOSTVar('password'))) {
             // go to previous referrer, if exists
-            $nav = getPOSTVar('nav');
-            $nav = !empty($nav)
+            $nav = $session->get('nav');
+            $nav = !is_null($nav)
                 ? urldecode($nav)
                 : 'index.php';
             redirect($nav);
@@ -90,13 +90,6 @@ function printLoginForm($username = '', $missatges = array())
 {
     global $CONFIG, $session;
 
-    // get url to redirect after login
-    if ($session->issetKey('nav')) {
-        $nav = $session->get('nav');
-        $session->delete('nav');
-    } else {
-        $nav = getPOSTVar('nav');
-    }
     $usertext = 'usuari';
     $logintext = 'Accedir';
 

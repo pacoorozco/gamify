@@ -13,6 +13,7 @@ Version 2.xx (developement version)
 * Move \Pakus\Core classes to its own folder
 * Changes at Bootstrap.class to address to new folder classes
 * Improve Session.class security following OWASP best practices
+* [BUG-#13] 'XSS on 'nav' field on login page'
 
 Version 2.11
 ------------
