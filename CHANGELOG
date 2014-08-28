@@ -1,5 +1,8 @@
 Version 2.xx (developement version)
 ------------
+
+Version 2.12
+------------
 * Move some HTML code to templates files
 * Solves bug whe apply actions to an user
 * Changes is_int() to is_numeric() on some tests
