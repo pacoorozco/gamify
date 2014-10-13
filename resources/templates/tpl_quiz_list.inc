@@ -32,7 +32,7 @@
     <div class="panel-body">
         <div class="well">
             <h4>Estàs preparat per posar-te a prova?</h4>
-            <p>Trobaras preguntes sobre diferents temes de la nostra organització, la nostra metodologia, eines, procediments... qualsevol cosa que serà molt util que coneguis.</p>
+            <p>Trobar&agrave;s preguntes sobre diferents temes de la nostra organització, la nostra metodologia, eines, procediments... qualsevol cosa que serà molt &uacute;til que coneguis.</p>
             <p>A més a més guanyaràs punts i insígnies per pujar de nivell, presumir amb els teus companys o simplement superar-te.</p>
         </div>
         <h4>Les teves preguntes pendents</h4>

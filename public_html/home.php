@@ -48,6 +48,14 @@ if (userIsLoggedIn()) {
         ),
         'total_points'
     );
+    $htmlTop10 = getHTMLRankingTable(
+        $db->getAll(
+            "SELECT * FROM vmembers "
+            . "ORDER BY total_points DESC, badges DESC, username ASC"
+        ),
+        'total_points',
+	10
+    );
     require_once TEMPLATES_PATH . '/tpl_home_member.inc';
 } else {
     // Home for anonymous
@@ -64,13 +72,12 @@ require_once TEMPLATES_PATH . '/tpl_footer.inc';
 exit();
 
 /*** FUNCTIONS ***/
-function getHTMLRankingTable($users = array(), $show = 'total_points')
+function getHTMLRankingTable($users = array(), $show = 'total_points', $top3 = 3)
 {
     global $db, $session;
 
     $htmlCode = array();
     $htmlReturn = array();
-    $top3 = 3;
     $top10 = 10;
 
     $position = 1;

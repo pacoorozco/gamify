@@ -32,7 +32,7 @@
         <div class="panel-heading">
             <div class="panel-title">Registre</div>
             <div style="float:right; position: relative; top:-10px">
-                <a href="<?= $_SERVER['PHP_SELF']; ?>">Ja tens usuari? Accedeix!</a>
+                <a href="<?= $_SERVER['PHP_SELF']; ?>">Ja ets usuari? Accedeix!</a>
             </div>
         </div>
         <div class="panel-body">
@@ -54,7 +54,7 @@
                 <div class="form-group">
                     <div class="col-md-offset-3 col-md-9">
                         <input type="hidden" id="a" name="a" value="do_register">
-                        <button type="submit" class="btn btn-info"><span class="glyphicon glyphicon-hand-right"></span> &nbsp Registrar</button>
+                        <button type="submit" class="btn btn-info"><span class="glyphicon glyphicon-hand-right"></span> &nbsp Registra't</button>
                     </div>
                 </div>
 

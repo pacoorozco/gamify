@@ -43,7 +43,7 @@
             <a href="//www.google.es/search?q=<?= $question['tip']; ?>" title="Buscar la resposta a Google" class="btn btn-default" target="_blank" role="button"><span class="glyphicon glyphicon-new-window"></span> Ho buscaré a Google</a>
             <input type="hidden" name="item" value="<?= $questionUUID; ?>">
             <input type="hidden" name="a" value="answer">
-            <button type="submit" class="btn btn-success pull-right"><span class="glyphicon glyphicon-save"></span> Guardar resposta</button>
+            <button type="submit" class="btn btn-success pull-right"><span class="glyphicon glyphicon-save"></span> Desa resposta</button>
         </form>
     </div>
 </div>

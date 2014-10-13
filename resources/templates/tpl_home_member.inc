@@ -35,7 +35,7 @@
         
         <ul class="nav nav-pills" role="tablist">
                 <li class="active"><a href="#gow50" role="tab" data-toggle="tab">50 preguntes GoW!</a></li>
-                <li><a href="#gow" role="tab" data-toggle="tab">Que &eacute;s GoW!?</a></li>
+                <li><a href="#gow" role="tab" data-toggle="tab">Qu&egrave; &eacute;s GoW!?</a></li>
         </ul>
 
         <p>&nbsp;</p>
@@ -55,11 +55,14 @@
 
 
         <h1>Novetats</h1>
-        <p class="lead">Hem fet les <a href="http://bit.ly/gow-50" target="_blank">50 preguntes a GoW!</a>, fes clic <a  href="http://bit.ly/gow-50" ta
-rget="_blank">aquí</a>
+        <ul>
+		<li><p class="lead">El desafiament de GoW! <a href="https://gow.upcnet.es//quiz.php?a=answerqz&item=92554bf8-9315-46b8-911a-6b4b60a0327b" target="_blank">"Qu&egrave; &eacute;s?"</a></p></li>
+	        <li><p class="lead">El GoW! al <a href="http://blog.upcnet.es/ludificacio-gow" target="_blank">blog d'UPCnet</a></p></li>
+        	<li><p class="lead">Hem fet les <a href="http://bit.ly/gow-50" target="_blank">50 preguntes a GoW!</a>, fes clic <a  href="http://bit.ly/gow-50" target="_blank">aquí</a></p></li>
+	</ul>
 
         <h1>Contacta'ns</h1>
-        <p class="lead">Tens alguna suggerència? Has trobat un error?</p>
+        <p class="lead">Tens algun suggeriment? Has trobat un error?</p>
         <p>Escriu-nos a:</p>
         <ul>
             <li>Emilio Ampudia (emilio.ampudia@upcnet.es)</li>
@@ -86,6 +89,7 @@ rget="_blank">aquí</a>
         <ul class="nav nav-tabs">
             <li class="active"><a href="#month_top" data-toggle="tab">Darrer mes</a></li>
             <li><a href="#top" data-toggle="tab">Total</a></li>
+            <li><a href="#top10" data-toggle="tab">10 primers</a></li>
         </ul>
 
         <div class="tab-content">
@@ -95,7 +99,7 @@ rget="_blank">aquí</a>
                     <thead>
                         <tr>
                             <th class="text-center">Posició</th>
-                            <th>Usuari</th>
+                            <th>Nom</th>
                             <th>Experiència</th>
                             <th>Nivell</th>
                             <th class="text-center">Insígnies</th>
@@ -113,7 +117,7 @@ rget="_blank">aquí</a>
                     <thead>
                         <tr>
                             <th class="text-center">Posició</th>
-                            <th>Usuari</th>
+                            <th>Nom</th>
                             <th>Experiència</th>
                             <th>Nivell</th>
                             <th class="text-center">Insígnies</th>
@@ -124,6 +128,25 @@ rget="_blank">aquí</a>
                     </tbody>
                 </table>
             </div>
+
+            <!-- top10 -->
+            <div class="table-responsive tab-pane fade active" id="top10">
+                <table class="table table-hover" >
+                    <thead>
+                        <tr>
+                            <th class="text-center">Posició</th>
+                            <th>Nom</th>
+                            <th>Experiència</th>
+                            <th>Nivell</th>
+                            <th class="text-center">Insígnies</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?= implode(PHP_EOL, $htmlTop10); ?>
+                    </tbody>
+                </table>
+            </div>
+
         </div>
     </div>
 </div>

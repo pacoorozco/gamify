@@ -302,10 +302,10 @@ function printQuestionHeader($a = 'list')
     <h1>Participa</h1>
     <ul class="nav nav-tabs">
         <li<?= ('list' === $a) ? ' class="active"' : ''; ?>>
-            <a href="<?= $_SERVER['PHP_SELF']; ?>?a=list">Contestar pendents</a>
+            <a href="<?= $_SERVER['PHP_SELF']; ?>?a=list">Respon pendents</a>
         </li>
         <li<?= ('historic' === $a) ? ' class="active"' : ''; ?>>
-            <a href="<?= $_SERVER['PHP_SELF']; ?>?a=historic">Revisar preguntes</a>
+            <a href="<?= $_SERVER['PHP_SELF']; ?>?a=historic">Revisa preguntes</a>
         </li>
         <li<?= ('question' === $a) ? ' class="active"' : ' class="disabled"'; ?>>
             <a href="#">Veure pregunta</a>
@@ -466,7 +466,7 @@ function viewQuestionByUUID($questionUUID, $msg = array())
     <?php
     if ($answered) {
         echo '<div class="alert alert-info"><p>Vas respondre aquesta pregunta el '
-            . $responses['last_time'] . ' i vas obtindre <strong>'
+            . $responses['last_time'] . ' i vas obtenir <strong>'
             . $responses['amount'] .' punts</strong>.</p></div>';
     }
     ?>

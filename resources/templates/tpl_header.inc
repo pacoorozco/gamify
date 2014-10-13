@@ -122,7 +122,7 @@
                             <div class="row">
                                 <div class="col-md-6"></div>
                                 <div class="col-md-6">
-                                    <a href="login.php?a=logout" title="Sortir" class="btn btn-danger btn-sm pull-right"><span class="glyphicon glyphicon-log-out"></span> Sortir</a>
+                                    <a href="login.php?a=logout" title="Surt" class="btn btn-danger btn-sm pull-right"><span class="glyphicon glyphicon-log-out"></span> Surt</a>
                                 </div>
                             </div>
                         </div>

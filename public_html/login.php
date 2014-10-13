@@ -92,11 +92,11 @@ function printLoginForm($username = '', $missatges = array())
     global $CONFIG, $session;
 
     $usertext = 'usuari';
-    $logintext = 'Accedir';
+    $logintext = 'Accedeix';
 
     if ('LDAP' == $CONFIG['authentication']['type']) {
         $usertext = 'usuari LDAP';
-        $logintext = 'Accedir amb LDAP';
+        $logintext = 'Accedeix amb LDAP';
     }
     require_once TEMPLATES_PATH . '/tpl_login_form.inc';
 }
