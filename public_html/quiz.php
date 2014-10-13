@@ -337,11 +337,9 @@ function printQuestionList()
             )
         );
     } else {
-#         $htmlCode[] = '<div class="list-group">';
 	$htmlCode[] = '<ul class="media-list">';
         $htmlCode[] = getHTMLQuestionLink($questions, 'answerqz');
 	$htmlCode[] = '</ul>';
-#        $htmlCode[] = '</div>';
     }
     printQuestionHeader('list');
     require_once TEMPLATES_PATH . '/tpl_quiz_list.inc';
@@ -351,13 +349,6 @@ function getHTMLQuestionLink($questionsList, $action)
 {
     $htmlCode = array();
     foreach ($questionsList as $row) {
-#        $htmlCode[] = '<a href="'. $_SERVER['PHP_SELF'] . '?a=' . $action .'&item='
-#            . $row['uuid'] . '" class="list-group-item">';
-#        $htmlCode[] = '<img src="'. $row['image'] .'" width="120" '
-#            . 'class="img-rounded" alt="'. $row['name'] .'">';
-#        $htmlCode[] = '<span class="h3">'. $row['name'] .'</span>';
-#        $htmlCode[] = '</a>';
-
 	$htmlCode[] = '<li class="media">';
         $htmlCode[] = '<a href="'. $_SERVER['PHP_SELF'] . '?a=' . $action .'&item='
             . $row['uuid'] . '" class="pull-left">';
@@ -369,7 +360,6 @@ function getHTMLQuestionLink($questionsList, $action)
             . $row['uuid'] . '">';
         $htmlCode[] = '<h4 class="media-heading">'. $row['name'] .'</h4>';
 	$htmlCode[] = '</a>';
-#	$htmlCode[] = '<p>Publicada el 24 de setembre</p>';
 	$htmlCode[] = '</div>';
 	$htmlCode[] = '</li>';
     }
