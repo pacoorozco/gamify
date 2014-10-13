@@ -39,8 +39,10 @@
             <ul class="list-group">
                 <?= implode(PHP_EOL, $htmlCode); ?>
             </ul>
+		<?php if (!empty($question['tip'])) { ?>
             <a href="//kbtic.upcnet.es/search?SearchableText=<?= $question['tip']; ?>" title="Buscar la resposta a la KBTic" class="btn btn-default" target="_blank"role="button"><span class="glyphicon glyphicon-new-window"></span> Ho buscaré a la KBTic</a>
             <a href="//www.google.es/search?q=<?= $question['tip']; ?>" title="Buscar la resposta a Google" class="btn btn-default" target="_blank" role="button"><span class="glyphicon glyphicon-new-window"></span> Ho buscaré a Google</a>
+		<?php } ?>
             <input type="hidden" name="item" value="<?= $questionUUID; ?>">
             <input type="hidden" name="a" value="answer">
             <button type="submit" class="btn btn-success pull-right"><span class="glyphicon glyphicon-save"></span> Desa resposta</button>
