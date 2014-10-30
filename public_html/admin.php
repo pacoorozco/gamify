@@ -1584,6 +1584,11 @@ function sendPublishedQuestionMessage($questionId, $whom)
         );
     }    
     
+    $mailAddresses = array();
+    foreach ($receiver as $recv) {
+        $mailAddresses[] = $recv['email'];
+    }
+    
     $questionLink = getQuestionLink($questionId);
     $questionName = getQuestionName($questionId);
     $subject = "S'ha publicat una nova pregunta a GoW!";
@@ -1594,7 +1599,7 @@ function sendPublishedQuestionMessage($questionId, $whom)
 </div>
 NEWQUESTION_MAIL;
     
-    sendMessage($subject, $missatge, $receiver);
+    sendMessage($subject, $missatge, $mailAddresses);
     
 }
 
