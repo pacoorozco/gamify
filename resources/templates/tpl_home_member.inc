@@ -34,14 +34,20 @@
         <p class="lead">Benvinguts a <strong>GoW - Game of Work!</strong></p>
         
         <ul class="nav nav-pills" role="tablist">
-                <li class="active"><a href="#gow50" role="tab" data-toggle="tab">50 preguntes GoW!</a></li>
+                <li class="active"><a href="#newrelic" role="tab" data-toggle="tab">Data Nerds</a></li>
+                <li><a href="#gow50" role="tab" data-toggle="tab">50 preguntes GoW!</a></li>
                 <li><a href="#gow" role="tab" data-toggle="tab">Qu&egrave; &eacute;s GoW!?</a></li>
         </ul>
 
         <p>&nbsp;</p>
 
         <div class="tab-content">
-                <div class="tab-pane active" id="gow50">
+                <div class="tab-pane active" id="newrelic">
+			<p class="lead">Felicitats</p>
+			<p>Aquests són els nostres <i>Data Nerds</i> que han aconseguit el premi especial a l'ésser els 4 més ràpids en respondre <a href="https://gow.upcnet.es/quiz.php?a=answerqz&item=280be6d8-0d4e-4cd4-843c-a5090be557e5">aquesta pregunta de GoW!</a></p>
+			<img src="uploads/questions/Guanyadors_New_Relic_rs.jpeg" class="img-responsive" />
+                </div>
+                <div class="tab-pane" id="gow50">
                         <div class="video-container">
                                 <iframe width="320" height="240" src="//www.youtube.com/embed/UpLxb4ZUg9A" allowfullscreen></iframe>
                         </div>
