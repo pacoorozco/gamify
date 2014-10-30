@@ -1548,6 +1548,56 @@ function printNewQuestionForm($data = array(), $msg = array())
     <?php
 }
 
+function notifyPublishedQuestion($questionId)
+{
+    global $db;
+    
+    $status = $db->getOne(
+        sprintf(
+            "SELECT `status` FROM `questions` "
+            . "WHERE `id`='%d' LIMIT 1",
+            $questionId
+        )
+    );    
+
+    if ('active' == $status) {
+        //sendPublishedQuestionMessage($questionId, 'members');
+        sendPublishedQuestionMessage($questionId, 'admins');
+    }
+    if ('hidden' == $status) {
+        sendPublishedQuestionMessage($questionId, 'admins');
+    }
+}
+
+function sendPublishedQuestionMessage($questionId, $whom)
+{
+    global $db;
+    
+    if ($whom == 'admins') {
+        $receiver = $db->getAll(
+            "SELECT email FROM vmembers WHERE role = 'administrator' AND disabled = '0'"
+        );
+    }
+    if ($whom == 'members') {
+        $receiver = $db->getAll(
+            "SELECT email FROM vmembers WHERE role = 'members' AND notifyme = '1'"
+        );
+    }    
+    
+    $questionLink = getQuestionLink($questionId);
+    $questionName = getQuestionName($questionId);
+    $subject = "S'ha publicat una nova pregunta a GoW!";
+    $missatge = <<<NEWQUESTION_MAIL
+<div style="text-align:center;">
+<h2>S'ha publicat una nova pregunta a GoW!</h2>
+<p style="padding-bottom: 10px;"><a href="$questionLink">$questionName</a>.</p>
+</div>
+NEWQUESTION_MAIL;
+    
+    sendMessage($subject, $missatge, $receiver);
+    
+}
+
 function createQuestion($data = array())
 {
     global $db;
@@ -1580,7 +1630,7 @@ function createQuestion($data = array())
     if ('active' == $data['status'] || 'hidden' == $data['status']) {
         setQuestionPublishTime($questionId);
     }
-
+    
     // put choices into its table
     foreach ($data['choices'] as $key => $value) {
         // validate supplied data
@@ -1614,7 +1664,7 @@ function createQuestion($data = array())
             )
         );
     }
-
+    
     $missatges[] = array(
         'type' => "success",
         'msg' => "La pregunta s'ha creat correctament."
@@ -1647,6 +1697,8 @@ function setQuestionPublishTime($questionId)
             ),
             sprintf("id='%d' LIMIT 1", $questionId)
         );
+        
+        notifyPublishedQuestion($questionId);
     }
 }
 

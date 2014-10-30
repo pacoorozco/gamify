@@ -305,6 +305,33 @@ function getQuestionResponses($questionUUID)
     );
 }
 
+function getQuestionLink($questionId)
+{
+    global $CONFIG;
+    
+    return sprintf(
+        "%s/quiz.php?a=answerqz&item=%s",
+        $CONFIG['site']['base_url'],
+        getQuestionUUIDById($questionId)
+    );
+}
+
+function getQuestionName($questionId)
+{
+    global $db;
+    return $db->getOne(
+        sprintf("SELECT name FROM questions WHERE id='%d' LIMIT 1", $questionId)
+    );
+}
+
+function getQuestionUUIDById($questionId)
+{
+    global $db;
+    return $db->getOne(
+        sprintf("SELECT uuid FROM questions WHERE id='%d' LIMIT 1", $questionId)
+    );
+}
+
 function getUserUUIDById($userId)
 {
     global $db;
