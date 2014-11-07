@@ -1,0 +1,18 @@
+{
+    "name": "pakus/gamify",
+    "type": "project",
+    "description": "A gamification platform used as core on GoW!",
+    "homepage": "https://github.com/pacoorozco/gamify",
+    "license": "GPL-2.0",
+    "authors": [
+        {
+            "name": "Paco Orozco",
+            "email": "paco@pacorozco.info",
+            "homepage": "https://github.com/pacoorozco/gamify",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "swiftmailer/swiftmailer": "@stable"
+    }
+}
