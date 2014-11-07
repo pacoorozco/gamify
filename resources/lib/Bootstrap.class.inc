@@ -149,6 +149,9 @@ class Bootstrap
     {
         global $CONFIG;
 
+        // Composer autoloading libraries
+        require realpath(dirname(__FILE__) . '/../../vendor/autoload.php');
+
         // Where configuration in located
         $configFile = realpath(dirname(__FILE__) . '/../gamify.conf');
 
@@ -160,7 +163,6 @@ class Bootstrap
         $CONFIG = parse_ini_file($configFile, true, INI_SCANNER_RAW);
 
         // Include some needed libraries
-        require_once LIBRARY_PATH . '/Swift/swift_required.php';
         require_once LIBRARY_PATH . '/functions.php';
     }
 
