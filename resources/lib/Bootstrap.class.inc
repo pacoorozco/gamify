@@ -173,17 +173,14 @@ class Bootstrap
     {
         global $db, $CONFIG;
 
-        require_once LIBRARY_PATH . '/Pakus/DB.class.inc';
+        require_once LIBRARY_PATH . '/Pakus/Database/DBAdapter.php';
 
         // Connects to DB and set a descriptor, this will be used later
-        $db = new \Pakus\Core\DB(
+        $db = new \Pakus\Database\DBAdapter(
             $CONFIG['mysql']['host'],
             $CONFIG['mysql']['user'],
             $CONFIG['mysql']['passwd'],
             $CONFIG['mysql']['database']
-        ) or die(
-            'ERROR: No he pogut connectar amb la base de dades ('
-            . mysqli_connect_errno() . ') ' . mysqli_connect_error()
         );
     }
 
