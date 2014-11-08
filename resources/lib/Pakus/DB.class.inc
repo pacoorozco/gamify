@@ -252,6 +252,7 @@ class DB
      */
     public function qstr($str)
     {
+        $this->connect();
         if (is_array($str)) {
             return $this->qstrArr($str);
         }
