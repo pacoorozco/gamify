@@ -30,6 +30,8 @@
 
 namespace Pakus\Core;
 
+use mysqli;
+
 /**
  * Database Abstraction Layer Class
  *
@@ -42,13 +44,72 @@ namespace Pakus\Core;
  * @category   Pakus
  * @package    Database
  * @author     Paco Orozco <paco@pacoorozco.info>
- * @version    1.2
+ * @version    1.3
  * @license    http://www.gnu.org/licenses/gpl-2.0.html (GPL v2)
  * @link       https://github.com/pacoorozco/gamify
  */
-class DB extends \mysqli
+class DB
 {
-    public $debug = false;
+    private $host;
+    private $username;
+    private $password;
+    private $database;
+
+    private $link;
+    private $result;
+
+    private $debug = false;
+
+    /**
+     * Constructor
+     */
+    public function __construct($host = '', $username = '', $password = '', $database = '')
+    {
+        $this->host = $host;
+        $this->user = $username;
+        $this->password = $password;
+        $this->database = $database;
+    }
+
+    /**
+     * Connect to MySQL
+     */
+    public function connect()
+    {
+        // connect only once
+        if ($this->link !== null) {
+            return $this->link;
+        }
+
+        $this->link = new \mysqli($this->host, $this->username, $this->password, $this->database);
+
+        if ($this->link->connect_error) {
+            throw new MySQLAdapterException('Error connecting to the server: ' . $this->link->connect_error);
+        }
+        return $this->link;
+    }
+
+    /**
+     * Execute the specified query
+     */
+    public function query($query)
+    {
+        if (!is_string($query) || empty($query)) {
+            throw new MySQLAdapterException('The specified query is not valid.');
+        }
+
+        try {
+            // lazy connect to MySQL
+            $this->connect();
+            $this->result = $this->link->query($query);
+            return $this->result;
+        } catch (Exception $e) {
+            throw new MySQLAdapterException(
+                'Error executing the specified query: ' . $query . $e->getMessage()
+            );
+        }
+
+    }
 
     /**
      * Returns the first row from database result and returns a PHP array
@@ -58,13 +119,35 @@ class DB extends \mysqli
      */
     public function getRow($query)
     {
-        $result = $this->query($query);
-
-        if (!$result) {
-            return null;
+        if (!is_string($query) || empty($query)) {
+            throw new MySQLAdapterException('The specified query is not valid.');
         }
 
-        return ($result->num_rows > 0) ? $result->fetch_assoc() : null;
+        try {
+            // lazy connect to MySQL
+            $this->connect();
+            $this->result = $this->query($query);
+            return $this->result->fetch_assoc();
+        } catch (Exception $e) {
+            throw new MySQLAdapterException(
+                'Error executing the specified query ' . $query . $e->getMessage()
+            );
+        }
+    }
+
+    /**
+     * Fetch a single row from the current result set (as an associative array)
+     */
+    public function fetch()
+    {
+        if ($this->result !== null) {
+            if (($row = $this->result->fetch_array(MYSQLI_ASSOC)) !== false) {
+                return $row;
+            }
+            $this->freeResult();
+            return false;
+        }
+        return null;
     }
 
     /**
@@ -75,15 +158,20 @@ class DB extends \mysqli
      */
     public function getOne($query)
     {
-        $result = $this->query($query);
-
-        if (!$result) {
-            return null;
+        if (!is_string($query) || empty($query)) {
+            throw new MySQLAdapterException('The specified query is not valid.');
         }
 
-        $row = $result->fetch_row();
-
-        return ($result->num_rows > 0) ? reset($row) : null;
+        try {
+            // lazy connect to MySQL
+            $this->connect();
+            $this->result = $this->query($query);
+            return $this->result->fetch_row();
+        } catch (Exception $e) {
+            throw new MySQLAdapterException(
+                'Error executing the specified query ' . $query . $e->getMessage()
+            );
+        }
     }
 
     /**
@@ -99,18 +187,24 @@ class DB extends \mysqli
      */
     public function getAll($query)
     {
-        $result = $this->query($query);
-        $ret = array();
-
-        if (!$result) {
-            return null;
+        if (!is_string($query) || empty($query)) {
+            throw new MySQLAdapterException('The specified query is not valid.');
         }
 
-        while ($row = $result->fetch_assoc()) {
-            $ret[] = $row;
+        try {
+            // lazy connect to MySQL
+            $this->connect();
+            $this->result = $this->query($query);
+            $ret = array();
+            while ($row = $this->result->fetch_assoc()) {
+                $ret[] = $row;
+            }
+            return $ret;
+        } catch (Exception $e) {
+            throw new MySQLAdapterException(
+                'Error executing the specified query ' . $query . $e->getMessage()
+            );
         }
-
-        return ($result->num_rows > 0) ? $ret : null;
     }
 
     /**
@@ -126,20 +220,25 @@ class DB extends \mysqli
      */
     public function getAssoc($query)
     {
-        $result = $this->query($query);
-        $ret = array();
-
-        if (!$result) {
-            return null;
+        if (!is_string($query) || empty($query)) {
+            throw new MySQLAdapterException('The specified query is not valid.');
         }
 
-        while ($row = $result->fetch_assoc()) {
-            $values = array_values($row);
-
-            $ret[$values[0]] = $values[1];
+        try {
+            // lazy connect to MySQL
+            $this->connect();
+            $this->result = $this->query($query);
+            $ret = array();
+            while ($row = $this->result->fetch_assoc()) {
+                $values = array_values($row);
+                $ret[$values[0]] = $values[1];
+            }
+            return $ret;
+        } catch (Exception $e) {
+            throw new MySQLAdapterException(
+                'Error executing the specified query ' . $query . $e->getMessage()
+            );
         }
-
-        return ($result->num_rows > 0) ? $ret : null;
     }
 
     /**
@@ -158,7 +257,7 @@ class DB extends \mysqli
         }
 
         if (is_string($str)) {
-            $str = $this->real_escape_string($str);
+            $str = $this->link->real_escape_string($str);
         }
 
         return $str;
@@ -270,24 +369,24 @@ class DB extends \mysqli
      * @param array associative array 'column' => 'value'
      * @return integer last inserted record on DB
      */
-    public function insert($table, $arr = array())
+    public function insert($table, array $data)
     {
         /**
          * Cleaning the key allows the developer to insert the entire
          * $_POST array should he wish to and still be safe from attacks.
          */
-        $keys = implode(", ", $this->backtick($this->qstr(array_keys($arr))));
+        $fields = implode(', ', $this->backtick($this->qstr(array_keys($data))));
         // Values should always be cleaned
-        $values = implode(", ", $this->quote($this->qstr(array_values($arr))));
+        $values = implode(', ', $this->quote($this->qstr(array_values($data))));
 
         // Build the query string
-        $query = "INSERT INTO " . $this->backtick($table) . " (" . $keys . ") VALUES (" . $values . ")";
+        $query = 'INSERT INTO ' . $this->backtick($table) . ' (' . $fields . ') VALUES (' . $values . ')';
         if ($this->debug) {
             error_log($query);
         }
         $this->query($query);
 
-        return ($this->insert_id > 0) ? $this->insert_id : false;
+        return $this->getInsertId();
     }
 
     /**
@@ -316,27 +415,31 @@ class DB extends \mysqli
      * @param string where clause, is left optional in case wants to update all
      * @return bool true on success, false on failure
      */
-    public function update($table, $arr = array(), $where = false)
+    public function update($table, array $data, $where = false)
     {
-        // Start the query string
-        $query = "UPDATE " . $this->backtick($table) . " SET ";
-
         // Build the SET part of the query string
-        foreach ($arr as $key => $value) {
-            $query .= $this->backtick($this->qstr($key)) . ' = ' .
-                $this->quote($this->qstr($value)) . ', ';
+        $set = array();
+        foreach ($data as $field => $value) {
+            $set[] = $this->backtick($this->qstr($field)) . ' = ' .
+                $this->quote($this->qstr($value));
         }
-        $query = rtrim($query, ', ');
+        $set = implode(',', $set);
+
+        // Set the query string
+        $query = 'UPDATE ' . $this->backtick($table) . ' SET ' . $set;
 
         // Add WHERE clause if given
         if (false !== $where) {
             $query .= " WHERE ". $where;
         }
+
         if ($this->debug) {
             error_log($query);
         }
-        return $this->query($query);
+        $this->query($query);
+        return $this->getAffectedRows();
     }
+
 
     /**
      * Deletes record from database
@@ -361,7 +464,7 @@ class DB extends \mysqli
     public function delete($table, $where = false)
     {
         // Start the query string
-        $query = "DELETE FROM " . $this->backtick($table) . " ";
+        $query = "DELETE FROM " . $this->backtick($table);
 
         // Add WHERE clause if given
         if (false !== $where) {
@@ -370,6 +473,66 @@ class DB extends \mysqli
         if ($this->debug) {
             error_log($query);
         }
-        return $this->query($query);
+        $this->query($query);
+        return $this->getAffectedRows();
+    }
+
+    /**
+     * Get the insertion ID
+     */
+    public function getInsertId()
+    {
+        return $this->link !== null ?
+               $this->link->insert_id :
+               null;
+    }
+
+    /**
+     * Get the number of rows returned by the current result set
+     */
+    public function countRows()
+    {
+        return $this->result !== null ?
+               $this->result->num_rows :
+               0;
+    }
+
+    /**
+     * Get the number of affected rows
+     */
+    public function getAffectedRows()
+    {
+        return $this->link !== null ?
+               $this->link->affected_rows :
+               0;
+    }
+
+    /**
+     * Enable / disable DEBUG mode
+     */
+    public function setDebug($status = true)
+    {
+        $this->debug = $status;
+    }
+
+    /**
+     * Close explicitly the database connection
+     */
+    public function disconnect()
+    {
+        if ($this->link !== null) {
+            $this->link->close();
+            $this->link = null;
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Close automatically the database connection when the instance of the class is destroyed
+     */
+    public function __destruct()
+    {
+        $this->disconnect();
     }
 }
