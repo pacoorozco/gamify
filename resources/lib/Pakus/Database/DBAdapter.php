@@ -96,6 +96,9 @@ class DBAdapter
         try {
             // lazy connect to MySQL
             $this->connect();
+            if ($this->debug) {
+                error_log($query);
+            }
             $this->result = $this->link->query($query);
             return $this->result;
         } catch (Exception $e) {
@@ -373,11 +376,7 @@ class DBAdapter
 
         // Build the query string
         $query = 'INSERT INTO ' . $this->backtick($table) . ' (' . $fields . ') VALUES (' . $values . ')';
-        if ($this->debug) {
-            error_log($query);
-        }
         $this->query($query);
-
         return $this->getInsertId();
     }
 
@@ -424,10 +423,6 @@ class DBAdapter
         if (false !== $where) {
             $query .= " WHERE ". $where;
         }
-
-        if ($this->debug) {
-            error_log($query);
-        }
         $this->query($query);
         return $this->getAffectedRows();
     }
@@ -461,9 +456,6 @@ class DBAdapter
         // Add WHERE clause if given
         if (false !== $where) {
             $query .= " WHERE ". $where;
-        }
-        if ($this->debug) {
-            error_log($query);
         }
         $this->query($query);
         return $this->getAffectedRows();
