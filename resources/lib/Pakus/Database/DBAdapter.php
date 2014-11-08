@@ -160,7 +160,7 @@ class DBAdapter
             // lazy connect to MySQL
             $this->connect();
             $this->result = $this->query($query);
-            return $this->result->fetch_row();
+            return reset($this->result->fetch_row());
         } catch (Exception $e) {
             throw new DBAdapterException(
                 'Error executing the specified query ' . $query . $e->getMessage()
