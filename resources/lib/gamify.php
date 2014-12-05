@@ -391,17 +391,42 @@ function getLevelAssignements($levelId)
     );
 }
 
+function userHasDesafiament($userId)
+{
+    $desafiament = $db->getOne(
+        sprintf(
+            "SELECT status FROM members_badges "
+            . "WHERE id_member='%d' AND id_badges='29' AND status='completed LIMIT 1",
+            intval($userId)
+        )
+    );
+    
+    return !empty($desafiament);
+}
+
 function getPendingQuizs($userId)
 {
     global $db;
-    $pending = $db->getOne(
-        sprintf(
+    
+    $sql = sprintf(
             "SELECT count(*) AS pending FROM questions "
             . "WHERE status='active' AND "
             . "id NOT IN (SELECT id_question FROM members_questions WHERE id_member='%d')",
             intval($userId)
-        )
-    );
+        );
+    
+    // Primer cal mirar si l'usuari te el badge desafiament
+    if (userHasDesafiament($userId)) {
+        // Ha completat el desafiament
+        $sql = sprintf(
+            "SELECT count(*) AS pending FROM questions "
+            . "WHERE status='active' AND creation_time > '2014-12-06 01:00:00' AND "
+            . "id NOT IN (SELECT id_question FROM members_questions WHERE id_member='%d')",
+            intval($userId)
+        );
+    } 
+    
+    $pending = $db->getOne($sql);
 
     return ( $pending > 0 ) ? $pending : '';
 }
