@@ -393,6 +393,8 @@ function getLevelAssignements($levelId)
 
 function userHasDesafiament($userId)
 {
+    global $db;
+    
     $desafiament = $db->getOne(
         sprintf(
             "SELECT status FROM members_badges "
