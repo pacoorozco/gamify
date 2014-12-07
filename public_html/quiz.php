@@ -319,13 +319,22 @@ function printQuestionList()
     global $db, $session;
     $htmlCode = array();
 
-    $questions = $db->getAll(
-        sprintf(
+    $sql = sprintf(
             "SELECT * FROM questions WHERE status='active' AND id NOT IN "
             . "(SELECT id_question FROM members_questions WHERE id_member='%d')",
             $session->get('member.id')
-        )
-    );
+        );
+
+    if (userHasDesafiament($session->get('member.id'))) {
+        $sql = sprintf(
+            "SELECT * FROM questions WHERE status='active' "
+            . "AND creation_time > '2014-12-06 01:00:00' AND id NOT IN "
+            . "(SELECT id_question FROM members_questions WHERE id_member='%d')",
+            $session->get('member.id')
+        );
+    }
+
+    $questions = $db->getAll($sql);
 
     if (is_null($questions)) {
         // No hi ha cap pregunta pendent
