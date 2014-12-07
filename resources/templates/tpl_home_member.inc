@@ -34,7 +34,8 @@
         <p class="lead">Benvinguts a <strong>GoW - Game of Work!</strong></p>
         
         <ul class="nav nav-pills" role="tablist">
-                <li class="active"><a href="#newrelic" role="tab" data-toggle="tab">Data Nerds</a></li>
+                <li class="active"><a href="#desafiament" role="tab" data-toggle="tab">Desafiament</a></li>
+                <li><a href="#newrelic" role="tab" data-toggle="tab">Data Nerds</a></li>
                 <li><a href="#gow50" role="tab" data-toggle="tab">50 preguntes GoW!</a></li>
                 <li><a href="#gow" role="tab" data-toggle="tab">Qu&egrave; &eacute;s GoW!?</a></li>
         </ul>
@@ -45,7 +46,8 @@
 
                 <div class="tab-pane active" id="desafiament">
 			<p class="lead">El primer Desafiament ha finalitzat</p>
-                        <p>Tal i com us vam explicar a <a href="https://gow.upcnet.es//quiz.php?a=answerqz&item=8797c6c4-8873-488e-b42f-a7ed80295134">aquesta pregunta del desafiament</a> tots els que l'heu completat heu arribat als <b>550 punts d'experiència</b>. Felicitats. <small>Ara bé, totes les preguntes que no havieu respost amb anterioritat al mateix ara ja no estan al vostre abast.</small></p>
+                        <p>Tal i com us vam explicar a <a href="https://gow.upcnet.es//quiz.php?a=answerqz&item=8797c6c4-8873-488e-b42f-a7ed80295134">aquesta pregunta del desafiament</a> tots els que l'heu completat heu arribat als <b>550 punts d'experiència</b>. Felicitats.</p>
+                        <p><small>Ara bé, totes les preguntes que no havieu respost amb anterioritat al mateix ara ja no estan al vostre abast.</small></p>
 			<img src="uploads/badges/curious_pirate.png" class="img-responsive" />
                 </div>
 
