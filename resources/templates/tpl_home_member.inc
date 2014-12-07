@@ -42,7 +42,14 @@
         <p>&nbsp;</p>
 
         <div class="tab-content">
-                <div class="tab-pane active" id="newrelic">
+
+                <div class="tab-pane active" id="desafiament">
+			<p class="lead">El primer Desafiament ha finalitzat</p>
+                        <p>Tal i com us vam explicar a <a href="https://gow.upcnet.es//quiz.php?a=answerqz&item=8797c6c4-8873-488e-b42f-a7ed80295134">aquesta pregunta del desafiament</a> tots els que l'heu completat heu arribat als <b>550 punts d'experiència</b>. Felicitats. <small>Ara bé, totes les preguntes que no havieu respost amb anterioritat al mateix ara ja no estan al vostre abast.</small></p>
+			<img src="uploads/badges/curious_pirate.png" class="img-responsive" />
+                </div>
+
+                <div class="tab-pane" id="newrelic">
 			<p class="lead">Felicitats</p>
 			<p>Aquests són els nostres <i>Data Nerds</i> que han aconseguit el premi especial a l'ésser els 4 més ràpids en respondre <a href="https://gow.upcnet.es/quiz.php?a=answerqz&item=280be6d8-0d4e-4cd4-843c-a5090be557e5">aquesta pregunta de GoW!</a></p>
 			<img src="uploads/questions/Guanyadors_New_Relic_rs.jpeg" class="img-responsive" />
