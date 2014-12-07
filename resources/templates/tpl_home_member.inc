@@ -46,7 +46,7 @@
 
                 <div class="tab-pane active" id="desafiament">
 			<p class="lead">El primer Desafiament ha finalitzat</p>
-                        <p>Tal i com us vam explicar a <a href="https://gow.upcnet.es//quiz.php?a=answerqz&item=8797c6c4-8873-488e-b42f-a7ed80295134">aquesta pregunta del desafiament</a> tots els que l'heu completat heu arribat als <b>500 punts d'experiència</b>. Felicitats.</p>
+                        <p>Tal i com us vam explicar tots els que l'heu completat heu arribat als <b>500 punts d'experiència</b>. Felicitats.</p>
                         <p>Esperem que hagueu gaudit amb les preguntes i recordeu que <a href="https://gow.upcnet.es//quiz.php?a=answerqz&item=9c15e078-6bde-442b-94ba-3fba92e81a26">podeu dir-nos que us ha semblat</a>!</p>
                         <p><small><b>Atenció</b>: Totes les preguntes que no havieu respost amb anterioritat al desafiament, ara ja no estan al vostre abast.</small></p>
 			<img src="uploads/badges/curious_pirate.png" class="img-responsive" />
