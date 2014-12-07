@@ -90,7 +90,7 @@ function answerQuestion($questionUUID, $answers)
     // Mirem si la pregunta ha estat resposta per aquest usuari
     $result = $db->getOne(
         sprintf(
-            "SELECT id FROM members_questions WHERE id_member='%d' AND id_question='%d' LIMIT 1",
+            "SELECT id_member FROM members_questions WHERE id_member='%d' AND id_question='%d' LIMIT 1",
             $userId,
             $question['id']
         )

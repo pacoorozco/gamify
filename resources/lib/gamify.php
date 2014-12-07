@@ -398,7 +398,7 @@ function userHasDesafiament($userId)
     $desafiament = $db->getOne(
         sprintf(
             "SELECT status FROM members_badges "
-            . "WHERE id_member='%d' AND id_badges='29' AND status='completed LIMIT 1",
+            . "WHERE id_member='%d' AND id_badges='29' AND status='completed' LIMIT 1",
             intval($userId)
         )
     );
