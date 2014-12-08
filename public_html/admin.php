@@ -1256,6 +1256,7 @@ function addExperience($data = array())
     // validate data
     $userId = intval($data['id']);
     $experience = intval($data['experience']);
+    $memo = $data['memo'];
 
     if (!getUserExists($userId) || empty($experience)) {
         // Parametres erronis
@@ -1269,7 +1270,7 @@ function addExperience($data = array())
     }
 
     $username = getUserNameById($userId);
-    if (!doSilentAddExperience($userId, $experience)) {
+    if (!doSilentAddExperience($userId, $experience, $memo)) {
         $missatges[] = array(
             'type' => "error",
             'msg' => "No s'ha pogut actualitzar les dades de l'usuari "
