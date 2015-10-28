@@ -1,0 +1,24 @@
+---
+server:
+    install: '1'
+    timezone: Europe/Madrid
+    locale: en_US.UTF-8
+vagrant_local:
+    install: '1'
+    vm: { base_box: trusty64, hostname: gamify, ip: 192.168.10.10, memory: '512', sharedfolder: ./, useVagrantCloud: '1', syncType: '0' }
+nginx:
+    install: '1'
+    docroot: /vagrant/public_html
+    servername: gamify.local
+mysql:
+    install: '1'
+    root_password: '123'
+    database: gamify
+    user: gamify
+    password: verysecret
+    dump: ''
+php:
+    install: '1'
+    ppa: php5-5.6
+    packages: [php5-cli, php5-intl, php5-mcrypt, php5-ldap, php5-mysql]
+
