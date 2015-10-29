@@ -34,48 +34,19 @@
         <p class="lead">Benvinguts a <strong>GoW - Game of Work!</strong></p>
         
         <ul class="nav nav-pills" role="tablist">
-                <li class="active"><a href="#desafiament" role="tab" data-toggle="tab">Desafiament</a></li>
-                <li><a href="#newrelic" role="tab" data-toggle="tab">Data Nerds</a></li>
-                <li><a href="#gow50" role="tab" data-toggle="tab">50 preguntes GoW!</a></li>
-                <li><a href="#gow" role="tab" data-toggle="tab">Qu&egrave; &eacute;s GoW!?</a></li>
+                <li class="active"><a href="#gow" role="tab" data-toggle="tab">Qu&egrave; &eacute;s GoW!?</a></li>
         </ul>
 
         <p>&nbsp;</p>
 
         <div class="tab-content">
 
-                <div class="tab-pane active" id="desafiament">
-			<p class="lead">El primer Desafiament ha finalitzat</p>
-                        <p>Tal i com us vam explicar tots els que l'heu completat heu arribat als <b>500 punts d'experiència</b>. Felicitats.</p>
-                        <p>Esperem que hagueu gaudit amb les preguntes i recordeu que <a href="https://gow.upcnet.es//quiz.php?a=answerqz&item=9c15e078-6bde-442b-94ba-3fba92e81a26">podeu dir-nos que us ha semblat</a>!</p>
-                        <p><small><b>Atenció</b>: Totes les preguntes que no havieu respost amb anterioritat al desafiament, ara ja no estan al vostre abast.</small></p>
-			<img src="uploads/badges/curious_pirate.png" class="img-responsive" />
-                </div>
-
-                <div class="tab-pane" id="newrelic">
-			<p class="lead">Felicitats</p>
-			<p>Aquests són els nostres <i>Data Nerds</i> que han aconseguit el premi especial a l'ésser els 4 més ràpids en respondre <a href="https://gow.upcnet.es/quiz.php?a=answerqz&item=280be6d8-0d4e-4cd4-843c-a5090be557e5">aquesta pregunta de GoW!</a></p>
-			<img src="uploads/questions/Guanyadors_New_Relic_rs.jpeg" class="img-responsive" />
-                </div>
-                <div class="tab-pane" id="gow50">
-                        <div class="video-container">
-                                <iframe width="320" height="240" src="//www.youtube.com/embed/UpLxb4ZUg9A" allowfullscreen></iframe>
-                        </div>
-                </div>
-                <div class="tab-pane" id="gow">
+                <div class="tab-pane active" id="gow">
                         <div class="video-container"> 
                                 <iframe width="320" height="240" src="//www.youtube.com/embed/eH2A0k1um3A" allowfullscreen></iframe>
                         </div>
                 </div>
         </div>
-
-
-        <h1>Novetats</h1>
-        <ul>
-		<li><p class="lead">El desafiament de GoW! <a href="https://gow.upcnet.es//quiz.php?a=answerqz&item=92554bf8-9315-46b8-911a-6b4b60a0327b" target="_blank">"Qu&egrave; &eacute;s?"</a></p></li>
-	        <li><p class="lead">El GoW! al <a href="http://blog.upcnet.es/ludificacio-gow" target="_blank">blog d'UPCnet</a></p></li>
-        	<li><p class="lead">Hem fet les <a href="http://bit.ly/gow-50" target="_blank">50 preguntes a GoW!</a>, fes clic <a  href="http://bit.ly/gow-50" target="_blank">aquí</a></p></li>
-	</ul>
 
         <h1>Contacta'ns</h1>
         <p class="lead">Tens algun suggeriment? Has trobat un error?</p>
