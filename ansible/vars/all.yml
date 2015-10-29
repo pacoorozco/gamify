@@ -16,7 +16,7 @@ mysql:
     database: gamify
     user: gamify
     password: verysecret
-    dump: ''
+    dump: 'public_html/install/database.sql'
 php:
     install: '1'
     ppa: php5-5.6
