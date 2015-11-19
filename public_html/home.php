@@ -122,11 +122,11 @@ function getHTMLRankingTable($users = array(), $show = 'total_points', $top3 = 3
 
     if ($currentranking > 0 && $currentranking <= $top3) {
         for ($i = 1; $i <= $top10; $i++) {
-            $htmlReturn[] = $ranking[$i];
+            $htmlReturn[] = isset($ranking[$i]) ? $ranking[$i] : '';
         }
     } else {
         for ($i = 1; $i <= $top3; $i++) {
-            $htmlReturn[] = $ranking[$i];
+            $htmlReturn[] = isset($ranking[$i]) ? $ranking[$i] : '';
         }
 
         $htmlReturn[] = '<tr><td colspan="5" class="text-center">...</td></tr>';
@@ -139,7 +139,7 @@ function getHTMLRankingTable($users = array(), $show = 'total_points', $top3 = 3
             $end = $position;
         }
         for ($i = $init; $i <= $end; $i++) {
-            $htmlReturn[] = $ranking[$i];
+            $htmlReturn[] = isset($ranking[$i]) ? $ranking[$i] : '';
         }
     }
     return $htmlReturn;
