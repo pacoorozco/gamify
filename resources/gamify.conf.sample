@@ -69,9 +69,9 @@ db_driver = mysql
 host = localhost
 
 ; Credentials to make DB connection
-database = <database name>
-user     = <user to access database>
-passwd   = <very secret password>
+database = gamify
+user     = gamify
+passwd   = verysecret
 
 [authentication]
 ; Where users will be authenticated

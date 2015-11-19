@@ -52,5 +52,8 @@ Vagrant.configure("2") do |config|
         config.vm.provision :shell, path: "ansible/windows.sh", args: ["gamify"]
     end
 
-    config.vm.synced_folder "./", "/vagrant"
+    config.vm.synced_folder "./", "/vagrant", id: "vagrant-root",
+        owner: "vagrant",
+        group: "www-data",
+        mount_options: ["dmode=755,fmode=644"]
 end
