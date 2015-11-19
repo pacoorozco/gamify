@@ -517,5 +517,5 @@ function getBaseUrl()
     $protocol = $isSecure ? 'https://' : 'http://';
 
     // return: http://localhost/myproject/
-    return $protocol . $hostName . $pathInfo['dirname'] . "/";
+    return $protocol . $hostName . $pathInfo['dirname'];
 }
