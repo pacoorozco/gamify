@@ -557,11 +557,13 @@ function validateUserData($data, &$msg)
     $error = array();
 
     // Validate supplied data
-    if (empty($data['username'])) {
-        $error[] = array(
-            'type' => "error",
-            'msg' => "El nom d'usuari no &eacute;s v&agrave;lid."
-        );
+    if (!isset($data['id'])) {
+        if (empty($data['username'])) {
+            $error[] = array(
+                'type' => "error",
+                'msg'  => "El nom d'usuari no &eacute;s v&agrave;lid."
+            );
+        }
     }
 
     if (!filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
@@ -788,7 +790,7 @@ function saveUserData($data = array())
         );
     }
 
-    if (!$db->upddate(
+    if (!$db->update(
         'members',
         $dataToSave,
         sprintf("id='%d'", $data['id'])
