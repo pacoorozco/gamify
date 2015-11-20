@@ -10,6 +10,10 @@ server {
         try_files $uri $uri/ /index.php?$query_string;
     }
 
+    location /api {
+        try_files $uri $uri/ /api/index.php?$query_string;
+    }
+
     error_page 404 /404.html;
 
     error_page 500 502 503 504 /50x.html;
