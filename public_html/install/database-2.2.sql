@@ -62,6 +62,7 @@ CREATE TABLE `members` (
   `last_access` timestamp NULL DEFAULT NULL,
   `disabled` tinyint(1) NOT NULL DEFAULT '0',
   `profile_image` varchar(250) DEFAULT NULL,
+  `api_key` varchar(32) DEFAULT NULL,
   `register_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`),
@@ -219,5 +220,5 @@ FROM ((members LEFT JOIN vtop ON (members.id = vtop.id)) LEFT JOIN vtop_month ON
 -- Create member 'admin' as an administrator
 -- Create member 'user' as a member
 -- -----------------------------------------------------
-INSERT INTO `members` SET uuid='ebd78dc0-7252-4d65-9dc3-d4d36881a89d', username='admin', email='admin@domain.com', password=MD5('admin123'), role='administrator';
-INSERT INTO `members` SET uuid='c3dc97c1-ef20-4682-916e-2f45ff1bc48c', username='user', email='user@domain.com', password=MD5('user123'), role='member';
+INSERT INTO `members` SET uuid='ebd78dc0-7252-4d65-9dc3-d4d36881a89d', username='admin', email='admin@domain.com', password=MD5('admin123'), api_key='940bb12af8d7b040876f60f965c5be6d', role='administrator';
+INSERT INTO `members` SET uuid='c3dc97c1-ef20-4682-916e-2f45ff1bc48c', username='user', email='user@domain.com', password=MD5('user123'), api_key='7b040876f60f965c5be6d940bb12af8d', role='member';

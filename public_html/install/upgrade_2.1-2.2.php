@@ -38,6 +38,7 @@ printf("Modificant les taules de la versio: 2.1\n");
 $tables = array();
 $tables[] = "ALTER TABLE `badges` ADD `creation_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;";
 $tables[] = "ALTER TABLE `members` ADD `register_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;";
+$tables[] = "ALTER TABLE `members` ADD `api_key` VARCHAR(32) DEFAULT NULL;";
 $tables[] = "ALTER TABLE `members` CHANGE `last_access` `last_access` TIMESTAMP NULL;";
 $tables[] = "ALTER TABLE `members_badges` CHANGE `last_time` `last_time` TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;";
 $tables[] = "ALTER TABLE `members_questions` CHANGE `last_time` `last_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;";
