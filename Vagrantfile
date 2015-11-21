@@ -25,10 +25,10 @@ end
 Vagrant.configure("2") do |config|
 
     config.vm.provider :virtualbox do |v|
-        v.name = "gamify"
+        v.name = "gamify2"
         v.customize [
             "modifyvm", :id,
-            "--name", "gamify",
+            "--name", "gamify2",
             "--memory", 512,
             "--natdnshostresolver1", "on",
             "--cpus", 1,
@@ -49,7 +49,7 @@ Vagrant.configure("2") do |config|
             ansible.limit = 'all'
         end
     else
-        config.vm.provision :shell, path: "ansible/windows.sh", args: ["gamify"]
+        config.vm.provision :shell, path: "ansible/windows.sh", args: ["gamify2"]
     end
 
     config.vm.synced_folder "./", "/vagrant", id: "vagrant-root",

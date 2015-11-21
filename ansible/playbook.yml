@@ -6,7 +6,7 @@
   roles:
     - server
     - vagrant_local
-    - nginx
+    - apache
     - mysql
     - php
     - app
