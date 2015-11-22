@@ -19,5 +19,19 @@ class Question {
         return $questions;
     }
 
+    public function getQuestionForUserId($question_uuid, $user_id) {
+        // $this->database->query('SELECT q.* FROM questions q, members_questions mq WHERE q.id <> mq.id_question AND mq.id_member = :user_id');
+        $this->database->query('SELECT * FROM questions WHERE uuid = :question_uuid');
+        $this->database->bind(':question_uuid', $question_uuid);
+        $question = $this->database->fetchOne();
+        return $question;
+    }
+
+    public function getChoicesForQuestion($question_id) {
+        $this->database->query('SELECT * FROM questions_choices WHERE question_id = :question_id');
+        $this->database->bind(':question_id', $question_id);
+        $choices = $this->database->fetchAll();
+        return $choices;
+    }
 
 }

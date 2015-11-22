@@ -112,6 +112,81 @@ $app->get('/questions', 'authenticate', function() {
     echoResponse(200, $response);
 });
 
+$app->get('/questions/:uuid', 'authenticate', function($question_uuid) {
+    global $user_id;
+
+    require_once 'include/Question.class.php';
+
+    $response = array();
+    $questionObject = new Question();
+
+    // fetching all user tasks
+    $result = $questionObject->getQuestionForUserId($question_uuid, $user_id);
+
+    $response["error"] = false;
+    $response["choices"] = array();
+
+    if ($result != null) {
+        $response["error"] = false;
+        $response["uuid"] = $result["uuid"];
+        $response["name"] = $result["name"];
+        $response["createdAt"] = $result["creation_time"];
+        $question_id = $result['id'];
+
+        $result = $questionObject->getChoicesForQuestion($question_id);
+
+        // looping through result and preparing tasks array
+        foreach($result as $choice) {
+            $tmp = array();
+            $tmp['id'] = $choice['id'];
+            $tmp['choice'] = $choice['choice'];
+            array_push($response["choices"], $tmp);
+        }
+
+        echoResponse(200, $response);
+    } else {
+        $response["error"] = true;
+        $response["message"] = "The requested resource doesn't exists";
+        echoResponse(404, $response);
+    }
+});
+
+$app->post('/questions/:uuid', 'authenticate', function($question_uuid) use ($app) {
+    global $user_id;
+
+    require_once 'include/Question.class.php';
+
+    // check for required params
+    //verifyRequiredParams(array('choices'));
+
+    $choices = $app->request->put('choices');
+    $response = array();
+    $questionObject = new Question();
+
+    // Mirem si la pregunta ha estat resposta per aquest usuari
+
+    // get question's choices, if none, return
+
+    // calculate points and success
+
+    // ACTION: Badge RAPIDO
+
+    // ACTION: END
+
+//
+
+//
+    if (true) {
+        // task updated successfully
+        $response["error"] = false;
+        $response["message"] = "Gràcies per la teva resposta. La teva resposta ha obtingut una puntuació de punts";
+    } else {
+        // task failed to update
+        $response["error"] = true;
+        $response["message"] = "Error";
+    }
+    echoResponse(200, $response);
+});
 
 $app->run();
 
