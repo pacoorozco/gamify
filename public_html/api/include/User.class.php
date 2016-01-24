@@ -11,9 +11,55 @@ class User {
 
     private $database;
 
+    // Roles for a user
+    public $allowedRoles = [ 'member', 'administrator' ];
+
+    // User's properties
+    public $id;
+    public $uuid;
+    public $username;
+    public $email;
+    protected $password_hash;
+    protected $role;
+    public $level_id;
+    public $disabled;
+    public $api_key;
+
     function __construct()
     {
         $this->database = new Database();
+    }
+
+    /**
+     * Set User's role.
+     * It only allows a role from $allowedRoles array
+     *
+     * @param $role
+     * @return bool
+     */
+    public function setRole($role)
+    {
+        if (in_array($role, $this->allowedRoles)) {
+            $this->role = $role;
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Set User's Email.
+     * Use filter_var() to validate supplied email
+     * 
+     * @param $email
+     * @return bool
+     */
+    public function setEmail($email)
+    {
+        if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $this->email = $email;
+            return true;
+        }
+        return false;
     }
 
     public function create($username, $email, $password)
